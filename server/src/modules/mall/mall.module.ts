@@ -7,6 +7,12 @@ import { PropertyController } from './property/property.controller';
 import { PropertyService } from './property/property.service';
 import { SpuController } from './spu/spu.controller';
 import { SpuService } from './spu/spu.service';
+import { OrderController } from './order/order.controller';
+import { OrderService } from './order/order.service';
+import { RefundController } from './refund/refund.controller';
+import { RefundService } from './refund/refund.service';
+import { PromotionController } from './promotion/promotion.controller';
+import { PromotionService } from './promotion/promotion.service';
 
 @Module({
   controllers: [
@@ -14,18 +20,27 @@ import { SpuService } from './spu/spu.service';
     BrandController,
     PropertyController,
     SpuController,
+    OrderController,
+    RefundController,
+    PromotionController,
   ],
   providers: [
     CategoryService,
     BrandService,
     PropertyService,
     SpuService,
+    OrderService,
+    RefundService,
+    PromotionService,
   ],
   exports: [
     CategoryService,
     BrandService,
     PropertyService,
     SpuService,
+    OrderService,
+    RefundService,
+    PromotionService,
   ],
 })
 export class MallModule {}

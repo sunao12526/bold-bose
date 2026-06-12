@@ -168,6 +168,70 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
                 icon: 'ShoppingOutlined',
               },
             },
+            {
+              name: 'member/user',
+              list: '/member/user',
+              meta: {
+                label: '会员列表',
+                icon: 'UserOutlined',
+              },
+            },
+            {
+              name: 'member/level',
+              list: '/member/level',
+              meta: {
+                label: '会员等级',
+                icon: 'TrophyOutlined',
+              },
+            },
+            {
+              name: 'member/tag',
+              list: '/member/tag',
+              meta: {
+                label: '会员标签',
+                icon: 'TagsOutlined',
+              },
+            },
+            {
+              name: 'member/sign-in-config',
+              list: '/member/sign-in-config',
+              meta: {
+                label: '签到规则',
+                icon: 'ScheduleOutlined',
+              },
+            },
+            {
+              name: 'member/sign-in-record',
+              list: '/member/sign-in-record',
+              meta: {
+                label: '签到记录',
+                icon: 'HistoryOutlined',
+              },
+            },
+            {
+              name: 'mall/order',
+              list: '/mall/order',
+              meta: {
+                label: '订单管理',
+                icon: 'FileTextOutlined',
+              },
+            },
+            {
+              name: 'mall/refund',
+              list: '/mall/order-refund',
+              meta: {
+                label: '退款售后',
+                icon: 'ReloadOutlined',
+              },
+            },
+            {
+              name: 'mall/coupon',
+              list: '/mall/coupon',
+              meta: {
+                label: '优惠券管理',
+                icon: 'GiftOutlined',
+              },
+            },
           ]}
           options={{
             syncWithLocation: true,

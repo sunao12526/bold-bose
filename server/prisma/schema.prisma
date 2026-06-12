@@ -419,3 +419,217 @@ model MallSku {
 
   @@map("mall_skus")
 }
+
+enum MallOrderStatus {
+  UNPAID
+  UNDELIVERED
+  DELIVERED
+  COMPLETED
+  CANCELLED
+}
+
+enum MallRefundStatus {
+  NONE
+  APPLY
+  APPROVED
+  REJECTED
+}
+
+model MemberUser {
+  id             Int                  @id @default(autoincrement())
+  nickname       String               @db.VarChar(50)
+  avatar         String?              @db.VarChar(512)
+  mobile         String               @unique @db.VarChar(20)
+  status         CommonStatus         @default(ENABLE)
+  points         Int                  @default(0) // Member points
+  balance        Int                  @default(0) // Balance in cents
+  levelId        Int?                 @map("level_id")
+  experience     Int                  @default(0) // Total experience points
+  tagIds         Json?                @map("tag_ids") // JSON array of tag IDs
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+
+  orders         MallOrder[]
+  coupons        MallCouponUser[]
+  signInRecords  MemberSignInRecord[]
+
+  level          MemberLevel?         @relation(fields: [levelId], references: [id], onDelete: SetNull)
+
+  @@map("member_users")
+}
+
+model MemberLevel {
+  id              Int          @id @default(autoincrement())
+  name            String       @db.VarChar(50)
+  level           Int          @unique // Level index, e.g. 1, 2, 3
+  experience      Int          // Upgrade experience threshold
+  discountPercent Int          @default(100) @map("discount_percent") // 90 means 90% (10% off)
+  status          CommonStatus @default(ENABLE)
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  users           MemberUser[]
+
+  @@map("member_levels")
+}
+
+model MemberTag {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique @db.VarChar(50)
+  status      CommonStatus @default(ENABLE)
+  description String?      @db.VarChar(200)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  @@map("member_tags")
+}
+
+model MemberSignInConfig {
+  id        Int          @id @default(autoincrement())
+  day       Int          @unique // Consecutive day index (e.g. 1-7)
+  point     Int          // Reward points
+  status    CommonStatus @default(ENABLE)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  @@map("member_sign_in_configs")
+}
+
+model MemberSignInRecord {
+  id        Int        @id @default(autoincrement())
+  memberId  Int        @map("member_id")
+  day       Int        // Consecutive day count of check-in
+  point     Int        // Reward points
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  member    MemberUser @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@map("member_sign_in_records")
+}
+
+model MallOrder {
+  id              Int               @id @default(autoincrement())
+  no              String            @unique @db.VarChar(100) // Order number
+  memberId        Int               @map("member_id")
+  status          MallOrderStatus   @default(UNPAID)
+  payPrice        Int               @map("pay_price") // Payable price in cents
+  totalPrice      Int               @map("total_price") // Original price in cents
+  discountPrice   Int               @default(0) @map("discount_price") // Price discount in cents
+  deliveryStatus  Boolean           @default(false) @map("delivery_status") // Shipped or not
+  logisticsCo     String?           @map("logistics_co") @db.VarChar(100) // Logistics Company
+  logisticsNo     String?           @map("logistics_no") @db.VarChar(100) // Tracking Number
+  receiverName    String            @map("receiver_name") @db.VarChar(50)
+  receiverMobile  String            @map("receiver_mobile") @db.VarChar(20)
+  receiverAddress String            @map("receiver_address") @db.VarChar(512)
+  userRemark      String?           @map("user_remark") @db.VarChar(500)
+  payTime         DateTime?         @map("pay_time")
+  deliveryTime    DateTime?         @map("delivery_time")
+  receiveTime     DateTime?         @map("receive_time")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  member          MemberUser        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  items           MallOrderItem[]
+  refunds         MallOrderRefund[]
+
+  @@map("mall_orders")
+}
+
+model MallOrderItem {
+  id         Int       @id @default(autoincrement())
+  orderId    Int       @map("order_id")
+  spuId      Int       @map("spu_id")
+  skuId      Int       @map("sku_id")
+  spuName    String    @map("spu_name") @db.VarChar(200)
+  picUrl     String    @map("pic_url") @db.VarChar(512)
+  properties Json      // SKU specs: [{propertyId, propertyName, valueId, valueName}]
+  price      Int       // Selling price in cents
+  count      Int       // Purchased quantity
+
+  order      MallOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("mall_order_items")
+}
+
+model MallOrderRefund {
+  id          Int              @id @default(autoincrement())
+  no          String           @unique @db.VarChar(100) // Refund number
+  orderId     Int              @map("order_id")
+  memberId    Int              @map("member_id")
+  refundPrice Int              @map("refund_price") // Refund amount in cents
+  status      MallRefundStatus @default(APPLY)
+  reason      String           @db.VarChar(200)
+  userRemark  String?          @map("user_remark") @db.VarChar(500)
+  auditRemark String?          @map("audit_remark") @db.VarChar(500)
+  auditTime   DateTime?        @map("audit_time")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  order       MallOrder        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("mall_order_refunds")
+}
+
+enum MallCouponType {
+  CASH
+  DISCOUNT
+}
+
+enum MallCouponScopeType {
+  ALL
+  CATEGORY
+  SPU
+}
+
+enum MallCouponValidityType {
+  DATE
+  TERM
+}
+
+enum MallCouponUserStatus {
+  UNUSED
+  USED
+  EXPIRED
+}
+
+model MallCoupon {
+  id             Int                    @id @default(autoincrement())
+  name           String                 @db.VarChar(100)
+  type           MallCouponType         @default(CASH)
+  minPrice       Int                    @default(0) @map("min_price") // Spend threshold in cents
+  value          Int                    // Discount amount (cents for cash, percent for discount)
+  totalCount     Int                    @default(0) @map("total_count") // Total stock
+  takeCount      Int                    @default(0) @map("take_count") // Claimed amount
+  useCount       Int                    @default(0) @map("use_count") // Used amount
+  scopeType      MallCouponScopeType    @default(ALL) @map("scope_type")
+  scopeValue     Json?                  @map("scope_value") // Array of Category or SPU IDs
+  validityType   MallCouponValidityType @default(DATE) @map("validity_type")
+  validStartTime DateTime?              @map("valid_start_time")
+  validEndTime   DateTime?              @map("valid_end_time")
+  validDays      Int?                   @map("valid_days")
+  status         CommonStatus           @default(ENABLE)
+  createdAt      DateTime               @default(now()) @map("created_at")
+  updatedAt      DateTime               @updatedAt @map("updated_at")
+
+  userCoupons    MallCouponUser[]
+
+  @@map("mall_coupons")
+}
+
+model MallCouponUser {
+  id             Int                  @id @default(autoincrement())
+  couponId       Int                  @map("coupon_id")
+  memberId       Int                  @map("member_id")
+  status         MallCouponUserStatus @default(UNUSED)
+  useOrderId     Int?                 @map("use_order_id")
+  validStartTime DateTime             @map("valid_start_time")
+  validEndTime   DateTime             @map("valid_end_time")
+  useTime        DateTime?            @map("use_time")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+
+  coupon         MallCoupon           @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  member         MemberUser           @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@map("mall_coupon_users")
+}

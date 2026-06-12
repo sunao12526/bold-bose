@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { SystemModule } from './modules/system/system.module';
 import { InfraModule } from './modules/infra/infra.module';
 import { MallModule } from './modules/mall/mall.module';
+import { MemberModule } from './modules/member/member.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { LogInterceptor } from './shared/interceptors/log.interceptor';
 
@@ -16,7 +17,8 @@ import { LogInterceptor } from './shared/interceptors/log.interceptor';
     AuthModule, 
     SystemModule, 
     InfraModule, 
-    MallModule
+    MallModule,
+    MemberModule
   ],
   providers: [
     {

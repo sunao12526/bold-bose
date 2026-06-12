@@ -16,6 +16,12 @@ const property_controller_1 = require("./property/property.controller");
 const property_service_1 = require("./property/property.service");
 const spu_controller_1 = require("./spu/spu.controller");
 const spu_service_1 = require("./spu/spu.service");
+const order_controller_1 = require("./order/order.controller");
+const order_service_1 = require("./order/order.service");
+const refund_controller_1 = require("./refund/refund.controller");
+const refund_service_1 = require("./refund/refund.service");
+const promotion_controller_1 = require("./promotion/promotion.controller");
+const promotion_service_1 = require("./promotion/promotion.service");
 let MallModule = class MallModule {
 };
 exports.MallModule = MallModule;
@@ -26,18 +32,27 @@ exports.MallModule = MallModule = __decorate([
             brand_controller_1.BrandController,
             property_controller_1.PropertyController,
             spu_controller_1.SpuController,
+            order_controller_1.OrderController,
+            refund_controller_1.RefundController,
+            promotion_controller_1.PromotionController,
         ],
         providers: [
             category_service_1.CategoryService,
             brand_service_1.BrandService,
             property_service_1.PropertyService,
             spu_service_1.SpuService,
+            order_service_1.OrderService,
+            refund_service_1.RefundService,
+            promotion_service_1.PromotionService,
         ],
         exports: [
             category_service_1.CategoryService,
             brand_service_1.BrandService,
             property_service_1.PropertyService,
             spu_service_1.SpuService,
+            order_service_1.OrderService,
+            refund_service_1.RefundService,
+            promotion_service_1.PromotionService,
         ],
     })
 ], MallModule);
