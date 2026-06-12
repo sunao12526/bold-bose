@@ -11,15 +11,22 @@ import { DictDataController } from './dict/dict-data.controller';
 import { DictDataService } from './dict/dict-data.service';
 import { ConfigController } from './config/config.controller';
 import { ConfigService } from './config/config.service';
+import { PostsModule } from './posts/posts.module';
+import { NotifyService } from './notify/notify.service';
+import { NotifyTemplateController } from './notify/notify-template.controller';
+import { NotifyMessageController } from './notify/notify-message.controller';
 
 @Module({
+  imports: [PostsModule],
   controllers: [
     UserController, 
     RoleController, 
     MenuController,
     DictTypeController,
     DictDataController,
-    ConfigController
+    ConfigController,
+    NotifyTemplateController,
+    NotifyMessageController
   ],
   providers: [
     UserService, 
@@ -27,7 +34,8 @@ import { ConfigService } from './config/config.service';
     MenuService,
     DictTypeService,
     DictDataService,
-    ConfigService
+    ConfigService,
+    NotifyService
   ],
   exports: [
     UserService, 
@@ -35,7 +43,8 @@ import { ConfigService } from './config/config.service';
     MenuService,
     DictTypeService,
     DictDataService,
-    ConfigService
+    ConfigService,
+    NotifyService
   ],
 })
 export class SystemModule {}

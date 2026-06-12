@@ -14,8 +14,8 @@ export declare class FileController {
         name: string;
         createdAt: Date;
         type: string | null;
-        configId: number;
         url: string;
+        configId: number;
         size: number;
     })[]>;
     remove(id: number): Promise<{
@@ -24,8 +24,8 @@ export declare class FileController {
         name: string;
         createdAt: Date;
         type: string | null;
-        configId: number;
         url: string;
+        configId: number;
         size: number;
     }>;
 }

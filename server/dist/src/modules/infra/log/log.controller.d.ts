@@ -10,10 +10,10 @@ export declare class LogController {
         type: string;
         username: string | null;
         userId: number | null;
-        module: string;
         description: string;
+        duration: number;
+        module: string;
         method: string;
         ip: string;
-        duration: number;
     }[]>;
 }

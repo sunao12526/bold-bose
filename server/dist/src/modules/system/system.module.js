@@ -20,18 +20,25 @@ const dict_data_controller_1 = require("./dict/dict-data.controller");
 const dict_data_service_1 = require("./dict/dict-data.service");
 const config_controller_1 = require("./config/config.controller");
 const config_service_1 = require("./config/config.service");
+const posts_module_1 = require("./posts/posts.module");
+const notify_service_1 = require("./notify/notify.service");
+const notify_template_controller_1 = require("./notify/notify-template.controller");
+const notify_message_controller_1 = require("./notify/notify-message.controller");
 let SystemModule = class SystemModule {
 };
 exports.SystemModule = SystemModule;
 exports.SystemModule = SystemModule = __decorate([
     (0, common_1.Module)({
+        imports: [posts_module_1.PostsModule],
         controllers: [
             user_controller_1.UserController,
             role_controller_1.RoleController,
             menu_controller_1.MenuController,
             dict_type_controller_1.DictTypeController,
             dict_data_controller_1.DictDataController,
-            config_controller_1.ConfigController
+            config_controller_1.ConfigController,
+            notify_template_controller_1.NotifyTemplateController,
+            notify_message_controller_1.NotifyMessageController
         ],
         providers: [
             user_service_1.UserService,
@@ -39,7 +46,8 @@ exports.SystemModule = SystemModule = __decorate([
             menu_service_1.MenuService,
             dict_type_service_1.DictTypeService,
             dict_data_service_1.DictDataService,
-            config_service_1.ConfigService
+            config_service_1.ConfigService,
+            notify_service_1.NotifyService
         ],
         exports: [
             user_service_1.UserService,
@@ -47,7 +55,8 @@ exports.SystemModule = SystemModule = __decorate([
             menu_service_1.MenuService,
             dict_type_service_1.DictTypeService,
             dict_data_service_1.DictDataService,
-            config_service_1.ConfigService
+            config_service_1.ConfigService,
+            notify_service_1.NotifyService
         ],
     })
 ], SystemModule);

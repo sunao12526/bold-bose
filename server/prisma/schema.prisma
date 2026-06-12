@@ -187,3 +187,118 @@ model OperationLog {
 
   @@map("system_operation_logs")
 }
+
+model CodegenTable {
+  id           Int             @id @default(autoincrement())
+  tableName    String          @unique @map("table_name") @db.VarChar(100)
+  tableComment String          @map("table_comment") @db.VarChar(500)
+  className    String          @map("class_name") @db.VarChar(100)
+  moduleName   String          @map("module_name") @db.VarChar(100)
+  businessName String          @map("business_name") @db.VarChar(100)
+  classComment String          @map("class_comment") @db.VarChar(200)
+  author       String          @db.VarChar(50)
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  columns      CodegenColumn[]
+
+  @@map("infra_codegen_tables")
+}
+
+model CodegenColumn {
+  id                     Int          @id @default(autoincrement())
+  tableId                Int          @map("table_id")
+  columnName             String       @map("column_name") @db.VarChar(100)
+  dataType               String       @map("data_type") @db.VarChar(100)
+  columnComment          String       @map("column_comment") @db.VarChar(500)
+  nullable               Boolean      @default(true)
+  primaryKey             Boolean      @default(false) @map("primary_key")
+  autoIncrement          Boolean      @default(false) @map("auto_increment")
+  tsType                 String       @map("ts_type") @db.VarChar(50)
+  prismaType             String       @map("prisma_type") @db.VarChar(50)
+  crud                   Boolean      @default(true)
+  listOperation          Boolean      @default(true) @map("list_operation")
+  listOperationCondition String       @default("=") @map("list_operation_condition") @db.VarChar(20)
+  formOperation          Boolean      @default(true) @map("form_operation")
+  htmlType               String       @default("input") @map("html_type") @db.VarChar(50)
+  dictType               String?      @map("dict_type") @db.VarChar(100)
+
+  table                  CodegenTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
+
+  @@map("infra_codegen_columns")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(100)
+  content   String?  @db.Text
+  status    String?  @default("ENABLE") @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("system_posts")
+}
+
+model SysJob {
+  id             Int          @id @default(autoincrement())
+  name           String       @db.VarChar(100)
+  handlerName    String       @map("handler_name") @db.VarChar(100) // e.g. logCleanupJob
+  cronExpression String       @map("cron_expression") @db.VarChar(100) // e.g. 0 0 2 * * *
+  status         CommonStatus @default(ENABLE)
+  remark         String?      @db.VarChar(500)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  logs           SysJobLog[]
+
+  @@map("infra_jobs")
+}
+
+model SysJobLog {
+  id           Int      @id @default(autoincrement())
+  jobId        Int      @map("job_id")
+  handlerName  String   @map("handler_name") @db.VarChar(100)
+  status       Int      // 200 = Success, 500 = Error
+  duration     Int      // Run duration in ms
+  errorMessage String?  @map("error_message") @db.VarChar(2000)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  job          SysJob   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("infra_job_logs")
+}
+
+model NotifyTemplate {
+  id           Int             @id @default(autoincrement())
+  name         String          @db.VarChar(100)
+  code         String          @unique @db.VarChar(100) // e.g. user_welcome, code_captcha
+  type         String          @db.VarChar(50) // SYSTEM (站内信), EMAIL, SMS
+  title        String          @db.VarChar(200) // Subject or title
+  content      String          @db.VarChar(2000) // e.g. Hello {nickname}, welcome!
+  status       CommonStatus    @default(ENABLE)
+  remark       String?         @db.VarChar(500)
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  messages     NotifyMessage[]
+
+  @@map("system_notify_templates")
+}
+
+model NotifyMessage {
+  id           Int            @id @default(autoincrement())
+  templateId   Int            @map("template_id")
+  templateCode String         @map("template_code") @db.VarChar(100)
+  userId       Int            @map("user_id")
+  username     String         @db.VarChar(50)
+  title        String         @db.VarChar(200)
+  content      String         @db.VarChar(2000)
+  read         Boolean        @default(false)
+  readTime     DateTime?      @map("read_time")
+  status       Int            // 200 = Success, 500 = Fail
+  errorMessage String?        @map("error_message") @db.VarChar(1000)
+  createdAt    DateTime       @default(now()) @map("created_at")
+
+  template     NotifyTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@map("system_notify_messages")
+}

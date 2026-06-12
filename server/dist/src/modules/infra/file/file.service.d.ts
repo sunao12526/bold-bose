@@ -16,8 +16,8 @@ export declare class FileService {
         name: string;
         createdAt: Date;
         type: string | null;
-        configId: number;
         url: string;
+        configId: number;
         size: number;
     })[]>;
     findOne(id: number): Promise<{
@@ -26,8 +26,8 @@ export declare class FileService {
         name: string;
         createdAt: Date;
         type: string | null;
-        configId: number;
         url: string;
+        configId: number;
         size: number;
     }>;
     remove(id: number): Promise<{
@@ -36,8 +36,8 @@ export declare class FileService {
         name: string;
         createdAt: Date;
         type: string | null;
-        configId: number;
         url: string;
+        configId: number;
         size: number;
     }>;
 }

@@ -4,12 +4,13 @@ import React from 'react';
 import { Authenticated } from '@refinedev/core';
 import { Suspense } from 'react';
 import { ThemedLayout } from '@refinedev/antd';
+import { CustomHeader } from '../../components/header';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Authenticated key="dashboard" fallback={null}>
-        <ThemedLayout>{children}</ThemedLayout>
+        <ThemedLayout Header={CustomHeader}>{children}</ThemedLayout>
       </Authenticated>
     </Suspense>
   );

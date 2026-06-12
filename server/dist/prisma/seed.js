@@ -195,10 +195,59 @@ async function main() {
             status: client_1.CommonStatus.ENABLE,
         },
     });
+    const codegenMenu = await prisma.menu.create({
+        data: {
+            name: '代码生成',
+            type: client_1.MenuType.MENU,
+            parentId: infraDir.id,
+            path: '/infra/codegen',
+            icon: 'CodeOutlined',
+            permission: 'infra:codegen:query',
+            component: 'infra/codegen/index',
+            sort: 4,
+            status: client_1.CommonStatus.ENABLE,
+        },
+    });
+    const jobMenu = await prisma.menu.create({
+        data: {
+            name: '定时任务',
+            type: client_1.MenuType.MENU,
+            parentId: infraDir.id,
+            path: '/infra/job',
+            icon: 'ScheduleOutlined',
+            permission: 'infra:job:query',
+            component: 'infra/job/index',
+            sort: 5,
+            status: client_1.CommonStatus.ENABLE,
+        },
+    });
+    const notifyTemplateMenu = await prisma.menu.create({
+        data: {
+            name: '通知模板',
+            type: client_1.MenuType.MENU,
+            parentId: sysDir.id,
+            path: '/system/notify-template',
+            icon: 'MailOutlined',
+            permission: 'system:notify-template:query',
+            component: 'system/notify-template/index',
+            sort: 6,
+            status: client_1.CommonStatus.ENABLE,
+        },
+    });
+    const notifyTemplateCreate = await prisma.menu.create({
+        data: { name: '模板新增', type: client_1.MenuType.BUTTON, parentId: notifyTemplateMenu.id, permission: 'system:notify-template:create', sort: 1, status: client_1.CommonStatus.ENABLE },
+    });
+    const notifyTemplateUpdate = await prisma.menu.create({
+        data: { name: '模板修改', type: client_1.MenuType.BUTTON, parentId: notifyTemplateMenu.id, permission: 'system:notify-template:update', sort: 2, status: client_1.CommonStatus.ENABLE },
+    });
+    const notifyTemplateDelete = await prisma.menu.create({
+        data: { name: '模板删除', type: client_1.MenuType.BUTTON, parentId: notifyTemplateMenu.id, permission: 'system:notify-template:delete', sort: 3, status: client_1.CommonStatus.ENABLE },
+    });
     console.log('Menus seeded.');
     const allMenus = [
         sysDir, userMenu, roleMenu, menuMenu, userCreate, userUpdate, userDelete,
-        dictMenu, configMenu, infraDir, fileConfigMenu, fileListMenu, logMenu
+        dictMenu, configMenu, infraDir, fileConfigMenu, fileListMenu, logMenu, codegenMenu, jobMenu,
+        notifyTemplateMenu, notifyTemplateCreate, notifyTemplateUpdate, notifyTemplateDelete
     ];
     for (const menu of allMenus) {
         await prisma.roleMenu.upsert({
@@ -334,7 +383,125 @@ async function main() {
             remark: '后台系统登录及主页左上角显示',
         },
     });
+    await prisma.sysConfig.upsert({
+        where: { key: 'sys.mail.host' },
+        update: {},
+        create: {
+            name: 'SMTP 邮件服务器地址',
+            key: 'sys.mail.host',
+            value: 'smtp.mailtrap.io',
+            visible: true,
+            remark: 'SMTP邮件服务器主机，例如 smtp.qq.com',
+        },
+    });
+    await prisma.sysConfig.upsert({
+        where: { key: 'sys.mail.port' },
+        update: {},
+        create: {
+            name: 'SMTP 邮件服务器端口',
+            key: 'sys.mail.port',
+            value: '2525',
+            visible: true,
+            remark: 'SMTP邮件服务器端口，通常为 25, 465, 587 或 2525',
+        },
+    });
+    await prisma.sysConfig.upsert({
+        where: { key: 'sys.mail.username' },
+        update: {},
+        create: {
+            name: 'SMTP 邮件用户名',
+            key: 'sys.mail.username',
+            value: 'any',
+            visible: true,
+            remark: 'SMTP邮件账户用户名',
+        },
+    });
+    await prisma.sysConfig.upsert({
+        where: { key: 'sys.mail.password' },
+        update: {},
+        create: {
+            name: 'SMTP 邮件密码',
+            key: 'sys.mail.password',
+            value: 'any',
+            visible: true,
+            remark: 'SMTP邮件账户密码或授权码',
+        },
+    });
+    await prisma.sysConfig.upsert({
+        where: { key: 'sys.mail.ssl' },
+        update: {},
+        create: {
+            name: 'SMTP 邮件启用 SSL',
+            key: 'sys.mail.ssl',
+            value: 'false',
+            visible: true,
+            remark: '是否启用安全连接 SSL/TLS (true 或 false)',
+        },
+    });
+    await prisma.sysConfig.upsert({
+        where: { key: 'sys.mail.from' },
+        update: {},
+        create: {
+            name: 'SMTP 邮件发件人地址',
+            key: 'sys.mail.from',
+            value: 'system@yudao.local',
+            visible: true,
+            remark: '发件人邮箱，例如 mail@yudao.local',
+        },
+    });
     console.log('System configs seeded.');
+    await prisma.notifyTemplate.upsert({
+        where: { code: 'user_welcome' },
+        update: {},
+        create: {
+            name: '用户注册欢迎模版',
+            code: 'user_welcome',
+            type: 'SYSTEM',
+            title: '欢迎注册系统',
+            content: '你好，{nickname}！欢迎注册 {systemName}！您的账号是 {username}。',
+            status: client_1.CommonStatus.ENABLE,
+            remark: '新用户注册成功后的站内欢迎信',
+        },
+    });
+    await prisma.notifyTemplate.upsert({
+        where: { code: 'test_email' },
+        update: {},
+        create: {
+            name: '测试邮件模版',
+            code: 'test_email',
+            type: 'EMAIL',
+            title: '测试通知邮件',
+            content: '你好，{nickname}！这是一封测试通知邮件，用于验证邮件服务器连接。发送时间为：{time}。',
+            status: client_1.CommonStatus.ENABLE,
+            remark: '用于系统后台邮件测试',
+        },
+    });
+    console.log('Notification templates seeded.');
+    await prisma.sysJob.upsert({
+        where: { id: 1 },
+        update: {},
+        create: {
+            id: 1,
+            name: '操作审计日志清理',
+            handlerName: 'logCleanupJob',
+            cronExpression: '0 0 2 * * *',
+            status: client_1.CommonStatus.DISABLE,
+            remark: '每日凌晨2点自动清理7天前的系统操作审计日志',
+        },
+    });
+    await prisma.sysJob.upsert({
+        where: { id: 2 },
+        update: {},
+        create: {
+            id: 2,
+            name: '系统状态健康监测',
+            handlerName: 'demoTaskJob',
+            cronExpression: '*/5 * * * * *',
+            status: client_1.CommonStatus.DISABLE,
+            remark: '每5秒触发一次的测试定时任务，在控制台输出 hello 消息',
+        },
+    });
+    console.log('Background jobs seeded.');
     console.log('Database seeding successfully finished.');
 }
 main()

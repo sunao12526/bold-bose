@@ -73,6 +73,22 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               },
             },
             {
+              name: 'system/notify-template',
+              list: '/system/notify-template',
+              meta: {
+                label: '通知模板',
+                icon: 'MailOutlined',
+              },
+            },
+            {
+              name: 'system/posts',
+              list: '/system/posts',
+              meta: {
+                label: '文章管理',
+                icon: 'FileTextOutlined',
+              },
+            },
+            {
               name: 'infra/file-config',
               list: '/infra/file-config',
               meta: {
@@ -94,6 +110,22 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               meta: {
                 label: '系统日志',
                 icon: 'FileTextOutlined',
+              },
+            },
+            {
+              name: 'infra/codegen',
+              list: '/infra/codegen',
+              meta: {
+                label: '代码生成',
+                icon: 'CodeOutlined',
+              },
+            },
+            {
+              name: 'infra/job',
+              list: '/infra/job',
+              meta: {
+                label: '定时任务',
+                icon: 'ScheduleOutlined',
               },
             },
           ]}

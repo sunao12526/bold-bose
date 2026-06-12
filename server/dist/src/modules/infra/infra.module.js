@@ -9,6 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InfraModule = void 0;
 const common_1 = require("@nestjs/common");
 const file_module_1 = require("./file/file.module");
+const codegen_module_1 = require("./codegen/codegen.module");
+const job_module_1 = require("./job/job.module");
 const log_controller_1 = require("./log/log.controller");
 const log_service_1 = require("./log/log.service");
 let InfraModule = class InfraModule {
@@ -16,10 +18,10 @@ let InfraModule = class InfraModule {
 exports.InfraModule = InfraModule;
 exports.InfraModule = InfraModule = __decorate([
     (0, common_1.Module)({
-        imports: [file_module_1.FileModule],
+        imports: [file_module_1.FileModule, codegen_module_1.CodegenModule, job_module_1.JobModule],
         controllers: [log_controller_1.LogController],
         providers: [log_service_1.LogService],
-        exports: [file_module_1.FileModule, log_service_1.LogService],
+        exports: [file_module_1.FileModule, codegen_module_1.CodegenModule, job_module_1.JobModule, log_service_1.LogService],
     })
 ], InfraModule);
 //# sourceMappingURL=infra.module.js.map
