@@ -1,6 +1,7 @@
-import { Controller, Get, Put, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Put, Post, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
+import { Public } from '../../../shared/decorators/public.decorator';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
@@ -39,6 +40,18 @@ export class OrderController {
   @Log({ module: '订单管理', type: 'UPDATE', description: '订单模拟支付' })
   async payMock(@Param('id', ParseIntPipe) id: number) {
     return this.orderService.payMock(id);
+  }
+
+  @Public()
+  @Post('pay-notify')
+  async payNotify(
+    @Body('merchantOrderId') merchantOrderId: string,
+    @Body('payOrderId') payOrderId: number,
+    @Body('status') status: string,
+    @Body('payTime') payTime: Date | string,
+  ) {
+    await this.orderService.payNotify(merchantOrderId, payOrderId, status, payTime);
+    return 'success';
   }
 
   @Put(':id/ship')

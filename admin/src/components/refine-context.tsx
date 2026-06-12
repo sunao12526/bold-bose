@@ -232,6 +232,30 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
                 icon: 'GiftOutlined',
               },
             },
+            {
+              name: 'pay/app',
+              list: '/pay/app',
+              meta: {
+                label: '支付应用',
+                icon: 'SlidersOutlined',
+              },
+            },
+            {
+              name: 'pay/order',
+              list: '/pay/order',
+              meta: {
+                label: '支付订单',
+                icon: 'OrderedListOutlined',
+              },
+            },
+            {
+              name: 'pay/refund',
+              list: '/pay/refund',
+              meta: {
+                label: '退款订单',
+                icon: 'RollbackOutlined',
+              },
+            },
           ]}
           options={{
             syncWithLocation: true,

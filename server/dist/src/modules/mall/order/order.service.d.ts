@@ -1,8 +1,10 @@
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { MallOrderStatus } from '@prisma/client';
+import { PayOrderService } from '../../pay/pay-order.service';
 export declare class OrderService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private payOrderService;
+    constructor(prisma: PrismaService, payOrderService: PayOrderService);
     findAll(status?: MallOrderStatus): Promise<({
         member: {
             id: number;
@@ -135,7 +137,7 @@ export declare class OrderService {
         deliveryTime: Date | null;
         receiveTime: Date | null;
     }>;
-    payMock(id: number): Promise<{
+    payMock(id: number): Promise<({
         items: {
             id: number;
             picUrl: string;
@@ -148,6 +150,27 @@ export declare class OrderService {
             orderId: number;
         }[];
     } & {
+        id: number;
+        status: import("@prisma/client").$Enums.MallOrderStatus;
+        createdAt: Date;
+        updatedAt: Date;
+        memberId: number;
+        no: string;
+        payPrice: number;
+        totalPrice: number;
+        discountPrice: number;
+        deliveryStatus: boolean;
+        logisticsCo: string | null;
+        logisticsNo: string | null;
+        receiverName: string;
+        receiverMobile: string;
+        receiverAddress: string;
+        userRemark: string | null;
+        payTime: Date | null;
+        deliveryTime: Date | null;
+        receiveTime: Date | null;
+    }) | null>;
+    payNotify(merchantOrderId: string, payOrderId: number, status: string, payTime: Date | string): Promise<{
         id: number;
         status: import("@prisma/client").$Enums.MallOrderStatus;
         createdAt: Date;

@@ -1,6 +1,7 @@
-import { Controller, Get, Put, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Put, Post, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { RefundService } from './refund.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
+import { Public } from '../../../shared/decorators/public.decorator';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
@@ -9,6 +10,18 @@ import { Log } from '../../../shared/decorators/log.decorator';
 @Controller('mall/refund')
 export class RefundController {
   constructor(private refundService: RefundService) {}
+
+  @Public()
+  @Post('notify')
+  async refundNotify(
+    @Body('merchantRefundId') merchantRefundId: string,
+    @Body('refundId') refundId: number,
+    @Body('status') status: string,
+    @Body('refundTime') refundTime: Date | string,
+  ) {
+    await this.refundService.refundNotify(merchantRefundId, refundId, status, refundTime);
+    return 'success';
+  }
 
   @Get()
   @RequirePermissions('mall:refund:query')

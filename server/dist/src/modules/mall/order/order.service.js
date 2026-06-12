@@ -13,10 +13,13 @@ exports.OrderService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
 const client_1 = require("@prisma/client");
+const pay_order_service_1 = require("../../pay/pay-order.service");
 let OrderService = class OrderService {
     prisma;
-    constructor(prisma) {
+    payOrderService;
+    constructor(prisma, payOrderService) {
         this.prisma = prisma;
+        this.payOrderService = payOrderService;
     }
     async findAll(status) {
         return this.prisma.mallOrder.findMany({
@@ -63,14 +66,40 @@ let OrderService = class OrderService {
         if (order.status !== client_1.MallOrderStatus.UNPAID) {
             throw new common_1.BadRequestException('该订单不是待付款状态，无法模拟支付');
         }
-        return this.prisma.mallOrder.update({
+        const payOrder = await this.payOrderService.createPayOrder({
+            appCode: 'mall_app',
+            merchantOrderId: order.no,
+            subject: `商城订单: ${order.no}`,
+            price: order.payPrice,
+            merchantNotifyUrl: 'http://localhost:3000/admin-api/mall/order/pay-notify',
+        });
+        await this.payOrderService.submitPayOrder(payOrder.id, 'mock');
+        return this.prisma.mallOrder.findUnique({
             where: { id },
-            data: {
-                status: client_1.MallOrderStatus.UNDELIVERED,
-                payTime: new Date(),
-            },
             include: { items: true },
         });
+    }
+    async payNotify(merchantOrderId, payOrderId, status, payTime) {
+        const order = await this.prisma.mallOrder.findFirst({
+            where: { no: merchantOrderId },
+        });
+        if (!order) {
+            throw new common_1.NotFoundException('订单不存在');
+        }
+        if (order.status !== client_1.MallOrderStatus.UNPAID) {
+            return order;
+        }
+        if (status === 'SUCCESS') {
+            return this.prisma.mallOrder.update({
+                where: { id: order.id },
+                data: {
+                    status: client_1.MallOrderStatus.UNDELIVERED,
+                    payTime: new Date(payTime),
+                },
+                include: { items: true },
+            });
+        }
+        return order;
     }
     async ship(id, logisticsCo, logisticsNo) {
         const order = await this.findOne(id);
@@ -109,6 +138,7 @@ let OrderService = class OrderService {
 exports.OrderService = OrderService;
 exports.OrderService = OrderService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        pay_order_service_1.PayOrderService])
 ], OrderService);
 //# sourceMappingURL=order.service.js.map

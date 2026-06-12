@@ -12,11 +12,13 @@ const job_service_1 = require("./job.service");
 const job_controller_1 = require("./job.controller");
 const job_log_controller_1 = require("./job-log.controller");
 const job_handlers_1 = require("./job.handlers");
+const pay_module_1 = require("../../pay/pay.module");
 let JobModule = class JobModule {
 };
 exports.JobModule = JobModule;
 exports.JobModule = JobModule = __decorate([
     (0, common_1.Module)({
+        imports: [pay_module_1.PayModule],
         controllers: [job_controller_1.JobController, job_log_controller_1.JobLogController],
         providers: [job_service_1.JobService, job_handlers_1.JobHandlers],
         exports: [job_service_1.JobService],

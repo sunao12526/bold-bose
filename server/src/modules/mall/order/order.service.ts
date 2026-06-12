@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { MallOrderStatus } from '@prisma/client';
+import { PayOrderService } from '../../pay/pay-order.service';
 
 @Injectable()
 export class OrderService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private payOrderService: PayOrderService,
+  ) {}
 
   async findAll(status?: MallOrderStatus) {
     return this.prisma.mallOrder.findMany({
@@ -53,14 +57,47 @@ export class OrderService {
     if (order.status !== MallOrderStatus.UNPAID) {
       throw new BadRequestException('该订单不是待付款状态，无法模拟支付');
     }
-    return this.prisma.mallOrder.update({
+
+    // Route payment creation and execution through PayModule
+    const payOrder = await this.payOrderService.createPayOrder({
+      appCode: 'mall_app',
+      merchantOrderId: order.no,
+      subject: `商城订单: ${order.no}`,
+      price: order.payPrice,
+      merchantNotifyUrl: 'http://localhost:3000/admin-api/mall/order/pay-notify',
+    });
+
+    await this.payOrderService.submitPayOrder(payOrder.id, 'mock');
+
+    return this.prisma.mallOrder.findUnique({
       where: { id },
-      data: {
-        status: MallOrderStatus.UNDELIVERED,
-        payTime: new Date(),
-      },
       include: { items: true },
     });
+  }
+
+  async payNotify(merchantOrderId: string, payOrderId: number, status: string, payTime: Date | string) {
+    const order = await this.prisma.mallOrder.findFirst({
+      where: { no: merchantOrderId },
+    });
+    if (!order) {
+      throw new NotFoundException('订单不存在');
+    }
+
+    if (order.status !== MallOrderStatus.UNPAID) {
+      return order;
+    }
+
+    if (status === 'SUCCESS') {
+      return this.prisma.mallOrder.update({
+        where: { id: order.id },
+        data: {
+          status: MallOrderStatus.UNDELIVERED,
+          payTime: new Date(payTime),
+        },
+        include: { items: true },
+      });
+    }
+    return order;
   }
 
   async ship(id: number, logisticsCo: string, logisticsNo: string) {

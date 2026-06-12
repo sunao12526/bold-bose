@@ -13,11 +13,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JobHandlers = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
+const notify_service_1 = require("../../pay/notify.service");
 let JobHandlers = JobHandlers_1 = class JobHandlers {
     prisma;
+    notifyService;
     logger = new common_1.Logger(JobHandlers_1.name);
-    constructor(prisma) {
+    constructor(prisma, notifyService) {
         this.prisma = prisma;
+        this.notifyService = notifyService;
     }
     async logCleanupJob() {
         const daysLimit = 7;
@@ -46,10 +49,32 @@ let JobHandlers = JobHandlers_1 = class JobHandlers {
         });
         this.logger.log(`[Job: sessionCleanupJob] Successfully cleaned up ${result.count} expired user sessions.`);
     }
+    async payNotifyJob() {
+        const failedLogs = await this.prisma.payNotifyLog.findMany({
+            where: {
+                status: 'FAIL',
+                attemptCount: { lt: 5 },
+                nextNotifyTime: { lte: new Date() },
+            },
+        });
+        if (failedLogs.length === 0) {
+            return;
+        }
+        this.logger.log(`[Job: payNotifyJob] Found ${failedLogs.length} failed notifications to retry.`);
+        for (const log of failedLogs) {
+            try {
+                await this.notifyService.sendNotification(log.id);
+            }
+            catch (err) {
+                this.logger.error(`[Job: payNotifyJob] Retry failed for log ${log.id}: ${err.message}`);
+            }
+        }
+    }
 };
 exports.JobHandlers = JobHandlers;
 exports.JobHandlers = JobHandlers = JobHandlers_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        notify_service_1.NotifyService])
 ], JobHandlers);
 //# sourceMappingURL=job.handlers.js.map

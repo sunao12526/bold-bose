@@ -633,3 +633,118 @@ model MallCouponUser {
 
   @@map("mall_coupon_users")
 }
+
+enum PayOrderStatus {
+  UNPAID
+  SUCCESS
+  CLOSED
+}
+
+enum PayRefundStatus {
+  APPLY
+  SUCCESS
+  CLOSED
+  FAIL
+}
+
+enum PayNotifyStatus {
+  NO
+  SUCCESS
+  FAIL
+}
+
+enum PayNotifyType {
+  ORDER
+  REFUND
+}
+
+model PayApp {
+  id        Int          @id @default(autoincrement())
+  name      String       @db.VarChar(64)
+  code      String       @unique @db.VarChar(64)
+  status    CommonStatus @default(ENABLE)
+  remark    String?      @db.VarChar(512)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  channels  PayChannel[]
+  orders    PayOrder[]
+
+  @@map("pay_apps")
+}
+
+model PayChannel {
+  id        Int          @id @default(autoincrement())
+  appId     Int          @map("app_id")
+  code      String       @db.VarChar(32) // e.g. "mock", "alipay", "wechat"
+  config    Json
+  status    CommonStatus @default(ENABLE)
+  remark    String?      @db.VarChar(512)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  app       PayApp       @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  @@unique([appId, code])
+  @@map("pay_channels")
+}
+
+model PayOrder {
+  id                Int             @id @default(autoincrement())
+  appId             Int             @map("app_id")
+  merchantOrderId   String          @map("merchant_order_id") @db.VarChar(64)
+  subject           String          @db.VarChar(128)
+  price             Int
+  channelCode       String?         @map("channel_code") @db.VarChar(32)
+  status            PayOrderStatus  @default(UNPAID)
+  payTime           DateTime?       @map("pay_time")
+  expireTime        DateTime        @map("expire_at")
+  merchantNotifyUrl String          @map("merchant_notify_url") @db.VarChar(512)
+  notifyStatus      PayNotifyStatus @default(NO)
+
+  app               PayApp          @relation(fields: [appId], references: [id], onDelete: Cascade)
+  refunds           PayRefund[]
+  notifyLogs        PayNotifyLog[]
+
+  @@unique([appId, merchantOrderId])
+  @@map("pay_orders")
+}
+
+model PayRefund {
+  id                Int             @id @default(autoincrement())
+  appId             Int             @map("app_id")
+  payOrderId        Int             @map("pay_order_id")
+  merchantRefundId  String          @map("merchant_refund_id") @db.VarChar(64)
+  price             Int
+  refundPrice       Int             @map("refund_price")
+  status            PayRefundStatus @default(APPLY)
+  reason            String          @db.VarChar(200)
+  refundTime        DateTime?       @map("refund_time")
+  merchantNotifyUrl String          @map("merchant_notify_url") @db.VarChar(512)
+  notifyStatus      PayNotifyStatus @default(NO)
+
+  payOrder          PayOrder        @relation(fields: [payOrderId], references: [id], onDelete: Cascade)
+  notifyLogs        PayNotifyLog[]
+
+  @@unique([appId, merchantRefundId])
+  @@map("pay_refunds")
+}
+
+model PayNotifyLog {
+  id              Int             @id @default(autoincrement())
+  appId           Int             @map("app_id")
+  payOrderId      Int?            @map("pay_order_id")
+  refundId        Int?            @map("refund_id")
+  type            PayNotifyType
+  status          PayNotifyStatus
+  attemptCount    Int             @default(0) @map("attempt_count")
+  lastAttemptTime DateTime?       @map("last_attempt_time")
+  nextNotifyTime  DateTime?       @map("next_notify_time")
+  responseContent String?         @map("response_content") @db.VarChar(2000)
+
+  payOrder        PayOrder?       @relation(fields: [payOrderId], references: [id], onDelete: Cascade)
+  refund          PayRefund?      @relation(fields: [refundId], references: [id], onDelete: Cascade)
+
+  @@map("pay_notify_logs")
+}
+

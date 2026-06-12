@@ -16,6 +16,7 @@ exports.OrderController = void 0;
 const common_1 = require("@nestjs/common");
 const order_service_1 = require("./order.service");
 const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
+const public_decorator_1 = require("../../../shared/decorators/public.decorator");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
@@ -36,6 +37,10 @@ let OrderController = class OrderController {
     }
     async payMock(id) {
         return this.orderService.payMock(id);
+    }
+    async payNotify(merchantOrderId, payOrderId, status, payTime) {
+        await this.orderService.payNotify(merchantOrderId, payOrderId, status, payTime);
+        return 'success';
     }
     async ship(id, logisticsCo, logisticsNo) {
         return this.orderService.ship(id, logisticsCo, logisticsNo);
@@ -81,6 +86,17 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "payMock", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('pay-notify'),
+    __param(0, (0, common_1.Body)('merchantOrderId')),
+    __param(1, (0, common_1.Body)('payOrderId')),
+    __param(2, (0, common_1.Body)('status')),
+    __param(3, (0, common_1.Body)('payTime')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number, String, Object]),
+    __metadata("design:returntype", Promise)
+], OrderController.prototype, "payNotify", null);
 __decorate([
     (0, common_1.Put)(':id/ship'),
     (0, require_permissions_decorator_1.RequirePermissions)('mall:order:update'),

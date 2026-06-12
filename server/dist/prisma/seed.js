@@ -510,6 +510,70 @@ async function main() {
     const mallCouponDelete = await prisma.menu.create({
         data: { name: '优惠券删除', type: client_1.MenuType.BUTTON, parentId: mallCouponMenu.id, permission: 'mall:coupon:delete', sort: 3, status: client_1.CommonStatus.ENABLE },
     });
+    const payDir = await prisma.menu.create({
+        data: {
+            name: '支付中心',
+            type: client_1.MenuType.DIR,
+            path: '/pay',
+            icon: 'TransactionOutlined',
+            sort: 5,
+            status: client_1.CommonStatus.ENABLE,
+        },
+    });
+    const payAppMenu = await prisma.menu.create({
+        data: {
+            name: '支付应用',
+            type: client_1.MenuType.MENU,
+            parentId: payDir.id,
+            path: '/pay/app',
+            icon: 'SlidersOutlined',
+            permission: 'pay:app:query',
+            component: 'pay/app/index',
+            sort: 1,
+            status: client_1.CommonStatus.ENABLE,
+        },
+    });
+    const payAppCreate = await prisma.menu.create({
+        data: { name: '应用新增', type: client_1.MenuType.BUTTON, parentId: payAppMenu.id, permission: 'pay:app:create', sort: 1, status: client_1.CommonStatus.ENABLE },
+    });
+    const payAppUpdate = await prisma.menu.create({
+        data: { name: '应用修改', type: client_1.MenuType.BUTTON, parentId: payAppMenu.id, permission: 'pay:app:update', sort: 2, status: client_1.CommonStatus.ENABLE },
+    });
+    const payAppDelete = await prisma.menu.create({
+        data: { name: '应用删除', type: client_1.MenuType.BUTTON, parentId: payAppMenu.id, permission: 'pay:app:delete', sort: 3, status: client_1.CommonStatus.ENABLE },
+    });
+    const payOrderMenu = await prisma.menu.create({
+        data: {
+            name: '支付订单',
+            type: client_1.MenuType.MENU,
+            parentId: payDir.id,
+            path: '/pay/order',
+            icon: 'OrderedListOutlined',
+            permission: 'pay:order:query',
+            component: 'pay/order/index',
+            sort: 2,
+            status: client_1.CommonStatus.ENABLE,
+        },
+    });
+    const payOrderUpdate = await prisma.menu.create({
+        data: { name: '模拟支付', type: client_1.MenuType.BUTTON, parentId: payOrderMenu.id, permission: 'pay:order:update', sort: 1, status: client_1.CommonStatus.ENABLE },
+    });
+    const payRefundMenu = await prisma.menu.create({
+        data: {
+            name: '退款订单',
+            type: client_1.MenuType.MENU,
+            parentId: payDir.id,
+            path: '/pay/refund',
+            icon: 'RollbackOutlined',
+            permission: 'pay:refund:query',
+            component: 'pay/refund/index',
+            sort: 3,
+            status: client_1.CommonStatus.ENABLE,
+        },
+    });
+    const payRefundUpdate = await prisma.menu.create({
+        data: { name: '模拟退款', type: client_1.MenuType.BUTTON, parentId: payRefundMenu.id, permission: 'pay:refund:update', sort: 1, status: client_1.CommonStatus.ENABLE },
+    });
     console.log('Menus seeded.');
     const allMenus = [
         sysDir, userMenu, roleMenu, menuMenu, userCreate, userUpdate, userDelete,
@@ -526,7 +590,9 @@ async function main() {
         memberDir, memberUserMenu, memberUserUpdate,
         memberLevelMenu, memberLevelCreate, memberLevelUpdate, memberLevelDelete,
         memberTagMenu, memberTagCreate, memberTagUpdate, memberTagDelete,
-        memberSignInConfigMenu, memberSignInConfigUpdate, memberSignInRecordMenu
+        memberSignInConfigMenu, memberSignInConfigUpdate, memberSignInRecordMenu,
+        payDir, payAppMenu, payAppCreate, payAppUpdate, payAppDelete,
+        payOrderMenu, payOrderUpdate, payRefundMenu, payRefundUpdate
     ];
     for (const menu of allMenus) {
         await prisma.roleMenu.upsert({
@@ -790,6 +856,18 @@ async function main() {
             cronExpression: '0 0 3 * * *',
             status: client_1.CommonStatus.ENABLE,
             remark: '每日凌晨3点自动清理过期的用户登录会话',
+        },
+    });
+    await prisma.sysJob.upsert({
+        where: { id: 4 },
+        update: {},
+        create: {
+            id: 4,
+            name: '支付通知重试回调',
+            handlerName: 'payNotifyJob',
+            cronExpression: '*/10 * * * * *',
+            status: client_1.CommonStatus.ENABLE,
+            remark: '每10秒自动扫描并重试发送失败的支付/退款回调通知',
         },
     });
     console.log('Background jobs seeded.');
@@ -1195,6 +1273,73 @@ async function main() {
             },
         });
     }
+    console.log('Seeding payment apps and channels...');
+    const payApp = await prisma.payApp.upsert({
+        where: { code: 'mall_app' },
+        update: {},
+        create: {
+            name: '商城应用',
+            code: 'mall_app',
+            status: client_1.CommonStatus.ENABLE,
+            remark: '商城主包支付应用',
+        },
+    });
+    await prisma.payChannel.upsert({
+        where: {
+            appId_code: {
+                appId: payApp.id,
+                code: 'mock',
+            },
+        },
+        update: {},
+        create: {
+            appId: payApp.id,
+            code: 'mock',
+            config: { enabled: true },
+            status: client_1.CommonStatus.ENABLE,
+            remark: '模拟支付测试通道',
+        },
+    });
+    await prisma.payChannel.upsert({
+        where: {
+            appId_code: {
+                appId: payApp.id,
+                code: 'alipay',
+            },
+        },
+        update: {},
+        create: {
+            appId: payApp.id,
+            code: 'alipay',
+            config: {
+                appId: '2021000123456789',
+                privateKey: 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQ...',
+                publicKey: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...',
+            },
+            status: client_1.CommonStatus.ENABLE,
+            remark: '支付宝应用内支付/网页支付通道',
+        },
+    });
+    await prisma.payChannel.upsert({
+        where: {
+            appId_code: {
+                appId: payApp.id,
+                code: 'wechat',
+            },
+        },
+        update: {},
+        create: {
+            appId: payApp.id,
+            code: 'wechat',
+            config: {
+                appId: 'wx1234567890abcdef',
+                mchId: '1900000109',
+                apiKey: '32charslongkeysecretkeyvaluehere',
+            },
+            status: client_1.CommonStatus.DISABLE,
+            remark: '微信小程序/JSAPI支付通道',
+        },
+    });
     console.log('Member users, Orders, and Refunds seeded successfully.');
     console.log('Database seeding successfully finished.');
 }

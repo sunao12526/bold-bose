@@ -1,7 +1,9 @@
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { PayRefundService } from '../../pay/pay-refund.service';
 export declare class RefundService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private payRefundService;
+    constructor(prisma: PrismaService, payRefundService: PayRefundService);
     findAll(): Promise<({
         order: {
             member: {
@@ -117,7 +119,43 @@ export declare class RefundService {
         auditTime: Date | null;
         orderId: number;
     }>;
-    approve(id: number, auditRemark?: string): Promise<{
+    approve(id: number, auditRemark?: string): Promise<({
+        order: {
+            id: number;
+            status: import("@prisma/client").$Enums.MallOrderStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            memberId: number;
+            no: string;
+            payPrice: number;
+            totalPrice: number;
+            discountPrice: number;
+            deliveryStatus: boolean;
+            logisticsCo: string | null;
+            logisticsNo: string | null;
+            receiverName: string;
+            receiverMobile: string;
+            receiverAddress: string;
+            userRemark: string | null;
+            payTime: Date | null;
+            deliveryTime: Date | null;
+            receiveTime: Date | null;
+        };
+    } & {
+        id: number;
+        status: import("@prisma/client").$Enums.MallRefundStatus;
+        createdAt: Date;
+        updatedAt: Date;
+        memberId: number;
+        no: string;
+        userRemark: string | null;
+        refundPrice: number;
+        reason: string;
+        auditRemark: string | null;
+        auditTime: Date | null;
+        orderId: number;
+    }) | null>;
+    refundNotify(merchantRefundId: string, payRefundId: number, status: string, refundTime: Date | string): Promise<{
         id: number;
         status: import("@prisma/client").$Enums.MallRefundStatus;
         createdAt: Date;

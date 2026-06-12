@@ -13,10 +13,13 @@ exports.RefundService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
 const client_1 = require("@prisma/client");
+const pay_refund_service_1 = require("../../pay/pay-refund.service");
 let RefundService = class RefundService {
     prisma;
-    constructor(prisma) {
+    payRefundService;
+    constructor(prisma, payRefundService) {
         this.prisma = prisma;
+        this.payRefundService = payRefundService;
     }
     async findAll() {
         return this.prisma.mallOrderRefund.findMany({
@@ -52,31 +55,62 @@ let RefundService = class RefundService {
         if (refund.status !== client_1.MallRefundStatus.APPLY) {
             throw new common_1.BadRequestException('只有待处理的退款申请才能审批');
         }
-        return this.prisma.$transaction(async (tx) => {
-            const updatedRefund = await tx.mallOrderRefund.update({
-                where: { id },
-                data: {
-                    status: client_1.MallRefundStatus.APPROVED,
-                    auditRemark,
-                    auditTime: new Date(),
-                },
-            });
-            await tx.mallOrder.update({
-                where: { id: refund.orderId },
-                data: {
-                    status: client_1.MallOrderStatus.CANCELLED,
-                },
-            });
-            await tx.memberUser.update({
-                where: { id: refund.memberId },
-                data: {
-                    balance: {
-                        increment: refund.refundPrice,
-                    },
-                },
-            });
-            return updatedRefund;
+        await this.prisma.mallOrderRefund.update({
+            where: { id },
+            data: { auditRemark },
         });
+        const payRefund = await this.payRefundService.createRefund({
+            appCode: 'mall_app',
+            merchantOrderId: refund.order.no,
+            merchantRefundId: refund.no,
+            refundPrice: refund.refundPrice,
+            reason: refund.reason,
+            merchantNotifyUrl: 'http://localhost:3000/admin-api/mall/refund/notify',
+        });
+        await this.payRefundService.refundMock(payRefund.id);
+        return this.prisma.mallOrderRefund.findUnique({
+            where: { id },
+            include: { order: true },
+        });
+    }
+    async refundNotify(merchantRefundId, payRefundId, status, refundTime) {
+        const refund = await this.prisma.mallOrderRefund.findFirst({
+            where: { no: merchantRefundId },
+            include: { order: true },
+        });
+        if (!refund) {
+            throw new common_1.NotFoundException('退款申请不存在');
+        }
+        if (refund.status !== client_1.MallRefundStatus.APPLY) {
+            return refund;
+        }
+        if (status === 'SUCCESS') {
+            return this.prisma.$transaction(async (tx) => {
+                const updatedRefund = await tx.mallOrderRefund.update({
+                    where: { id: refund.id },
+                    data: {
+                        status: client_1.MallRefundStatus.APPROVED,
+                        auditTime: new Date(refundTime),
+                    },
+                });
+                await tx.mallOrder.update({
+                    where: { id: refund.orderId },
+                    data: {
+                        status: client_1.MallOrderStatus.CANCELLED,
+                    },
+                });
+                await tx.memberUser.update({
+                    where: { id: refund.memberId },
+                    data: {
+                        balance: {
+                            increment: refund.refundPrice,
+                        },
+                    },
+                });
+                return updatedRefund;
+            });
+        }
+        return refund;
     }
     async reject(id, auditRemark) {
         if (!auditRemark || auditRemark.trim() === '') {
@@ -99,6 +133,7 @@ let RefundService = class RefundService {
 exports.RefundService = RefundService;
 exports.RefundService = RefundService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        pay_refund_service_1.PayRefundService])
 ], RefundService);
 //# sourceMappingURL=refund.service.js.map

@@ -3,8 +3,10 @@ import { JobService } from './job.service';
 import { JobController } from './job.controller';
 import { JobLogController } from './job-log.controller';
 import { JobHandlers } from './job.handlers';
+import { PayModule } from '../../pay/pay.module';
 
 @Module({
+  imports: [PayModule],
   controllers: [JobController, JobLogController],
   providers: [JobService, JobHandlers],
   exports: [JobService],

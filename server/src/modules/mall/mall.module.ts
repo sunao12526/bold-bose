@@ -13,8 +13,10 @@ import { RefundController } from './refund/refund.controller';
 import { RefundService } from './refund/refund.service';
 import { PromotionController } from './promotion/promotion.controller';
 import { PromotionService } from './promotion/promotion.service';
+import { PayModule } from '../pay/pay.module';
 
 @Module({
+  imports: [PayModule],
   controllers: [
     CategoryController,
     BrandController,

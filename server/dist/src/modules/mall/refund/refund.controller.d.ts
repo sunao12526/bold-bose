@@ -2,6 +2,7 @@ import { RefundService } from './refund.service';
 export declare class RefundController {
     private refundService;
     constructor(refundService: RefundService);
+    refundNotify(merchantRefundId: string, refundId: number, status: string, refundTime: Date | string): Promise<string>;
     findAll(): Promise<({
         order: {
             member: {
@@ -117,7 +118,29 @@ export declare class RefundController {
         auditTime: Date | null;
         orderId: number;
     }>;
-    approve(id: number, auditRemark?: string): Promise<{
+    approve(id: number, auditRemark?: string): Promise<({
+        order: {
+            id: number;
+            status: import("@prisma/client").$Enums.MallOrderStatus;
+            createdAt: Date;
+            updatedAt: Date;
+            memberId: number;
+            no: string;
+            payPrice: number;
+            totalPrice: number;
+            discountPrice: number;
+            deliveryStatus: boolean;
+            logisticsCo: string | null;
+            logisticsNo: string | null;
+            receiverName: string;
+            receiverMobile: string;
+            receiverAddress: string;
+            userRemark: string | null;
+            payTime: Date | null;
+            deliveryTime: Date | null;
+            receiveTime: Date | null;
+        };
+    } & {
         id: number;
         status: import("@prisma/client").$Enums.MallRefundStatus;
         createdAt: Date;
@@ -130,7 +153,7 @@ export declare class RefundController {
         auditRemark: string | null;
         auditTime: Date | null;
         orderId: number;
-    }>;
+    }) | null>;
     reject(id: number, auditRemark: string): Promise<{
         id: number;
         status: import("@prisma/client").$Enums.MallRefundStatus;

@@ -135,7 +135,7 @@ export declare class OrderController {
         deliveryTime: Date | null;
         receiveTime: Date | null;
     }>;
-    payMock(id: number): Promise<{
+    payMock(id: number): Promise<({
         items: {
             id: number;
             picUrl: string;
@@ -167,7 +167,8 @@ export declare class OrderController {
         payTime: Date | null;
         deliveryTime: Date | null;
         receiveTime: Date | null;
-    }>;
+    }) | null>;
+    payNotify(merchantOrderId: string, payOrderId: number, status: string, payTime: Date | string): Promise<string>;
     ship(id: number, logisticsCo: string, logisticsNo: string): Promise<{
         items: {
             id: number;

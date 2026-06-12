@@ -16,6 +16,7 @@ exports.RefundController = void 0;
 const common_1 = require("@nestjs/common");
 const refund_service_1 = require("./refund.service");
 const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
+const public_decorator_1 = require("../../../shared/decorators/public.decorator");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
@@ -23,6 +24,10 @@ let RefundController = class RefundController {
     refundService;
     constructor(refundService) {
         this.refundService = refundService;
+    }
+    async refundNotify(merchantRefundId, refundId, status, refundTime) {
+        await this.refundService.refundNotify(merchantRefundId, refundId, status, refundTime);
+        return 'success';
     }
     async findAll() {
         return this.refundService.findAll();
@@ -38,6 +43,17 @@ let RefundController = class RefundController {
     }
 };
 exports.RefundController = RefundController;
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('notify'),
+    __param(0, (0, common_1.Body)('merchantRefundId')),
+    __param(1, (0, common_1.Body)('refundId')),
+    __param(2, (0, common_1.Body)('status')),
+    __param(3, (0, common_1.Body)('refundTime')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number, String, Object]),
+    __metadata("design:returntype", Promise)
+], RefundController.prototype, "refundNotify", null);
 __decorate([
     (0, common_1.Get)(),
     (0, require_permissions_decorator_1.RequirePermissions)('mall:refund:query'),

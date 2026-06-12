@@ -12,8 +12,8 @@ export declare class LogController {
         userId: number | null;
         description: string;
         ip: string;
+        method: string;
         duration: number;
         module: string;
-        method: string;
     }[]>;
 }

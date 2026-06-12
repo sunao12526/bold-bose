@@ -22,11 +22,13 @@ const refund_controller_1 = require("./refund/refund.controller");
 const refund_service_1 = require("./refund/refund.service");
 const promotion_controller_1 = require("./promotion/promotion.controller");
 const promotion_service_1 = require("./promotion/promotion.service");
+const pay_module_1 = require("../pay/pay.module");
 let MallModule = class MallModule {
 };
 exports.MallModule = MallModule;
 exports.MallModule = MallModule = __decorate([
     (0, common_1.Module)({
+        imports: [pay_module_1.PayModule],
         controllers: [
             category_controller_1.CategoryController,
             brand_controller_1.BrandController,
