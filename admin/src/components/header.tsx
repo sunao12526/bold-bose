@@ -74,6 +74,13 @@ export const CustomHeader: React.FC = () => {
         <br />
         <Text type="secondary" style={{ fontSize: 12 }}>@{user?.username}</Text>
       </Menu.Item>
+      <Menu.Item 
+        key="profile" 
+        icon={<UserOutlined />} 
+        onClick={() => window.location.href = '/system/profile'}
+      >
+        个人中心
+      </Menu.Item>
       <Menu.Divider />
       <Menu.Item 
         key="logout" 

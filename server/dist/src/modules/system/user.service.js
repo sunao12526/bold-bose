@@ -122,6 +122,70 @@ let UserService = class UserService {
         }
         return { success: true };
     }
+    async getProfile(userId) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                username: true,
+                nickname: true,
+                email: true,
+                mobile: true,
+                remark: true,
+                status: true,
+                createdAt: true,
+            },
+        });
+        if (!user)
+            throw new common_1.BadRequestException('用户不存在');
+        const userRoles = await this.prisma.userRole.findMany({
+            where: { userId },
+            include: { role: true },
+        });
+        const roles = userRoles.map((ur) => ({
+            id: ur.role.id,
+            name: ur.role.name,
+            code: ur.role.code,
+        }));
+        return {
+            user,
+            roles,
+        };
+    }
+    async updateProfile(userId, data) {
+        return this.prisma.user.update({
+            where: { id: userId },
+            data: {
+                nickname: data.nickname,
+                email: data.email,
+                mobile: data.mobile,
+            },
+            select: {
+                id: true,
+                username: true,
+                nickname: true,
+                email: true,
+                mobile: true,
+            }
+        });
+    }
+    async updatePassword(userId, data) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user)
+            throw new common_1.BadRequestException('用户不存在');
+        const isPasswordValid = await bcrypt.compare(data.oldPassword, user.password);
+        if (!isPasswordValid) {
+            throw new common_1.BadRequestException('原密码错误，请重新输入');
+        }
+        const hashedNewPassword = await bcrypt.hash(data.newPassword, 10);
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { password: hashedNewPassword },
+        });
+        return { success: true };
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([

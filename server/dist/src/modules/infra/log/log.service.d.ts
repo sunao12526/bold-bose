@@ -11,10 +11,10 @@ export declare class LogService {
         username: string | null;
         userId: number | null;
         description: string;
+        ip: string;
         duration: number;
         module: string;
         method: string;
-        ip: string;
     }[]>;
     removeOldLogs(days: number): Promise<import("@prisma/client").Prisma.BatchPayload>;
 }

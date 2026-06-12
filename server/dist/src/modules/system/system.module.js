@@ -24,6 +24,9 @@ const posts_module_1 = require("./posts/posts.module");
 const notify_service_1 = require("./notify/notify.service");
 const notify_template_controller_1 = require("./notify/notify-template.controller");
 const notify_message_controller_1 = require("./notify/notify-message.controller");
+const user_session_service_1 = require("./session/user-session.service");
+const user_session_controller_1 = require("./session/user-session.controller");
+const profile_controller_1 = require("./profile.controller");
 let SystemModule = class SystemModule {
 };
 exports.SystemModule = SystemModule;
@@ -38,7 +41,9 @@ exports.SystemModule = SystemModule = __decorate([
             dict_data_controller_1.DictDataController,
             config_controller_1.ConfigController,
             notify_template_controller_1.NotifyTemplateController,
-            notify_message_controller_1.NotifyMessageController
+            notify_message_controller_1.NotifyMessageController,
+            user_session_controller_1.UserSessionController,
+            profile_controller_1.ProfileController
         ],
         providers: [
             user_service_1.UserService,
@@ -47,7 +52,8 @@ exports.SystemModule = SystemModule = __decorate([
             dict_type_service_1.DictTypeService,
             dict_data_service_1.DictDataService,
             config_service_1.ConfigService,
-            notify_service_1.NotifyService
+            notify_service_1.NotifyService,
+            user_session_service_1.UserSessionService
         ],
         exports: [
             user_service_1.UserService,
@@ -56,7 +62,8 @@ exports.SystemModule = SystemModule = __decorate([
             dict_type_service_1.DictTypeService,
             dict_data_service_1.DictDataService,
             config_service_1.ConfigService,
-            notify_service_1.NotifyService
+            notify_service_1.NotifyService,
+            user_session_service_1.UserSessionService
         ],
     })
 ], SystemModule);

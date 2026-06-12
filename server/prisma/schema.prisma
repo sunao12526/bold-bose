@@ -302,3 +302,120 @@ model NotifyMessage {
 
   @@map("system_notify_messages")
 }
+
+model UserSession {
+  id             String   @id @default(uuid())
+  token          String   @unique @db.VarChar(500)
+  userId         Int      @map("user_id")
+  username       String   @db.VarChar(50)
+  nickname       String   @db.VarChar(50)
+  ip             String   @db.VarChar(50)
+  userAgent      String?  @map("user_agent") @db.VarChar(500)
+  browser        String?  @db.VarChar(50)
+  os             String?  @db.VarChar(50)
+  loginTime      DateTime @default(now()) @map("login_time")
+  lastActiveTime DateTime @default(now()) @map("last_active_time")
+  expiresAt      DateTime @map("expires_at")
+
+  @@map("system_user_sessions")
+}
+
+model MallCategory {
+  id        Int          @id @default(autoincrement())
+  name      String       @db.VarChar(100)
+  parentId  Int?         @map("parent_id")
+  picUrl    String?      @map("pic_url") @db.VarChar(512)
+  sort      Int          @default(0)
+  status    CommonStatus @default(ENABLE)
+  remark    String?      @db.VarChar(500)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  parent    MallCategory?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: Cascade)
+  children  MallCategory[] @relation("CategoryToCategory")
+  spus      MallSpu[]
+
+  @@map("mall_categories")
+}
+
+model MallBrand {
+  id        Int          @id @default(autoincrement())
+  name      String       @db.VarChar(100)
+  logo      String?      @db.VarChar(512)
+  sort      Int          @default(0)
+  status    CommonStatus @default(ENABLE)
+  remark    String?      @db.VarChar(500)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  spus      MallSpu[]
+
+  @@map("mall_brands")
+}
+
+model MallProperty {
+  id        Int                 @id @default(autoincrement())
+  name      String              @db.VarChar(100)
+  remark    String?             @db.VarChar(500)
+  createdAt DateTime            @default(now()) @map("created_at")
+  updatedAt DateTime            @updatedAt @map("updated_at")
+
+  values    MallPropertyValue[]
+
+  @@map("mall_properties")
+}
+
+model MallPropertyValue {
+  id         Int          @id @default(autoincrement())
+  propertyId Int          @map("property_id")
+  value      String       @db.VarChar(100)
+  remark     String?      @db.VarChar(500)
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+
+  property   MallProperty @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@map("mall_property_values")
+}
+
+model MallSpu {
+  id            Int          @id @default(autoincrement())
+  name          String       @db.VarChar(200)
+  categoryId    Int          @map("category_id")
+  brandId       Int?         @map("brand_id")
+  picUrl        String       @map("pic_url") @db.VarChar(512)
+  sliderPicUrls Json         @map("slider_pic_urls")
+  description   String?      @db.Text
+  sort          Int          @default(0)
+  status        CommonStatus @default(ENABLE)
+  salesCount    Int          @default(0) @map("sales_count")
+  minPrice      Int          @default(0) @map("min_price")
+  maxPrice      Int          @default(0) @map("max_price")
+  totalStock    Int          @default(0) @map("total_stock")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  category      MallCategory @relation(fields: [categoryId], references: [id])
+  brand         MallBrand?   @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  skus          MallSku[]
+
+  @@map("mall_spus")
+}
+
+model MallSku {
+  id           Int      @id @default(autoincrement())
+  spuId        Int      @map("spu_id")
+  properties   Json
+  price        Int
+  marketPrice  Int?     @map("market_price")
+  costPrice    Int?     @map("cost_price")
+  stock        Int      @default(0)
+  picUrl       String?  @map("pic_url") @db.VarChar(512)
+  barCode      String?  @map("bar_code") @db.VarChar(100)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  spu          MallSpu  @relation(fields: [spuId], references: [id], onDelete: Cascade)
+
+  @@map("mall_skus")
+}

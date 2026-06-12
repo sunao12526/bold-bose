@@ -83,4 +83,35 @@ export declare class UserService {
     assignRoles(userId: number, roleIds: number[]): Promise<{
         success: boolean;
     }>;
+    getProfile(userId: number): Promise<{
+        user: {
+            id: number;
+            status: import("@prisma/client").$Enums.CommonStatus;
+            remark: string | null;
+            createdAt: Date;
+            username: string;
+            nickname: string;
+            email: string | null;
+            mobile: string | null;
+        };
+        roles: {
+            id: number;
+            name: string;
+            code: string;
+        }[];
+    }>;
+    updateProfile(userId: number, data: {
+        nickname: string;
+        email?: string;
+        mobile?: string;
+    }): Promise<{
+        id: number;
+        username: string;
+        nickname: string;
+        email: string | null;
+        mobile: string | null;
+    }>;
+    updatePassword(userId: number, data: any): Promise<{
+        success: boolean;
+    }>;
 }

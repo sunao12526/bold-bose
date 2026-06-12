@@ -5,10 +5,12 @@ export declare class AuthService {
     private prisma;
     private jwtService;
     constructor(prisma: PrismaService, jwtService: JwtService);
-    login(loginDto: LoginDto): Promise<{
+    private parseUserAgent;
+    login(loginDto: LoginDto, ip?: string, userAgent?: string): Promise<{
         accessToken: string;
         userId: number;
     }>;
+    logout(token: string): Promise<void>;
     getUserPermissionInfo(userId: number): Promise<{
         user: {
             id: number;

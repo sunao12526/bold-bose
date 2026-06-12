@@ -11,7 +11,29 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(loginDto: LoginDto) {
+  private parseUserAgent(userAgentStr: string) {
+    let browser = 'Unknown Browser';
+    let os = 'Unknown OS';
+    if (!userAgentStr) return { browser, os };
+    
+    const ua = userAgentStr.toLowerCase();
+    
+    if (ua.includes('chrome')) browser = 'Chrome';
+    else if (ua.includes('firefox')) browser = 'Firefox';
+    else if (ua.includes('safari')) browser = 'Safari';
+    else if (ua.includes('edge')) browser = 'Edge';
+    else if (ua.includes('opera') || ua.includes('opr')) browser = 'Opera';
+    
+    if (ua.includes('windows')) os = 'Windows';
+    else if (ua.includes('macintosh') || ua.includes('mac os')) os = 'macOS';
+    else if (ua.includes('linux')) os = 'Linux';
+    else if (ua.includes('iphone') || ua.includes('ipad')) os = 'iOS';
+    else if (ua.includes('android')) os = 'Android';
+    
+    return { browser, os };
+  }
+
+  async login(loginDto: LoginDto, ip = '127.0.0.1', userAgent = '') {
     const user = await this.prisma.user.findUnique({
       where: { username: loginDto.username },
     });
@@ -32,10 +54,35 @@ export class AuthService {
     const payload = { id: user.id, username: user.username };
     const accessToken = this.jwtService.sign(payload);
 
+    // Write session details
+    const { browser, os } = this.parseUserAgent(userAgent);
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 1); // Token expires in 1 day
+
+    await this.prisma.userSession.create({
+      data: {
+        token: accessToken,
+        userId: user.id,
+        username: user.username,
+        nickname: user.nickname,
+        ip,
+        userAgent,
+        browser,
+        os,
+        expiresAt,
+      },
+    });
+
     return {
       accessToken,
       userId: user.id,
     };
+  }
+
+  async logout(token: string) {
+    await this.prisma.userSession.deleteMany({
+      where: { token },
+    });
   }
 
   async getUserPermissionInfo(userId: number) {

@@ -15,6 +15,9 @@ import { PostsModule } from './posts/posts.module';
 import { NotifyService } from './notify/notify.service';
 import { NotifyTemplateController } from './notify/notify-template.controller';
 import { NotifyMessageController } from './notify/notify-message.controller';
+import { UserSessionService } from './session/user-session.service';
+import { UserSessionController } from './session/user-session.controller';
+import { ProfileController } from './profile.controller';
 
 @Module({
   imports: [PostsModule],
@@ -26,7 +29,9 @@ import { NotifyMessageController } from './notify/notify-message.controller';
     DictDataController,
     ConfigController,
     NotifyTemplateController,
-    NotifyMessageController
+    NotifyMessageController,
+    UserSessionController,
+    ProfileController
   ],
   providers: [
     UserService, 
@@ -35,7 +40,8 @@ import { NotifyMessageController } from './notify/notify-message.controller';
     DictTypeService,
     DictDataService,
     ConfigService,
-    NotifyService
+    NotifyService,
+    UserSessionService
   ],
   exports: [
     UserService, 
@@ -44,7 +50,8 @@ import { NotifyMessageController } from './notify/notify-message.controller';
     DictTypeService,
     DictDataService,
     ConfigService,
-    NotifyService
+    NotifyService,
+    UserSessionService
   ],
 })
 export class SystemModule {}

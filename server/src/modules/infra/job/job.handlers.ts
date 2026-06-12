@@ -30,4 +30,16 @@ export class JobHandlers {
     await this.prisma.$queryRawUnsafe('SELECT 1;');
     this.logger.log('[Job: demoTaskJob] System status health check: PostgreSQL and SeaweedFS S3 are running normally.');
   }
+
+  // 3. sessionCleanupJob: cleans up expired sessions
+  async sessionCleanupJob(): Promise<void> {
+    const result = await this.prisma.userSession.deleteMany({
+      where: {
+        expiresAt: {
+          lt: new Date(),
+        },
+      },
+    });
+    this.logger.log(`[Job: sessionCleanupJob] Successfully cleaned up ${result.count} expired user sessions.`);
+  }
 }

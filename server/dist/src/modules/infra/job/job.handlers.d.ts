@@ -5,4 +5,5 @@ export declare class JobHandlers {
     constructor(prisma: PrismaService);
     logCleanupJob(): Promise<void>;
     demoTaskJob(): Promise<void>;
+    sessionCleanupJob(): Promise<void>;
 }

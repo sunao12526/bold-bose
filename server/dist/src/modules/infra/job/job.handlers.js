@@ -36,6 +36,16 @@ let JobHandlers = JobHandlers_1 = class JobHandlers {
         await this.prisma.$queryRawUnsafe('SELECT 1;');
         this.logger.log('[Job: demoTaskJob] System status health check: PostgreSQL and SeaweedFS S3 are running normally.');
     }
+    async sessionCleanupJob() {
+        const result = await this.prisma.userSession.deleteMany({
+            where: {
+                expiresAt: {
+                    lt: new Date(),
+                },
+            },
+        });
+        this.logger.log(`[Job: sessionCleanupJob] Successfully cleaned up ${result.count} expired user sessions.`);
+    }
 };
 exports.JobHandlers = JobHandlers;
 exports.JobHandlers = JobHandlers = JobHandlers_1 = __decorate([

@@ -239,13 +239,144 @@ async function main() {
     data: { name: '模板删除', type: MenuType.BUTTON, parentId: notifyTemplateMenu.id, permission: 'system:notify-template:delete', sort: 3, status: CommonStatus.ENABLE },
   });
 
+  const userSessionMenu = await prisma.menu.create({
+    data: {
+      name: '在线用户',
+      type: MenuType.MENU,
+      parentId: sysDir.id,
+      path: '/system/user-session',
+      icon: 'MonitorOutlined',
+      permission: 'system:user-session:query',
+      component: 'system/user-session/index',
+      sort: 7,
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  const userSessionDelete = await prisma.menu.create({
+    data: { name: '会话强退', type: MenuType.BUTTON, parentId: userSessionMenu.id, permission: 'system:user-session:delete', sort: 1, status: CommonStatus.ENABLE },
+  });
+
+  // Mall Directory
+  const mallDir = await prisma.menu.create({
+    data: {
+      name: '商城管理',
+      type: MenuType.DIR,
+      path: '/mall',
+      icon: 'ShopOutlined',
+      sort: 3,
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  // Category Menu
+  const mallCategoryMenu = await prisma.menu.create({
+    data: {
+      name: '商品分类',
+      type: MenuType.MENU,
+      parentId: mallDir.id,
+      path: '/mall/category',
+      icon: 'AppstoreOutlined',
+      permission: 'mall:category:query',
+      component: 'mall/category/index',
+      sort: 1,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const mallCategoryCreate = await prisma.menu.create({
+    data: { name: '分类新增', type: MenuType.BUTTON, parentId: mallCategoryMenu.id, permission: 'mall:category:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const mallCategoryUpdate = await prisma.menu.create({
+    data: { name: '分类修改', type: MenuType.BUTTON, parentId: mallCategoryMenu.id, permission: 'mall:category:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const mallCategoryDelete = await prisma.menu.create({
+    data: { name: '分类删除', type: MenuType.BUTTON, parentId: mallCategoryMenu.id, permission: 'mall:category:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+
+  // Brand Menu
+  const mallBrandMenu = await prisma.menu.create({
+    data: {
+      name: '商品品牌',
+      type: MenuType.MENU,
+      parentId: mallDir.id,
+      path: '/mall/brand',
+      icon: 'CopyrightOutlined',
+      permission: 'mall:brand:query',
+      component: 'mall/brand/index',
+      sort: 2,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const mallBrandCreate = await prisma.menu.create({
+    data: { name: '品牌新增', type: MenuType.BUTTON, parentId: mallBrandMenu.id, permission: 'mall:brand:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const mallBrandUpdate = await prisma.menu.create({
+    data: { name: '品牌修改', type: MenuType.BUTTON, parentId: mallBrandMenu.id, permission: 'mall:brand:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const mallBrandDelete = await prisma.menu.create({
+    data: { name: '品牌删除', type: MenuType.BUTTON, parentId: mallBrandMenu.id, permission: 'mall:brand:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+
+  // Property Menu
+  const mallPropertyMenu = await prisma.menu.create({
+    data: {
+      name: '规格管理',
+      type: MenuType.MENU,
+      parentId: mallDir.id,
+      path: '/mall/property',
+      icon: 'TagsOutlined',
+      permission: 'mall:property:query',
+      component: 'mall/property/index',
+      sort: 3,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const mallPropertyCreate = await prisma.menu.create({
+    data: { name: '规格新增', type: MenuType.BUTTON, parentId: mallPropertyMenu.id, permission: 'mall:property:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const mallPropertyUpdate = await prisma.menu.create({
+    data: { name: '规格修改', type: MenuType.BUTTON, parentId: mallPropertyMenu.id, permission: 'mall:property:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const mallPropertyDelete = await prisma.menu.create({
+    data: { name: '规格删除', type: MenuType.BUTTON, parentId: mallPropertyMenu.id, permission: 'mall:property:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+
+  // SPU Menu
+  const mallSpuMenu = await prisma.menu.create({
+    data: {
+      name: '商品列表',
+      type: MenuType.MENU,
+      parentId: mallDir.id,
+      path: '/mall/spu',
+      icon: 'ShoppingOutlined',
+      permission: 'mall:spu:query',
+      component: 'mall/spu/index',
+      sort: 4,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const mallSpuCreate = await prisma.menu.create({
+    data: { name: '商品新增', type: MenuType.BUTTON, parentId: mallSpuMenu.id, permission: 'mall:spu:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const mallSpuUpdate = await prisma.menu.create({
+    data: { name: '商品修改', type: MenuType.BUTTON, parentId: mallSpuMenu.id, permission: 'mall:spu:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const mallSpuDelete = await prisma.menu.create({
+    data: { name: '商品删除', type: MenuType.BUTTON, parentId: mallSpuMenu.id, permission: 'mall:spu:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+
   console.log('Menus seeded.');
 
   // 3. Link all Menus to super_admin role
   const allMenus = [
     sysDir, userMenu, roleMenu, menuMenu, userCreate, userUpdate, userDelete,
     dictMenu, configMenu, infraDir, fileConfigMenu, fileListMenu, logMenu, codegenMenu, jobMenu,
-    notifyTemplateMenu, notifyTemplateCreate, notifyTemplateUpdate, notifyTemplateDelete
+    notifyTemplateMenu, notifyTemplateCreate, notifyTemplateUpdate, notifyTemplateDelete,
+    userSessionMenu, userSessionDelete,
+    mallDir, mallCategoryMenu, mallCategoryCreate, mallCategoryUpdate, mallCategoryDelete,
+    mallBrandMenu, mallBrandCreate, mallBrandUpdate, mallBrandDelete,
+    mallPropertyMenu, mallPropertyCreate, mallPropertyUpdate, mallPropertyDelete,
+    mallSpuMenu, mallSpuCreate, mallSpuUpdate, mallSpuDelete
   ];
   for (const menu of allMenus) {
     await prisma.roleMenu.upsert({
@@ -531,7 +662,174 @@ async function main() {
     },
   });
 
+  await prisma.sysJob.upsert({
+    where: { id: 3 },
+    update: {},
+    create: {
+      id: 3,
+      name: '在线会话清理',
+      handlerName: 'sessionCleanupJob',
+      cronExpression: '0 0 3 * * *',
+      status: CommonStatus.ENABLE,
+      remark: '每日凌晨3点自动清理过期的用户登录会话',
+    },
+  });
+
   console.log('Background jobs seeded.');
+
+  // 10. Seed E-commerce Mall sample data
+  console.log('Seeding E-commerce Mall sample data...');
+  
+  // Categories
+  const catDigital = await prisma.mallCategory.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      name: '手机数码',
+      parentId: null,
+      picUrl: '/category/digital.png',
+      sort: 1,
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  const catPhone = await prisma.mallCategory.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      id: 2,
+      name: '智能手机',
+      parentId: catDigital.id,
+      picUrl: '/category/phone.png',
+      sort: 1,
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  // Brands
+  const brandApple = await prisma.mallBrand.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      name: '苹果 (Apple)',
+      logo: '/brand/apple.png',
+      sort: 1,
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  const brandHuawei = await prisma.mallBrand.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      id: 2,
+      name: '华为 (Huawei)',
+      logo: '/brand/huawei.png',
+      sort: 2,
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  // Properties & Values
+  const propColor = await prisma.mallProperty.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      name: '颜色',
+    },
+  });
+
+  const valBlack = await prisma.mallPropertyValue.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      propertyId: propColor.id,
+      value: '黑色',
+    },
+  });
+
+  const valWhite = await prisma.mallPropertyValue.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      id: 2,
+      propertyId: propColor.id,
+      value: '白色',
+    },
+  });
+
+  const propStorage = await prisma.mallProperty.upsert({
+    where: { id: 2 },
+    update: {},
+    create: {
+      id: 2,
+      name: '内存存储',
+    },
+  });
+
+  const val256 = await prisma.mallPropertyValue.upsert({
+    where: { id: 3 },
+    update: {},
+    create: {
+      id: 3,
+      propertyId: propStorage.id,
+      value: '256GB',
+    },
+  });
+
+  // Product SPU & SKU
+  await prisma.mallSpu.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      name: '华为 Mate 60 Pro',
+      categoryId: catPhone.id,
+      brandId: brandHuawei.id,
+      picUrl: '/spu/mate60.png',
+      sliderPicUrls: ['/spu/mate60_1.png', '/spu/mate60_2.png'],
+      description: '华为 Mate 60 Pro 搭载超可靠玄武架构，强悍性能与非凡体验。',
+      sort: 1,
+      status: CommonStatus.ENABLE,
+      minPrice: 699900,
+      maxPrice: 699900,
+      totalStock: 250,
+      skus: {
+        create: [
+          {
+            properties: [
+              { propertyId: propColor.id, propertyName: '颜色', valueId: valBlack.id, valueName: '黑色' },
+              { propertyId: propStorage.id, propertyName: '内存存储', valueId: val256.id, valueName: '256GB' }
+            ],
+            price: 699900,
+            marketPrice: 799900,
+            costPrice: 500000,
+            stock: 100,
+            picUrl: '/spu/mate60_black.png',
+            barCode: 'HW-M60P-BLK-256'
+          },
+          {
+            properties: [
+              { propertyId: propColor.id, propertyName: '颜色', valueId: valWhite.id, valueName: '白色' },
+              { propertyId: propStorage.id, propertyName: '内存存储', valueId: val256.id, valueName: '256GB' }
+            ],
+            price: 699900,
+            marketPrice: 799900,
+            costPrice: 500000,
+            stock: 150,
+            picUrl: '/spu/mate60_white.png',
+            barCode: 'HW-M60P-WHT-256'
+          }
+        ]
+      }
+    }
+  });
+
+  console.log('E-commerce Mall sample data seeded.');
   console.log('Database seeding successfully finished.');
 }
 

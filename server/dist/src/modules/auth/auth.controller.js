@@ -23,8 +23,17 @@ let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    async login(loginDto) {
-        return this.authService.login(loginDto);
+    async login(loginDto, req) {
+        const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+        const userAgent = req.headers['user-agent'] || '';
+        return this.authService.login(loginDto, ip, userAgent);
+    }
+    async logout(req) {
+        const token = req.headers.authorization?.replace('Bearer ', '');
+        if (token) {
+            await this.authService.logout(token);
+        }
+        return { success: true };
     }
     async getPermissionInfo(req) {
         return this.authService.getUserPermissionInfo(req.user.id);
@@ -35,10 +44,19 @@ __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [login_dto_1.LoginDto]),
+    __metadata("design:paramtypes", [login_dto_1.LoginDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('logout'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('get-permission-info'),

@@ -5,11 +5,19 @@ import { PrismaModule } from './shared/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { SystemModule } from './modules/system/system.module';
 import { InfraModule } from './modules/infra/infra.module';
+import { MallModule } from './modules/mall/mall.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { LogInterceptor } from './shared/interceptors/log.interceptor';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), PrismaModule, AuthModule, SystemModule, InfraModule],
+  imports: [
+    ScheduleModule.forRoot(), 
+    PrismaModule, 
+    AuthModule, 
+    SystemModule, 
+    InfraModule, 
+    MallModule
+  ],
   providers: [
     {
       provide: APP_GUARD,

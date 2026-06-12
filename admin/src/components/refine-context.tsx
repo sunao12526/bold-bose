@@ -81,6 +81,14 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               },
             },
             {
+              name: 'system/user-session',
+              list: '/system/user-session',
+              meta: {
+                label: '在线用户',
+                icon: 'MonitorOutlined',
+              },
+            },
+            {
               name: 'system/posts',
               list: '/system/posts',
               meta: {
@@ -126,6 +134,38 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               meta: {
                 label: '定时任务',
                 icon: 'ScheduleOutlined',
+              },
+            },
+            {
+              name: 'mall/category',
+              list: '/mall/category',
+              meta: {
+                label: '商品分类',
+                icon: 'AppstoreOutlined',
+              },
+            },
+            {
+              name: 'mall/brand',
+              list: '/mall/brand',
+              meta: {
+                label: '商品品牌',
+                icon: 'CopyrightOutlined',
+              },
+            },
+            {
+              name: 'mall/property',
+              list: '/mall/property',
+              meta: {
+                label: '规格管理',
+                icon: 'TagsOutlined',
+              },
+            },
+            {
+              name: 'mall/spu',
+              list: '/mall/spu',
+              meta: {
+                label: '商品列表',
+                icon: 'ShoppingOutlined',
               },
             },
           ]}

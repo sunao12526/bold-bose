@@ -54,7 +54,35 @@ let AuthService = class AuthService {
         this.prisma = prisma;
         this.jwtService = jwtService;
     }
-    async login(loginDto) {
+    parseUserAgent(userAgentStr) {
+        let browser = 'Unknown Browser';
+        let os = 'Unknown OS';
+        if (!userAgentStr)
+            return { browser, os };
+        const ua = userAgentStr.toLowerCase();
+        if (ua.includes('chrome'))
+            browser = 'Chrome';
+        else if (ua.includes('firefox'))
+            browser = 'Firefox';
+        else if (ua.includes('safari'))
+            browser = 'Safari';
+        else if (ua.includes('edge'))
+            browser = 'Edge';
+        else if (ua.includes('opera') || ua.includes('opr'))
+            browser = 'Opera';
+        if (ua.includes('windows'))
+            os = 'Windows';
+        else if (ua.includes('macintosh') || ua.includes('mac os'))
+            os = 'macOS';
+        else if (ua.includes('linux'))
+            os = 'Linux';
+        else if (ua.includes('iphone') || ua.includes('ipad'))
+            os = 'iOS';
+        else if (ua.includes('android'))
+            os = 'Android';
+        return { browser, os };
+    }
+    async login(loginDto, ip = '127.0.0.1', userAgent = '') {
         const user = await this.prisma.user.findUnique({
             where: { username: loginDto.username },
         });
@@ -70,10 +98,31 @@ let AuthService = class AuthService {
         }
         const payload = { id: user.id, username: user.username };
         const accessToken = this.jwtService.sign(payload);
+        const { browser, os } = this.parseUserAgent(userAgent);
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 1);
+        await this.prisma.userSession.create({
+            data: {
+                token: accessToken,
+                userId: user.id,
+                username: user.username,
+                nickname: user.nickname,
+                ip,
+                userAgent,
+                browser,
+                os,
+                expiresAt,
+            },
+        });
         return {
             accessToken,
             userId: user.id,
         };
+    }
+    async logout(token) {
+        await this.prisma.userSession.deleteMany({
+            where: { token },
+        });
     }
     async getUserPermissionInfo(userId) {
         const user = await this.prisma.user.findUnique({
