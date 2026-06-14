@@ -257,6 +257,264 @@ async function main() {
     data: { name: '会话强退', type: MenuType.BUTTON, parentId: userSessionMenu.id, permission: 'system:user-session:delete', sort: 1, status: CommonStatus.ENABLE },
   });
 
+  // Post Menu
+  const postMenu = await prisma.menu.create({
+    data: {
+      name: '岗位管理',
+      type: MenuType.MENU,
+      parentId: sysDir.id,
+      path: '/system/posts',
+      icon: 'SolutionOutlined',
+      permission: 'system:posts:query',
+      component: 'system/post/index',
+      sort: 8,
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  const postCreate = await prisma.menu.create({
+    data: { name: '岗位新增', type: MenuType.BUTTON, parentId: postMenu.id, permission: 'system:posts:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const postUpdate = await prisma.menu.create({
+    data: { name: '岗位修改', type: MenuType.BUTTON, parentId: postMenu.id, permission: 'system:posts:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const postDelete = await prisma.menu.create({
+    data: { name: '岗位删除', type: MenuType.BUTTON, parentId: postMenu.id, permission: 'system:posts:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+
+  // 1. Dept Menu
+  const deptMenu = await prisma.menu.create({
+    data: {
+      name: '部门管理',
+      type: MenuType.MENU,
+      parentId: sysDir.id,
+      path: '/system/dept',
+      icon: 'PartitionOutlined',
+      permission: 'system:dept:query',
+      component: 'system/dept/index',
+      sort: 9,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const deptCreate = await prisma.menu.create({
+    data: { name: '部门新增', type: MenuType.BUTTON, parentId: deptMenu.id, permission: 'system:dept:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const deptUpdate = await prisma.menu.create({
+    data: { name: '部门修改', type: MenuType.BUTTON, parentId: deptMenu.id, permission: 'system:dept:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const deptDelete = await prisma.menu.create({
+    data: { name: '部门删除', type: MenuType.BUTTON, parentId: deptMenu.id, permission: 'system:dept:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+
+  // 2. Notice Menu
+  const noticeMenu = await prisma.menu.create({
+    data: {
+      name: '通知公告',
+      type: MenuType.MENU,
+      parentId: sysDir.id,
+      path: '/system/notice',
+      icon: 'NotificationOutlined',
+      permission: 'system:notice:query',
+      component: 'system/notice/index',
+      sort: 10,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const noticeCreate = await prisma.menu.create({
+    data: { name: '公告新增', type: MenuType.BUTTON, parentId: noticeMenu.id, permission: 'system:notice:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const noticeUpdate = await prisma.menu.create({
+    data: { name: '公告修改', type: MenuType.BUTTON, parentId: noticeMenu.id, permission: 'system:notice:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const noticeDelete = await prisma.menu.create({
+    data: { name: '公告删除', type: MenuType.BUTTON, parentId: noticeMenu.id, permission: 'system:notice:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+
+  // 3. Sms Menu (DIR)
+  const smsDir = await prisma.menu.create({
+    data: {
+      name: '短信管理',
+      type: MenuType.DIR,
+      parentId: sysDir.id,
+      path: '/system/sms',
+      icon: 'MessageOutlined',
+      sort: 11,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  // Sms Channels
+  const smsChannelMenu = await prisma.menu.create({
+    data: {
+      name: '短信渠道',
+      type: MenuType.MENU,
+      parentId: smsDir.id,
+      path: '/system/sms/channel',
+      icon: 'PhoneOutlined',
+      permission: 'system:sms:query',
+      component: 'system/sms/channel',
+      sort: 1,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const smsChannelCreate = await prisma.menu.create({
+    data: { name: '渠道新增', type: MenuType.BUTTON, parentId: smsChannelMenu.id, permission: 'system:sms:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const smsChannelUpdate = await prisma.menu.create({
+    data: { name: '渠道修改', type: MenuType.BUTTON, parentId: smsChannelMenu.id, permission: 'system:sms:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const smsChannelDelete = await prisma.menu.create({
+    data: { name: '渠道删除', type: MenuType.BUTTON, parentId: smsChannelMenu.id, permission: 'system:sms:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+  // Sms Templates
+  const smsTemplateMenu = await prisma.menu.create({
+    data: {
+      name: '短信模板',
+      type: MenuType.MENU,
+      parentId: smsDir.id,
+      path: '/system/sms/template',
+      icon: 'FileTextOutlined',
+      permission: 'system:sms:query',
+      component: 'system/sms/template',
+      sort: 2,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const smsTemplateCreate = await prisma.menu.create({
+    data: { name: '模板新增', type: MenuType.BUTTON, parentId: smsTemplateMenu.id, permission: 'system:sms:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const smsTemplateUpdate = await prisma.menu.create({
+    data: { name: '模板修改', type: MenuType.BUTTON, parentId: smsTemplateMenu.id, permission: 'system:sms:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const smsTemplateDelete = await prisma.menu.create({
+    data: { name: '模板删除', type: MenuType.BUTTON, parentId: smsTemplateMenu.id, permission: 'system:sms:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+  // Sms Logs
+  const smsLogMenu = await prisma.menu.create({
+    data: {
+      name: '短信日志',
+      type: MenuType.MENU,
+      parentId: smsDir.id,
+      path: '/system/sms/log',
+      icon: 'HistoryOutlined',
+      permission: 'system:sms:query',
+      component: 'system/sms/log',
+      sort: 3,
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  // 4. Mail Menu (DIR)
+  const mailDir = await prisma.menu.create({
+    data: {
+      name: '邮件管理',
+      type: MenuType.DIR,
+      parentId: sysDir.id,
+      path: '/system/mail',
+      icon: 'MailOutlined',
+      sort: 12,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  // Mail Accounts
+  const mailAccountMenu = await prisma.menu.create({
+    data: {
+      name: '邮箱账号',
+      type: MenuType.MENU,
+      parentId: mailDir.id,
+      path: '/system/mail/account',
+      icon: 'UserOutlined',
+      permission: 'system:mail:query',
+      component: 'system/mail/account',
+      sort: 1,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const mailAccountCreate = await prisma.menu.create({
+    data: { name: '账号新增', type: MenuType.BUTTON, parentId: mailAccountMenu.id, permission: 'system:mail:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const mailAccountUpdate = await prisma.menu.create({
+    data: { name: '账号修改', type: MenuType.BUTTON, parentId: mailAccountMenu.id, permission: 'system:mail:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const mailAccountDelete = await prisma.menu.create({
+    data: { name: '账号删除', type: MenuType.BUTTON, parentId: mailAccountMenu.id, permission: 'system:mail:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+  // Mail Templates
+  const mailTemplateMenu = await prisma.menu.create({
+    data: {
+      name: '邮件模板',
+      type: MenuType.MENU,
+      parentId: mailDir.id,
+      path: '/system/mail/template',
+      icon: 'FileTextOutlined',
+      permission: 'system:mail:query',
+      component: 'system/mail/template',
+      sort: 2,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const mailTemplateCreate = await prisma.menu.create({
+    data: { name: '模板新增', type: MenuType.BUTTON, parentId: mailTemplateMenu.id, permission: 'system:mail:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const mailTemplateUpdate = await prisma.menu.create({
+    data: { name: '模板修改', type: MenuType.BUTTON, parentId: mailTemplateMenu.id, permission: 'system:mail:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const mailTemplateDelete = await prisma.menu.create({
+    data: { name: '模板删除', type: MenuType.BUTTON, parentId: mailTemplateMenu.id, permission: 'system:mail:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+  // Mail Logs
+  const mailLogMenu = await prisma.menu.create({
+    data: {
+      name: '邮件日志',
+      type: MenuType.MENU,
+      parentId: mailDir.id,
+      path: '/system/mail/log',
+      icon: 'HistoryOutlined',
+      permission: 'system:mail:query',
+      component: 'system/mail/log',
+      sort: 3,
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  // 5. OAuth2 Client Menu
+  const oauth2ClientMenu = await prisma.menu.create({
+    data: {
+      name: 'OAuth2 客户端',
+      type: MenuType.MENU,
+      parentId: sysDir.id,
+      path: '/system/oauth2-client',
+      icon: 'SafetyCertificateOutlined',
+      permission: 'system:oauth2:query',
+      component: 'system/oauth2-client/index',
+      sort: 13,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  const oauth2ClientCreate = await prisma.menu.create({
+    data: { name: '客户端新增', type: MenuType.BUTTON, parentId: oauth2ClientMenu.id, permission: 'system:oauth2:create', sort: 1, status: CommonStatus.ENABLE },
+  });
+  const oauth2ClientUpdate = await prisma.menu.create({
+    data: { name: '客户端修改', type: MenuType.BUTTON, parentId: oauth2ClientMenu.id, permission: 'system:oauth2:update', sort: 2, status: CommonStatus.ENABLE },
+  });
+  const oauth2ClientDelete = await prisma.menu.create({
+    data: { name: '客户端删除', type: MenuType.BUTTON, parentId: oauth2ClientMenu.id, permission: 'system:oauth2:delete', sort: 3, status: CommonStatus.ENABLE },
+  });
+
+  // 6. Login Log Menu
+  const loginLogMenu = await prisma.menu.create({
+    data: {
+      name: '登录日志',
+      type: MenuType.MENU,
+      parentId: sysDir.id,
+      path: '/system/login-log',
+      icon: 'LoginOutlined',
+      permission: 'system:login-log:query',
+      component: 'system/login-log/index',
+      sort: 14,
+      status: CommonStatus.ENABLE,
+    },
+  });
+
   // Mall Directory
   const mallDir = await prisma.menu.create({
     data: {
@@ -616,6 +874,15 @@ async function main() {
     dictMenu, configMenu, infraDir, fileConfigMenu, fileListMenu, logMenu, codegenMenu, jobMenu,
     notifyTemplateMenu, notifyTemplateCreate, notifyTemplateUpdate, notifyTemplateDelete,
     userSessionMenu, userSessionDelete,
+    postMenu, postCreate, postUpdate, postDelete,
+    deptMenu, deptCreate, deptUpdate, deptDelete,
+    noticeMenu, noticeCreate, noticeUpdate, noticeDelete,
+    smsDir, smsChannelMenu, smsChannelCreate, smsChannelUpdate, smsChannelDelete,
+    smsTemplateMenu, smsTemplateCreate, smsTemplateUpdate, smsTemplateDelete, smsLogMenu,
+    mailDir, mailAccountMenu, mailAccountCreate, mailAccountUpdate, mailAccountDelete,
+    mailTemplateMenu, mailTemplateCreate, mailTemplateUpdate, mailTemplateDelete, mailLogMenu,
+    oauth2ClientMenu, oauth2ClientCreate, oauth2ClientUpdate, oauth2ClientDelete,
+    loginLogMenu,
     mallDir, mallCategoryMenu, mallCategoryCreate, mallCategoryUpdate, mallCategoryDelete,
     mallBrandMenu, mallBrandCreate, mallBrandUpdate, mallBrandDelete,
     mallPropertyMenu, mallPropertyCreate, mallPropertyUpdate, mallPropertyDelete,
@@ -1469,6 +1736,121 @@ async function main() {
       remark: '微信小程序/JSAPI支付通道',
     },
   });
+
+  // Seed default post data
+  console.log('Seeding post data...');
+  await prisma.post.deleteMany({});
+  await prisma.post.createMany({
+    data: [
+      { name: '董事长', code: 'ceo', sort: 1, remark: '公司董事长', status: CommonStatus.ENABLE },
+      { name: '项目经理', code: 'pm', sort: 2, remark: '各项目负责人', status: CommonStatus.ENABLE },
+      { name: '开发人员', code: 'dev', sort: 3, remark: '研发部门程序员', status: CommonStatus.ENABLE },
+      { name: '测试人员', code: 'test', sort: 4, remark: '质量保证测试员', status: CommonStatus.ENABLE },
+    ],
+  });
+
+  // Seed default system feature data
+  console.log('Seeding departments...');
+  await prisma.dept.deleteMany({});
+  const deptRd = await prisma.dept.create({
+    data: { name: '研发部', parentId: 0, sort: 1, status: CommonStatus.ENABLE },
+  });
+  const deptMkt = await prisma.dept.create({
+    data: { name: '市场部', parentId: 0, sort: 2, status: CommonStatus.ENABLE },
+  });
+  await prisma.dept.create({
+    data: { name: '开发组', parentId: deptRd.id, sort: 1, status: CommonStatus.ENABLE },
+  });
+  await prisma.dept.create({
+    data: { name: '测试组', parentId: deptRd.id, sort: 2, status: CommonStatus.ENABLE },
+  });
+
+  console.log('Seeding notices...');
+  await prisma.notice.deleteMany({});
+  await prisma.notice.createMany({
+    data: [
+      { title: '关于系统正式上线的通知', type: 1, content: '经过开发团队数月的努力，芋道管理系统正式上线运行！', status: CommonStatus.ENABLE },
+      { title: '2026年端午节放假安排公告', type: 2, content: '2026年端午节放假安排如下：6月15日至6月17日放假公休，共3天。请大家做好工作安排。', status: CommonStatus.ENABLE },
+    ],
+  });
+
+  console.log('Seeding SMS configurations...');
+  await prisma.smsLog.deleteMany({});
+  await prisma.smsTemplate.deleteMany({});
+  await prisma.smsChannel.deleteMany({});
+  const aliSms = await prisma.smsChannel.create({
+    data: {
+      code: 'aliyun',
+      name: '阿里云短信',
+      apiKey: 'LTAI5tMockApiKey',
+      apiSecret: 'MockApiSecretValueHere',
+      signature: '芋道源码',
+      status: CommonStatus.ENABLE,
+      remark: '线上生产短信通道',
+    },
+  });
+  await prisma.smsChannel.create({
+    data: {
+      code: 'tencent',
+      name: '腾讯云短信',
+      apiKey: 'mock_sdk_app_id',
+      apiSecret: 'mock_app_key',
+      signature: '芋道源码',
+      status: CommonStatus.DISABLE,
+      remark: '测试备用短信通道',
+    },
+  });
+  await prisma.smsTemplate.create({
+    data: {
+      channelId: aliSms.id,
+      code: 'sms_login',
+      name: '验证码登录模板',
+      content: '您的登录验证码是 {code}，有效期5分钟，请勿泄露。',
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  console.log('Seeding Mail configurations...');
+  await prisma.mailLog.deleteMany({});
+  await prisma.mailTemplate.deleteMany({});
+  await prisma.mailAccount.deleteMany({});
+  const mailAcc = await prisma.mailAccount.create({
+    data: {
+      mail: 'yudao_test@163.com',
+      username: 'yudao_test',
+      password: 'yudaoPassword123',
+      host: 'smtp.163.com',
+      port: 465,
+      ssl: true,
+      status: CommonStatus.ENABLE,
+    },
+  });
+  await prisma.mailTemplate.create({
+    data: {
+      accountId: mailAcc.id,
+      code: 'mail_login',
+      name: '验证码登录邮件',
+      title: '【芋道系统】登录验证码',
+      content: '<h3>您好：</h3><p>您的登录验证码是 <strong>{code}</strong>，请在5分钟内输入。如非本人操作，请忽略此邮件。</p>',
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  console.log('Seeding OAuth2 Client configurations...');
+  await prisma.oAuth2Client.deleteMany({});
+  await prisma.oAuth2Client.create({
+    data: {
+      clientId: 'yudao_sso_client',
+      secret: 'yudao_sso_secret',
+      name: '单点登录测试客户端',
+      redirectUris: '["http://localhost:3001/sso-callback"]',
+      scopes: '["user_info", "roles"]',
+      status: CommonStatus.ENABLE,
+    },
+  });
+
+  console.log('Clearing old Login logs...');
+  await prisma.loginLog.deleteMany({});
 
   console.log('Member users, Orders, and Refunds seeded successfully.');
   console.log('Database seeding successfully finished.');

@@ -41,9 +41,16 @@ export class UserService {
         mobile: true,
         status: true,
         remark: true,
+        deptId: true,
         createdAt: true,
         updatedAt: true,
         roles: { include: { role: true } },
+        dept: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
   }

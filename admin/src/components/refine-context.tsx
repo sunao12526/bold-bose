@@ -10,6 +10,43 @@ import zhCN from 'antd/locale/zh_CN';
 import { authProvider } from '../providers/auth-provider';
 import { dataProvider } from '../providers/data-provider';
 
+import {
+  SettingOutlined,
+  DatabaseOutlined,
+  ShopOutlined,
+  TeamOutlined,
+  TransactionOutlined,
+  UserOutlined,
+  MenuOutlined,
+  BookOutlined,
+  ControlOutlined,
+  MailOutlined,
+  MonitorOutlined,
+  FileTextOutlined,
+  ToolOutlined,
+  FileOutlined,
+  CodeOutlined,
+  ScheduleOutlined,
+  AppstoreOutlined,
+  CopyrightOutlined,
+  TagsOutlined,
+  ShoppingOutlined,
+  ReloadOutlined,
+  GiftOutlined,
+  TrophyOutlined,
+  HistoryOutlined,
+  SlidersOutlined,
+  OrderedListOutlined,
+  RollbackOutlined,
+  SolutionOutlined,
+  PartitionOutlined,
+  NotificationOutlined,
+  PhoneOutlined,
+  MessageOutlined,
+  SafetyCertificateOutlined,
+  LoginOutlined
+} from '@ant-design/icons';
+
 import '@refinedev/antd/dist/reset.css';
 
 export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -32,12 +69,21 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
           authProvider={authProvider}
           notificationProvider={useNotificationProvider}
           resources={[
+            // Parent: System
+            {
+              name: 'system',
+              meta: {
+                label: '系统管理',
+                icon: <SettingOutlined />,
+              },
+            },
             {
               name: 'system/user',
               list: '/system/user',
               meta: {
                 label: '用户管理',
-                icon: 'UserOutlined',
+                icon: <UserOutlined />,
+                parent: 'system',
               },
             },
             {
@@ -45,7 +91,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/system/role',
               meta: {
                 label: '角色管理',
-                icon: 'TeamOutlined',
+                icon: <TeamOutlined />,
+                parent: 'system',
               },
             },
             {
@@ -53,7 +100,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/system/menu',
               meta: {
                 label: '菜单管理',
-                icon: 'MenuOutlined',
+                icon: <MenuOutlined />,
+                parent: 'system',
               },
             },
             {
@@ -61,7 +109,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/system/dict',
               meta: {
                 label: '字典管理',
-                icon: 'BookOutlined',
+                icon: <BookOutlined />,
+                parent: 'system',
               },
             },
             {
@@ -69,7 +118,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/system/config',
               meta: {
                 label: '参数配置',
-                icon: 'ControlOutlined',
+                icon: <ControlOutlined />,
+                parent: 'system',
               },
             },
             {
@@ -77,7 +127,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/system/notify-template',
               meta: {
                 label: '通知模板',
-                icon: 'MailOutlined',
+                icon: <MailOutlined />,
+                parent: 'system',
               },
             },
             {
@@ -85,15 +136,132 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/system/user-session',
               meta: {
                 label: '在线用户',
-                icon: 'MonitorOutlined',
+                icon: <MonitorOutlined />,
+                parent: 'system',
               },
             },
             {
               name: 'system/posts',
               list: '/system/posts',
               meta: {
-                label: '文章管理',
-                icon: 'FileTextOutlined',
+                label: '岗位管理',
+                icon: <SolutionOutlined />,
+                parent: 'system',
+              },
+            },
+            {
+              name: 'system/dept',
+              list: '/system/dept',
+              meta: {
+                label: '部门管理',
+                icon: <PartitionOutlined />,
+                parent: 'system',
+              },
+            },
+            {
+              name: 'system/notice',
+              list: '/system/notice',
+              meta: {
+                label: '通知公告',
+                icon: <NotificationOutlined />,
+                parent: 'system',
+              },
+            },
+            {
+              name: 'system/sms',
+              meta: {
+                label: '短信管理',
+                icon: <MessageOutlined />,
+                parent: 'system',
+              },
+            },
+            {
+              name: 'system/sms/channel',
+              list: '/system/sms/channel',
+              meta: {
+                label: '短信渠道',
+                icon: <PhoneOutlined />,
+                parent: 'system/sms',
+              },
+            },
+            {
+              name: 'system/sms/template',
+              list: '/system/sms/template',
+              meta: {
+                label: '短信模板',
+                icon: <FileTextOutlined />,
+                parent: 'system/sms',
+              },
+            },
+            {
+              name: 'system/sms/log',
+              list: '/system/sms/log',
+              meta: {
+                label: '短信日志',
+                icon: <HistoryOutlined />,
+                parent: 'system/sms',
+              },
+            },
+            {
+              name: 'system/mail',
+              meta: {
+                label: '邮件管理',
+                icon: <MailOutlined />,
+                parent: 'system',
+              },
+            },
+            {
+              name: 'system/mail/account',
+              list: '/system/mail/account',
+              meta: {
+                label: '邮箱账号',
+                icon: <UserOutlined />,
+                parent: 'system/mail',
+              },
+            },
+            {
+              name: 'system/mail/template',
+              list: '/system/mail/template',
+              meta: {
+                label: '邮件模板',
+                icon: <FileTextOutlined />,
+                parent: 'system/mail',
+              },
+            },
+            {
+              name: 'system/mail/log',
+              list: '/system/mail/log',
+              meta: {
+                label: '邮件日志',
+                icon: <HistoryOutlined />,
+                parent: 'system/mail',
+              },
+            },
+            {
+              name: 'system/oauth2-client',
+              list: '/system/oauth2-client',
+              meta: {
+                label: 'OAuth2 客户端',
+                icon: <SafetyCertificateOutlined />,
+                parent: 'system',
+              },
+            },
+            {
+              name: 'system/login-log',
+              list: '/system/login-log',
+              meta: {
+                label: '登录日志',
+                icon: <LoginOutlined />,
+                parent: 'system',
+              },
+            },
+
+            // Parent: Infra
+            {
+              name: 'infra',
+              meta: {
+                label: '基础设施',
+                icon: <DatabaseOutlined />,
               },
             },
             {
@@ -101,7 +269,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/infra/file-config',
               meta: {
                 label: '文件配置',
-                icon: 'ToolOutlined',
+                icon: <ToolOutlined />,
+                parent: 'infra',
               },
             },
             {
@@ -109,7 +278,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/infra/file',
               meta: {
                 label: '文件列表',
-                icon: 'FileOutlined',
+                icon: <FileOutlined />,
+                parent: 'infra',
               },
             },
             {
@@ -117,7 +287,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/infra/log',
               meta: {
                 label: '系统日志',
-                icon: 'FileTextOutlined',
+                icon: <FileTextOutlined />,
+                parent: 'infra',
               },
             },
             {
@@ -125,7 +296,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/infra/codegen',
               meta: {
                 label: '代码生成',
-                icon: 'CodeOutlined',
+                icon: <CodeOutlined />,
+                parent: 'infra',
               },
             },
             {
@@ -133,7 +305,17 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/infra/job',
               meta: {
                 label: '定时任务',
-                icon: 'ScheduleOutlined',
+                icon: <ScheduleOutlined />,
+                parent: 'infra',
+              },
+            },
+
+            // Parent: Mall
+            {
+              name: 'mall',
+              meta: {
+                label: '商城管理',
+                icon: <ShopOutlined />,
               },
             },
             {
@@ -141,7 +323,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/mall/category',
               meta: {
                 label: '商品分类',
-                icon: 'AppstoreOutlined',
+                icon: <AppstoreOutlined />,
+                parent: 'mall',
               },
             },
             {
@@ -149,7 +332,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/mall/brand',
               meta: {
                 label: '商品品牌',
-                icon: 'CopyrightOutlined',
+                icon: <CopyrightOutlined />,
+                parent: 'mall',
               },
             },
             {
@@ -157,7 +341,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/mall/property',
               meta: {
                 label: '规格管理',
-                icon: 'TagsOutlined',
+                icon: <TagsOutlined />,
+                parent: 'mall',
               },
             },
             {
@@ -165,47 +350,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/mall/spu',
               meta: {
                 label: '商品列表',
-                icon: 'ShoppingOutlined',
-              },
-            },
-            {
-              name: 'member/user',
-              list: '/member/user',
-              meta: {
-                label: '会员列表',
-                icon: 'UserOutlined',
-              },
-            },
-            {
-              name: 'member/level',
-              list: '/member/level',
-              meta: {
-                label: '会员等级',
-                icon: 'TrophyOutlined',
-              },
-            },
-            {
-              name: 'member/tag',
-              list: '/member/tag',
-              meta: {
-                label: '会员标签',
-                icon: 'TagsOutlined',
-              },
-            },
-            {
-              name: 'member/sign-in-config',
-              list: '/member/sign-in-config',
-              meta: {
-                label: '签到规则',
-                icon: 'ScheduleOutlined',
-              },
-            },
-            {
-              name: 'member/sign-in-record',
-              list: '/member/sign-in-record',
-              meta: {
-                label: '签到记录',
-                icon: 'HistoryOutlined',
+                icon: <ShoppingOutlined />,
+                parent: 'mall',
               },
             },
             {
@@ -213,7 +359,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/mall/order',
               meta: {
                 label: '订单管理',
-                icon: 'FileTextOutlined',
+                icon: <FileTextOutlined />,
+                parent: 'mall',
               },
             },
             {
@@ -221,7 +368,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/mall/order-refund',
               meta: {
                 label: '退款售后',
-                icon: 'ReloadOutlined',
+                icon: <ReloadOutlined />,
+                parent: 'mall',
               },
             },
             {
@@ -229,7 +377,71 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/mall/coupon',
               meta: {
                 label: '优惠券管理',
-                icon: 'GiftOutlined',
+                icon: <GiftOutlined />,
+                parent: 'mall',
+              },
+            },
+
+            // Parent: Member
+            {
+              name: 'member',
+              meta: {
+                label: '会员管理',
+                icon: <TeamOutlined />,
+              },
+            },
+            {
+              name: 'member/user',
+              list: '/member/user',
+              meta: {
+                label: '会员列表',
+                icon: <UserOutlined />,
+                parent: 'member',
+              },
+            },
+            {
+              name: 'member/level',
+              list: '/member/level',
+              meta: {
+                label: '会员等级',
+                icon: <TrophyOutlined />,
+                parent: 'member',
+              },
+            },
+            {
+              name: 'member/tag',
+              list: '/member/tag',
+              meta: {
+                label: '会员标签',
+                icon: <TagsOutlined />,
+                parent: 'member',
+              },
+            },
+            {
+              name: 'member/sign-in-config',
+              list: '/member/sign-in-config',
+              meta: {
+                label: '签到规则',
+                icon: <ScheduleOutlined />,
+                parent: 'member',
+              },
+            },
+            {
+              name: 'member/sign-in-record',
+              list: '/member/sign-in-record',
+              meta: {
+                label: '签到记录',
+                icon: <HistoryOutlined />,
+                parent: 'member',
+              },
+            },
+
+            // Parent: Pay
+            {
+              name: 'pay',
+              meta: {
+                label: '支付中心',
+                icon: <TransactionOutlined />,
               },
             },
             {
@@ -237,7 +449,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/pay/app',
               meta: {
                 label: '支付应用',
-                icon: 'SlidersOutlined',
+                icon: <SlidersOutlined />,
+                parent: 'pay',
               },
             },
             {
@@ -245,7 +458,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/pay/order',
               meta: {
                 label: '支付订单',
-                icon: 'OrderedListOutlined',
+                icon: <OrderedListOutlined />,
+                parent: 'pay',
               },
             },
             {
@@ -253,7 +467,8 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               list: '/pay/refund',
               meta: {
                 label: '退款订单',
-                icon: 'RollbackOutlined',
+                icon: <RollbackOutlined />,
+                parent: 'pay',
               },
             },
           ]}

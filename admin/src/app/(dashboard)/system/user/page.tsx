@@ -8,7 +8,7 @@ import { Table, Space, Modal, Form, Input, Select, Tag } from 'antd';
 import { useTable, useForm, useSelect } from '@refinedev/antd';
 
 export default function UserList() {
-  const { tableProps } = useTable({
+  const { tableProps, tableQuery: tableQueryResult } = useTable({
     resource: 'system/user',
     syncWithLocation: true,
   });
@@ -23,6 +23,12 @@ export default function UserList() {
     optionValue: 'id',
   });
 
+  const { selectProps: deptSelectProps } = useSelect({
+    resource: 'system/dept',
+    optionLabel: 'name',
+    optionValue: 'id',
+  });
+
   const handleCreate = () => {
     setFormMode('create');
     form.resetFields();
@@ -33,6 +39,7 @@ export default function UserList() {
     setFormMode('edit');
     form.setFieldsValue({
       ...record,
+      deptId: record.deptId || null,
       roleIds: record.roles?.map((ur: any) => ur.role.id) || [],
     });
     setIsModalOpen(true);
@@ -44,6 +51,7 @@ export default function UserList() {
     id: form.getFieldValue('id'),
     onMutationSuccess: () => {
       setIsModalOpen(false);
+      tableQueryResult.refetch();
     },
   });
 
@@ -60,6 +68,11 @@ export default function UserList() {
           <Table.Column dataIndex="nickname" title="昵称" />
           <Table.Column dataIndex="email" title="邮箱" />
           <Table.Column dataIndex="mobile" title="手机号" />
+          <Table.Column 
+            dataIndex="dept" 
+            title="部门" 
+            render={(dept: any) => dept ? <Tag color="cyan">{dept.name}</Tag> : '-'}
+          />
           <Table.Column 
             dataIndex="roles" 
             title="角色" 
@@ -86,7 +99,7 @@ export default function UserList() {
             render={(_, record: any) => (
               <Space>
                 <EditButton hideText size="small" onClick={() => handleEdit(record)} />
-                <DeleteButton hideText size="small" recordItemId={record.id} />
+                <DeleteButton hideText size="small" recordItemId={record.id} onSuccess={() => tableQueryResult.refetch()} />
               </Space>
             )}
           />
@@ -104,7 +117,11 @@ export default function UserList() {
           form={form}
           layout="vertical"
           onFinish={(values) => {
-            onFinish(values);
+            const payload = { ...values };
+            if (payload.deptId) {
+              payload.deptId = Number(payload.deptId);
+            }
+            onFinish(payload);
           }}
         >
           {formMode === 'edit' && <Form.Item name="id" hidden><Input /></Form.Item>}
@@ -139,6 +156,10 @@ export default function UserList() {
 
           <Form.Item name="mobile" label="手机号">
             <Input />
+          </Form.Item>
+
+          <Form.Item name="deptId" label="部门">
+            <Select placeholder="请选择部门" allowClear {...deptSelectProps} />
           </Form.Item>
 
           <Form.Item name="roleIds" label="角色">

@@ -10,11 +10,11 @@ export declare class NotifyMessageController {
         userId: number;
         title: string;
         content: string;
+        templateId: number;
+        errorMessage: string | null;
         templateCode: string;
         read: boolean;
         readTime: Date | null;
-        errorMessage: string | null;
-        templateId: number;
     }[]>;
     markRead(req: any, id: number): Promise<{
         id: number;
@@ -24,11 +24,11 @@ export declare class NotifyMessageController {
         userId: number;
         title: string;
         content: string;
+        templateId: number;
+        errorMessage: string | null;
         templateCode: string;
         read: boolean;
         readTime: Date | null;
-        errorMessage: string | null;
-        templateId: number;
     }>;
     markAllRead(req: any): Promise<import("@prisma/client").Prisma.BatchPayload>;
 }

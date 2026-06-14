@@ -10,7 +10,7 @@ import { OrderedListOutlined, CreditCardOutlined, HistoryOutlined, SyncOutlined,
 import { axiosInstance } from '@/lib/axios';
 
 export default function PayOrderList() {
-  const { tableProps, tableQueryResult } = useTable({
+  const { tableProps, tableQuery: tableQueryResult } = useTable({
     resource: 'pay/order',
     syncWithLocation: true,
   });

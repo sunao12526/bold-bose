@@ -12,6 +12,12 @@ import { DictDataService } from './dict/dict-data.service';
 import { ConfigController } from './config/config.controller';
 import { ConfigService } from './config/config.service';
 import { PostsModule } from './posts/posts.module';
+import { DeptModule } from './dept/dept.module';
+import { NoticeModule } from './notice/notice.module';
+import { SmsModule } from './sms/sms.module';
+import { MailModule } from './mail/mail.module';
+import { OAuth2Module } from './oauth2/oauth2.module';
+import { LoginLogModule } from './login-log/login-log.module';
 import { NotifyService } from './notify/notify.service';
 import { NotifyTemplateController } from './notify/notify-template.controller';
 import { NotifyMessageController } from './notify/notify-message.controller';
@@ -20,7 +26,15 @@ import { UserSessionController } from './session/user-session.controller';
 import { ProfileController } from './profile.controller';
 
 @Module({
-  imports: [PostsModule],
+  imports: [
+    PostsModule,
+    DeptModule,
+    NoticeModule,
+    SmsModule,
+    MailModule,
+    OAuth2Module,
+    LoginLogModule
+  ],
   controllers: [
     UserController, 
     RoleController, 

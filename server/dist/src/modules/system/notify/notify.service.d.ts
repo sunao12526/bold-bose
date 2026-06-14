@@ -77,11 +77,11 @@ export declare class NotifyService {
         userId: number;
         title: string;
         content: string;
+        templateId: number;
+        errorMessage: string | null;
         templateCode: string;
         read: boolean;
         readTime: Date | null;
-        errorMessage: string | null;
-        templateId: number;
     }[]>;
     markRead(userId: number, messageId: number): Promise<{
         id: number;
@@ -91,11 +91,11 @@ export declare class NotifyService {
         userId: number;
         title: string;
         content: string;
+        templateId: number;
+        errorMessage: string | null;
         templateCode: string;
         read: boolean;
         readTime: Date | null;
-        errorMessage: string | null;
-        templateId: number;
     }>;
     markAllRead(userId: number): Promise<import("@prisma/client").Prisma.BatchPayload>;
 }

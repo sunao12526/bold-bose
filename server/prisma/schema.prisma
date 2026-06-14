@@ -32,10 +32,14 @@ model User {
   mobile    String?      @db.VarChar(20)
   status    CommonStatus @default(ENABLE)
   remark    String?      @db.VarChar(500)
+  deptId    Int?         @map("dept_id")
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
 
-  roles     UserRole[]
+  roles       UserRole[]
+  dept        Dept?        @relation("UserDept", fields: [deptId], references: [id], onDelete: SetNull)
+  deptLeader  Dept[]       @relation("DeptLeader")
+  socialUsers SocialUser[]
 
   @@map("system_users")
 }
@@ -229,11 +233,13 @@ model CodegenColumn {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  title     String   @db.VarChar(100)
-  content   String?  @db.Text
-  status    String?  @default("ENABLE") @db.VarChar(20)
-  createdAt DateTime @default(now()) @map("created_at")
+  id        Int          @id @default(autoincrement())
+  name      String       @db.VarChar(100)
+  code      String       @db.VarChar(100)
+  sort      Int
+  remark    String?      @db.VarChar(500)
+  status    CommonStatus @default(ENABLE)
+  createdAt DateTime     @default(now()) @map("created_at")
 
   @@map("system_posts")
 }
@@ -746,5 +752,169 @@ model PayNotifyLog {
   refund          PayRefund?      @relation(fields: [refundId], references: [id], onDelete: Cascade)
 
   @@map("pay_notify_logs")
+}
+
+model Dept {
+  id        Int          @id @default(autoincrement())
+  name      String       @db.VarChar(100)
+  parentId  Int          @default(0) @map("parent_id")
+  sort      Int          @default(0)
+  leaderId  Int?         @map("leader_id")
+  phone     String?      @db.VarChar(20)
+  email     String?      @db.VarChar(100)
+  status    CommonStatus @default(ENABLE)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  leader    User?        @relation("DeptLeader", fields: [leaderId], references: [id], onDelete: SetNull)
+  users     User[]       @relation("UserDept")
+
+  @@map("system_dept")
+}
+
+model Notice {
+  id        Int          @id @default(autoincrement())
+  title     String       @db.VarChar(200)
+  type      Int          // 1 = Notice (通知), 2 = Announcement (公告)
+  content   String       @db.Text
+  status    CommonStatus @default(ENABLE)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  @@map("system_notice")
+}
+
+model SmsChannel {
+  id           Int          @id @default(autoincrement())
+  code         String       @db.VarChar(50) // e.g. aliyun, tencent
+  name         String       @db.VarChar(100)
+  apiKey       String       @map("api_key") @db.VarChar(100)
+  apiSecret    String       @map("api_secret") @db.VarChar(100)
+  signature    String       @db.VarChar(50)
+  status       CommonStatus @default(ENABLE)
+  remark       String?      @db.VarChar(500)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  templates    SmsTemplate[]
+
+  @@map("system_sms_channel")
+}
+
+model SmsTemplate {
+  id           Int          @id @default(autoincrement())
+  channelId    Int          @map("channel_id")
+  code         String       @unique @db.VarChar(50) // e.g. code_login
+  name         String       @db.VarChar(100)
+  content      String       @db.VarChar(500)
+  status       CommonStatus @default(ENABLE)
+  remark       String?      @db.VarChar(500)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  channel      SmsChannel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  logs         SmsLog[]
+
+  @@map("system_sms_template")
+}
+
+model SmsLog {
+  id           Int       @id @default(autoincrement())
+  templateId   Int       @map("template_id")
+  mobile       String    @db.VarChar(20)
+  content      String    @db.VarChar(500)
+  status       String    @db.VarChar(20) // SUCCESS, FAIL
+  errorMessage String?   @map("error_message") @db.VarChar(500)
+  sendTime     DateTime  @default(now()) @map("send_time")
+  template     SmsTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@map("system_sms_log")
+}
+
+model MailAccount {
+  id           Int          @id @default(autoincrement())
+  mail         String       @db.VarChar(100) // email address
+  username     String       @db.VarChar(100)
+  password     String       @db.VarChar(100)
+  host         String       @db.VarChar(100)
+  port         Int
+  ssl          Boolean      @default(false)
+  status       CommonStatus @default(ENABLE)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  templates    MailTemplate[]
+
+  @@map("system_mail_account")
+}
+
+model MailTemplate {
+  id           Int          @id @default(autoincrement())
+  accountId    Int          @map("account_id")
+  code         String       @unique @db.VarChar(50)
+  name         String       @db.VarChar(100)
+  title        String       @db.VarChar(200)
+  content      String       @db.Text
+  status       CommonStatus @default(ENABLE)
+  remark       String?      @db.VarChar(500)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  account      MailAccount  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  logs         MailLog[]
+
+  @@map("system_mail_template")
+}
+
+model MailLog {
+  id           Int          @id @default(autoincrement())
+  templateId   Int          @map("template_id")
+  receiver     String       @db.VarChar(100)
+  title        String       @db.VarChar(200)
+  content      String       @db.Text
+  status       String       @db.VarChar(20) // SUCCESS, FAIL
+  errorMessage String?      @map("error_message") @db.VarChar(500)
+  sendTime     DateTime     @default(now()) @map("send_time")
+  template     MailTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@map("system_mail_log")
+}
+
+model SocialUser {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  type      String   @db.VarChar(50) // WECHAT, DINGTALK, QQ
+  openid    String   @db.VarChar(100)
+  nickname  String?  @db.VarChar(100)
+  avatar    String?  @db.VarChar(200)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([type, openid])
+  @@map("system_social_user")
+}
+
+model OAuth2Client {
+  id           Int          @id @default(autoincrement())
+  clientId     String       @unique @map("client_id") @db.VarChar(100)
+  secret       String       @db.VarChar(100)
+  name         String       @db.VarChar(100)
+  logo         String?      @db.VarChar(200)
+  redirectUris String       @map("redirect_uris") @db.Text // JSON string array
+  scopes       String       @db.Text // JSON string array
+  status       CommonStatus @default(ENABLE)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  @@map("system_oauth2_client")
+}
+
+model LoginLog {
+  id        Int      @id @default(autoincrement())
+  username  String   @db.VarChar(50)
+  ip        String   @db.VarChar(50)
+  userAgent String   @map("user_agent") @db.VarChar(500)
+  status    String   @db.VarChar(20) // SUCCESS, FAIL
+  message   String?  @db.VarChar(200)
+  loginTime DateTime @default(now()) @map("login_time")
+
+  @@map("system_login_log")
 }
 

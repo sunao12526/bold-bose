@@ -21,6 +21,12 @@ const dict_data_service_1 = require("./dict/dict-data.service");
 const config_controller_1 = require("./config/config.controller");
 const config_service_1 = require("./config/config.service");
 const posts_module_1 = require("./posts/posts.module");
+const dept_module_1 = require("./dept/dept.module");
+const notice_module_1 = require("./notice/notice.module");
+const sms_module_1 = require("./sms/sms.module");
+const mail_module_1 = require("./mail/mail.module");
+const oauth2_module_1 = require("./oauth2/oauth2.module");
+const login_log_module_1 = require("./login-log/login-log.module");
 const notify_service_1 = require("./notify/notify.service");
 const notify_template_controller_1 = require("./notify/notify-template.controller");
 const notify_message_controller_1 = require("./notify/notify-message.controller");
@@ -32,7 +38,15 @@ let SystemModule = class SystemModule {
 exports.SystemModule = SystemModule;
 exports.SystemModule = SystemModule = __decorate([
     (0, common_1.Module)({
-        imports: [posts_module_1.PostsModule],
+        imports: [
+            posts_module_1.PostsModule,
+            dept_module_1.DeptModule,
+            notice_module_1.NoticeModule,
+            sms_module_1.SmsModule,
+            mail_module_1.MailModule,
+            oauth2_module_1.OAuth2Module,
+            login_log_module_1.LoginLogModule
+        ],
         controllers: [
             user_controller_1.UserController,
             role_controller_1.RoleController,

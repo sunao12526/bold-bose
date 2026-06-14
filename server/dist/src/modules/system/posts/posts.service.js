@@ -18,40 +18,37 @@ let PostsService = class PostsService {
         this.prisma = prisma;
     }
     async create(data) {
-        return this.prisma.posts.create({ data });
+        return this.prisma.post.create({ data });
     }
     async findAll(query) {
         const where = {};
-        if (query?.title) {
-            where.title = query.title;
+        if (query?.name) {
+            where.name = { contains: query.name };
         }
-        if (query?.content) {
-            where.content = query.content;
+        if (query?.code) {
+            where.code = { contains: query.code };
         }
         if (query?.status) {
             where.status = query.status;
         }
-        if (query?.created_at) {
-            where.created_at = query.created_at;
-        }
-        return this.prisma.posts.findMany({
+        return this.prisma.post.findMany({
             where,
-            orderBy: { id: 'desc' },
+            orderBy: { sort: 'asc' },
         });
     }
     async findOne(id) {
-        const record = await this.prisma.posts.findUnique({ where: { id } });
+        const record = await this.prisma.post.findUnique({ where: { id } });
         if (!record)
             throw new common_1.NotFoundException('数据记录不存在');
         return record;
     }
     async update(id, data) {
         await this.findOne(id);
-        return this.prisma.posts.update({ where: { id }, data });
+        return this.prisma.post.update({ where: { id }, data });
     }
     async remove(id) {
         await this.findOne(id);
-        return this.prisma.posts.delete({ where: { id } });
+        return this.prisma.post.delete({ where: { id } });
     }
 };
 exports.PostsService = PostsService;

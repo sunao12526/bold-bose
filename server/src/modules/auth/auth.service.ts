@@ -34,20 +34,39 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto, ip = '127.0.0.1', userAgent = '') {
+    const writeLog = async (status: string, message: string) => {
+      try {
+        await this.prisma.loginLog.create({
+          data: {
+            username: loginDto.username,
+            ip,
+            userAgent,
+            status,
+            message,
+          },
+        });
+      } catch (err) {
+        console.error('Failed to write login log:', err);
+      }
+    };
+
     const user = await this.prisma.user.findUnique({
       where: { username: loginDto.username },
     });
 
     if (!user) {
+      await writeLog('FAIL', '用户名不存在');
       throw new UnauthorizedException('用户名或密码错误');
     }
 
     if (user.status === 'DISABLE') {
+      await writeLog('FAIL', '用户已被禁用');
       throw new UnauthorizedException('用户已被禁用');
     }
 
     const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
     if (!isPasswordValid) {
+      await writeLog('FAIL', '密码错误');
       throw new UnauthorizedException('用户名或密码错误');
     }
 
@@ -72,6 +91,8 @@ export class AuthService {
         expiresAt,
       },
     });
+
+    await writeLog('SUCCESS', '登录成功');
 
     return {
       accessToken,

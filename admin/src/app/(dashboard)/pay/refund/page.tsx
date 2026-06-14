@@ -10,7 +10,7 @@ import { RollbackOutlined, CreditCardOutlined, HistoryOutlined, SyncOutlined, Ch
 import { axiosInstance } from '@/lib/axios';
 
 export default function PayRefundList() {
-  const { tableProps, tableQueryResult } = useTable({
+  const { tableProps, tableQuery: tableQueryResult } = useTable({
     resource: 'pay/refund',
     syncWithLocation: true,
   });

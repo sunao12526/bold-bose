@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 import React, { useState } from 'react';
 import { List, CreateButton, EditButton, DeleteButton } from '@refinedev/antd';
-import { Table, Space, Modal, Form, Input, Select, Tag, Switch } from 'antd';
+import { Table, Space, Modal, Form, Input, InputNumber, Select, Tag } from 'antd';
 import { useTable, useForm, useSelect } from '@refinedev/antd';
 
 export default function PostsList() {
@@ -24,7 +24,6 @@ export default function PostsList() {
     optionValue: 'value',
     filters: [{ field: 'dictType', operator: 'eq', value: 'sys_common_status' }],
   });
-
 
   const handleCreate = () => {
     setFormMode('create');
@@ -57,19 +56,21 @@ export default function PostsList() {
         }}
       >
         <Table {...tableProps} rowKey="id">
-          <Table.Column dataIndex="id" title="ID" width={80} />
-          <Table.Column dataIndex="title" title="title" ellipsis />
-          <Table.Column dataIndex="content" title="content" ellipsis />
+          <Table.Column dataIndex="id" title="岗位编号" width={100} />
+          <Table.Column dataIndex="name" title="岗位名称" ellipsis />
+          <Table.Column dataIndex="code" title="岗位编码" ellipsis />
+          <Table.Column dataIndex="sort" title="显示顺序" width={100} />
           <Table.Column 
             dataIndex="status" 
-            title="status" 
+            title="状态" 
             render={(val: string) => (
               <Tag color={val === 'ENABLE' ? 'green' : 'red'}>{val === 'ENABLE' ? '启用' : '禁用'}</Tag>
             )}
           />
+          <Table.Column dataIndex="remark" title="备注" ellipsis />
           <Table.Column 
-            dataIndex="created_at" 
-            title="created_at" 
+            dataIndex="createdAt" 
+            title="创建时间" 
             render={(val: string) => val ? new Date(val).toLocaleString() : '-'}
           />
           <Table.Column
@@ -87,7 +88,7 @@ export default function PostsList() {
       </List>
 
       <Modal
-        title={formMode === 'create' ? '新增system_posts' : '编辑system_posts'}
+        title={formMode === 'create' ? '新增岗位' : '编辑岗位'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={() => form.submit()}
@@ -97,29 +98,33 @@ export default function PostsList() {
           form={form}
           layout="vertical"
           onFinish={(values) => {
-            // Convert numerical inputs
             const payload = { ...values };
-            Object.keys(payload).forEach(key => {
-              const rules = form.getFieldInstance(key)?.props?.type;
-              if (rules === 'number' && payload[key] !== undefined) {
-                payload[key] = Number(payload[key]);
-              }
-            });
+            if (payload.sort !== undefined) {
+              payload.sort = Number(payload.sort);
+            }
             onFinish(payload);
           }}
         >
           {formMode === 'edit' && <Form.Item name="id" hidden><Input /></Form.Item>}
           
-          <Form.Item name="title" label="title" rules={[{ required: true, message: '请输入title' }]}>
-            <Input placeholder="请输入title" />
+          <Form.Item name="name" label="岗位名称" rules={[{ required: true, message: '请输入岗位名称' }]}>
+            <Input placeholder="请输入岗位名称" />
           </Form.Item>
 
-          <Form.Item name="content" label="content" >
-            <Input.TextArea rows={3} placeholder="请输入content" />
+          <Form.Item name="code" label="岗位编码" rules={[{ required: true, message: '请输入岗位编码' }]}>
+            <Input placeholder="请输入岗位编码" />
           </Form.Item>
 
-          <Form.Item name="status" label="status"  initialValue="ENABLE">
-            <Select placeholder="请选择status" {...statusSelectProps} />
+          <Form.Item name="sort" label="岗位顺序" rules={[{ required: true, message: '请输入显示顺序' }]} initialValue={1}>
+            <InputNumber style={{ width: '100%' }} placeholder="请输入显示顺序" min={0} />
+          </Form.Item>
+
+          <Form.Item name="status" label="状态" initialValue="ENABLE">
+            <Select placeholder="请选择状态" {...statusSelectProps} />
+          </Form.Item>
+
+          <Form.Item name="remark" label="备注">
+            <Input.TextArea rows={3} placeholder="请输入备注内容" />
           </Form.Item>
 
         </Form>

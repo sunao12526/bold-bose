@@ -13,6 +13,7 @@ export declare class UserService {
         nickname: string;
         email: string | null;
         mobile: string | null;
+        deptId: number | null;
     }>;
     findAll(): Promise<{
         id: number;
@@ -39,6 +40,11 @@ export declare class UserService {
         nickname: string;
         email: string | null;
         mobile: string | null;
+        deptId: number | null;
+        dept: {
+            id: number;
+            name: string;
+        } | null;
     }[]>;
     findOne(id: number): Promise<({
         roles: {
@@ -55,6 +61,7 @@ export declare class UserService {
         nickname: string;
         email: string | null;
         mobile: string | null;
+        deptId: number | null;
     }) | null>;
     update(id: number, data: any): Promise<{
         id: number;
@@ -67,6 +74,7 @@ export declare class UserService {
         nickname: string;
         email: string | null;
         mobile: string | null;
+        deptId: number | null;
     }>;
     remove(id: number): Promise<{
         id: number;
@@ -79,6 +87,7 @@ export declare class UserService {
         nickname: string;
         email: string | null;
         mobile: string | null;
+        deptId: number | null;
     }>;
     assignRoles(userId: number, roleIds: number[]): Promise<{
         success: boolean;
