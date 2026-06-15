@@ -1,4 +1,9 @@
-import { Injectable, OnApplicationBootstrap, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  OnApplicationBootstrap,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { JobHandlers } from './job.handlers';
@@ -22,13 +27,15 @@ export class JobService implements OnApplicationBootstrap {
     for (const job of jobs) {
       await this.registerJob(job);
     }
-    console.log(`[Scheduler] Loaded and registered ${jobs.length} active cron jobs.`);
+    console.log(
+      `[Scheduler] Loaded and registered ${jobs.length} active cron jobs.`,
+    );
   }
 
   // 2. Register a cron job in NestJS SchedulerRegistry
   async registerJob(jobRecord: any) {
     const jobName = `JOB_${jobRecord.id}`;
-    
+
     // Unregister first if exists
     this.unregisterJob(jobRecord.id);
 
@@ -36,11 +43,14 @@ export class JobService implements OnApplicationBootstrap {
       const job = new CronJob(jobRecord.cronExpression, async () => {
         await this.runJobWrapper(jobRecord.id, jobRecord.handlerName);
       });
-      
+
       this.schedulerRegistry.addCronJob(jobName, job);
       job.start();
     } catch (e) {
-      console.error(`[Scheduler] Failed to register job "${jobRecord.name}":`, e.message);
+      console.error(
+        `[Scheduler] Failed to register job "${jobRecord.name}":`,
+        e.message,
+      );
     }
   }
 
@@ -52,7 +62,10 @@ export class JobService implements OnApplicationBootstrap {
         job.stop();
         this.schedulerRegistry.deleteCronJob(jobName);
       } catch (e: any) {
-        console.error(`[Scheduler] Error deleting job "${jobName}":`, e.message);
+        console.error(
+          `[Scheduler] Error deleting job "${jobName}":`,
+          e.message,
+        );
       }
     }
   }
@@ -61,7 +74,9 @@ export class JobService implements OnApplicationBootstrap {
   async runJobWrapper(jobId: number, handlerName: string) {
     const lockKey = `${jobId}_${handlerName}`;
     if (this.runningJobs.has(lockKey)) {
-      console.warn(`[Scheduler] Job ${handlerName} (ID: ${jobId}) is already running, skipping execution.`);
+      console.warn(
+        `[Scheduler] Job ${handlerName} (ID: ${jobId}) is already running, skipping execution.`,
+      );
       return;
     }
     this.runningJobs.add(lockKey);
@@ -73,7 +88,9 @@ export class JobService implements OnApplicationBootstrap {
     try {
       const handler = (this.jobHandlers as any)[handlerName];
       if (typeof handler !== 'function') {
-        throw new Error(`Handler name "${handlerName}" is not a valid method on JobHandlers.`);
+        throw new Error(
+          `Handler name "${handlerName}" is not a valid method on JobHandlers.`,
+        );
       }
       await handler.call(this.jobHandlers);
     } catch (err: any) {

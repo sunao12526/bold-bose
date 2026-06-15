@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { CommonStatus } from '@prisma/client';
 
@@ -100,7 +104,8 @@ export class SignInService {
       where: { day: nextConsecutiveDay },
     });
 
-    const pointsRewarded = config && config.status === CommonStatus.ENABLE ? config.point : 0;
+    const pointsRewarded =
+      config && config.status === CommonStatus.ENABLE ? config.point : 0;
 
     return this.prisma.$transaction(async (tx) => {
       const record = await tx.memberSignInRecord.create({

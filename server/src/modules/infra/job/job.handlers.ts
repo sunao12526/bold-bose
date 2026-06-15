@@ -25,14 +25,18 @@ export class JobHandlers {
       },
     });
 
-    this.logger.log(`[Job: logCleanupJob] Successfully deleted ${result.count} audit logs older than ${daysLimit} days.`);
+    this.logger.log(
+      `[Job: logCleanupJob] Successfully deleted ${result.count} audit logs older than ${daysLimit} days.`,
+    );
   }
 
   // 2. demoTaskJob: console print logs system status
   async demoTaskJob(): Promise<void> {
     // Check if database is connectable
     await this.prisma.$queryRawUnsafe('SELECT 1;');
-    this.logger.log('[Job: demoTaskJob] System status health check: PostgreSQL and SeaweedFS S3 are running normally.');
+    this.logger.log(
+      '[Job: demoTaskJob] System status health check: PostgreSQL and SeaweedFS S3 are running normally.',
+    );
   }
 
   // 3. sessionCleanupJob: cleans up expired sessions
@@ -44,7 +48,9 @@ export class JobHandlers {
         },
       },
     });
-    this.logger.log(`[Job: sessionCleanupJob] Successfully cleaned up ${result.count} expired user sessions.`);
+    this.logger.log(
+      `[Job: sessionCleanupJob] Successfully cleaned up ${result.count} expired user sessions.`,
+    );
   }
 
   // 4. payNotifyJob: retries failed callback notifications
@@ -61,12 +67,16 @@ export class JobHandlers {
       return;
     }
 
-    this.logger.log(`[Job: payNotifyJob] Found ${failedLogs.length} failed notifications to retry.`);
+    this.logger.log(
+      `[Job: payNotifyJob] Found ${failedLogs.length} failed notifications to retry.`,
+    );
     for (const log of failedLogs) {
       try {
         await this.notifyService.sendNotification(log.id);
       } catch (err: any) {
-        this.logger.error(`[Job: payNotifyJob] Retry failed for log ${log.id}: ${err.message}`);
+        this.logger.error(
+          `[Job: payNotifyJob] Retry failed for log ${log.id}: ${err.message}`,
+        );
       }
     }
   }

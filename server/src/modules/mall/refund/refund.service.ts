@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { MallRefundStatus, MallOrderStatus } from '@prisma/client';
 import { PayRefundService } from '../../pay/pay-refund.service';
@@ -70,7 +74,12 @@ export class RefundService {
     });
   }
 
-  async refundNotify(merchantRefundId: string, payRefundId: number, status: string, refundTime: Date | string) {
+  async refundNotify(
+    merchantRefundId: string,
+    payRefundId: number,
+    status: string,
+    refundTime: Date | string,
+  ) {
     const refund = await this.prisma.mallOrderRefund.findFirst({
       where: { no: merchantRefundId },
       include: { order: true },
@@ -94,12 +103,13 @@ export class RefundService {
           },
         });
 
-        // 2. Update order status to CANCELLED
-        await tx.mallOrder.update({
+        // 2. Update order status to CANCELLED and fetch items
+        const updatedOrder = await tx.mallOrder.update({
           where: { id: refund.orderId },
           data: {
             status: MallOrderStatus.CANCELLED,
           },
+          include: { items: true },
         });
 
         // 3. Refund balance to customer user
@@ -111,6 +121,27 @@ export class RefundService {
             },
           },
         });
+
+        // 4. Roll back stock for each item
+        for (const item of updatedOrder.items) {
+          await tx.mallSku.update({
+            where: { id: item.skuId },
+            data: {
+              stock: {
+                increment: item.count,
+              },
+            },
+          });
+
+          await tx.mallSpu.update({
+            where: { id: item.spuId },
+            data: {
+              totalStock: {
+                increment: item.count,
+              },
+            },
+          });
+        }
 
         return updatedRefund;
       });

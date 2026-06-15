@@ -25,14 +25,18 @@ let NotifyService = NotifyService_1 = class NotifyService {
         let payOrderId = null;
         let refundId = null;
         if (type === client_1.PayNotifyType.ORDER) {
-            const order = await this.prisma.payOrder.findUnique({ where: { id: dataId } });
+            const order = await this.prisma.payOrder.findUnique({
+                where: { id: dataId },
+            });
             if (!order)
                 return;
             appId = order.appId;
             payOrderId = order.id;
         }
         else {
-            const refund = await this.prisma.payRefund.findUnique({ where: { id: dataId } });
+            const refund = await this.prisma.payRefund.findUnique({
+                where: { id: dataId },
+            });
             if (!refund)
                 return;
             appId = refund.appId;
@@ -107,7 +111,11 @@ let NotifyService = NotifyService_1 = class NotifyService {
             });
             clearTimeout(timeoutId);
             responseText = await response.text();
-            if (response.ok && (responseText.trim().toLowerCase() === 'success' || responseText.trim().toLowerCase() === 'ok' || response.status === 200 || response.status === 201)) {
+            if (response.ok &&
+                (responseText.trim().toLowerCase() === 'success' ||
+                    responseText.trim().toLowerCase() === 'ok' ||
+                    response.status === 200 ||
+                    response.status === 201)) {
                 notifyStatus = client_1.PayNotifyStatus.SUCCESS;
             }
             else {

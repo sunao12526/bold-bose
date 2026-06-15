@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { CodegenService } from './codegen.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
@@ -19,7 +30,10 @@ export class CodegenController {
   @Post('import')
   @RequirePermissions('infra:codegen:create')
   @Log({ module: '代码生成', type: 'CREATE', description: '导入数据库表结构' })
-  async importTables(@Body('tableNames') tableNames: string[], @Body('author') author?: string) {
+  async importTables(
+    @Body('tableNames') tableNames: string[],
+    @Body('author') author?: string,
+  ) {
     await this.codegenService.importTables(tableNames, author);
     return { success: true };
   }
@@ -58,7 +72,11 @@ export class CodegenController {
 
   @Post('write/:id')
   @RequirePermissions('infra:codegen:create')
-  @Log({ module: '代码生成', type: 'CREATE', description: '同步写入代码到磁盘' })
+  @Log({
+    module: '代码生成',
+    type: 'CREATE',
+    description: '同步写入代码到磁盘',
+  })
   async writeCode(@Param('id', ParseIntPipe) id: number) {
     return this.codegenService.writeCodeToDisk(id);
   }

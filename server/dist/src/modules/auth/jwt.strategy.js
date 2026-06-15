@@ -17,10 +17,14 @@ const prisma_service_1 = require("../../shared/prisma/prisma.service");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     prisma;
     constructor(prisma) {
+        const jwtSecret = process.env.JWT_SECRET;
+        if (!jwtSecret) {
+            throw new Error('JWT_SECRET environment variable is required but not defined in .env');
+        }
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: process.env.JWT_SECRET || 'yudao-nestjs-secret-key-2026',
+            secretOrKey: jwtSecret,
             passReqToCallback: true,
         });
         this.prisma = prisma;
@@ -41,10 +45,12 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             throw new common_1.UnauthorizedException('会话已过期，请重新登录');
         }
         if (now.getTime() - session.lastActiveTime.getTime() > 60000) {
-            this.prisma.userSession.update({
+            this.prisma.userSession
+                .update({
                 where: { id: session.id },
                 data: { lastActiveTime: now },
-            }).catch((e) => console.error('Failed to update active time:', e));
+            })
+                .catch((e) => console.error('Failed to update active time:', e));
         }
         const user = await this.prisma.user.findUnique({
             where: { id: payload.id },
@@ -56,7 +62,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             id: user.id,
             username: user.username,
             nickname: user.nickname,
-            sessionId: session.id
+            sessionId: session.id,
         };
     }
 };

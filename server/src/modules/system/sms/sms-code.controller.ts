@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Req, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Req,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { SmsCodeService } from './sms-code.service';
 import { Public } from '../../../shared/decorators/public.decorator';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';

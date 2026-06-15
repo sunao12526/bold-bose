@@ -69,7 +69,10 @@ export class FileConfigService {
     const c = config.config as any;
     if (config.storage === 'LOCAL') {
       return {
-        client: new LocalFileClient({ baseFolder: c.baseFolder, domain: c.domain }),
+        client: new LocalFileClient({
+          baseFolder: c.baseFolder,
+          domain: c.domain,
+        }),
         configId: config.id,
       };
     } else if (config.storage === 'S3') {

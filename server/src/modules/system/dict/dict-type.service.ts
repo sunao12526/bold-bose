@@ -6,7 +6,9 @@ export class DictTypeService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: any) {
-    const existing = await this.prisma.dictType.findUnique({ where: { type: data.type } });
+    const existing = await this.prisma.dictType.findUnique({
+      where: { type: data.type },
+    });
     if (existing) throw new BadRequestException('字典类型已存在');
     return this.prisma.dictType.create({ data });
   }
@@ -26,10 +28,13 @@ export class DictTypeService {
   async remove(id: number) {
     const type = await this.prisma.dictType.findUnique({ where: { id } });
     if (!type) throw new BadRequestException('字典类型不存在');
-    
-    const count = await this.prisma.dictData.count({ where: { dictType: type.type } });
-    if (count > 0) throw new BadRequestException('该字典类型包含数据，无法删除');
-    
+
+    const count = await this.prisma.dictData.count({
+      where: { dictType: type.type },
+    });
+    if (count > 0)
+      throw new BadRequestException('该字典类型包含数据，无法删除');
+
     return this.prisma.dictType.delete({ where: { id } });
   }
 }

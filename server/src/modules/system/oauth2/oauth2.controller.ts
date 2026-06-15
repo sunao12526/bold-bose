@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Req, Query, Res, UseGuards, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Req,
+  Query,
+  Res,
+  UseGuards,
+  BadRequestException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { OAuth2Service } from './oauth2.service';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
@@ -26,7 +37,9 @@ export class OAuth2Controller {
     @Res() res: any,
   ) {
     if (responseType !== 'code') {
-      throw new BadRequestException('Unsupported response_type. Must be "code".');
+      throw new BadRequestException(
+        'Unsupported response_type. Must be "code".',
+      );
     }
 
     const clients = await this.prisma.oAuth2Client.findMany({
@@ -40,13 +53,19 @@ export class OAuth2Controller {
     // Validate redirect URI
     const allowedUris: string[] = JSON.parse(client.redirectUris || '[]');
     if (!allowedUris.includes(redirectUri)) {
-      throw new BadRequestException('Redirect URI not authorized for this client.');
+      throw new BadRequestException(
+        'Redirect URI not authorized for this client.',
+      );
     }
 
     const scopes = scopeStr ? scopeStr.split(' ') : [];
 
     // Generate code
-    const code = await this.oauth2Service.generateCode(req.user.id, clientId, scopes);
+    const code = await this.oauth2Service.generateCode(
+      req.user.id,
+      clientId,
+      scopes,
+    );
 
     // Redirect back
     const targetUrl = `${redirectUri}?code=${code}${state ? `&state=${state}` : ''}`;
@@ -76,7 +95,10 @@ export class OAuth2Controller {
 
     if (grantType === 'authorization_code') {
       try {
-        const { userId, scopes } = await this.oauth2Service.verifyCode(code, clientId);
+        const { userId, scopes } = await this.oauth2Service.verifyCode(
+          code,
+          clientId,
+        );
 
         const user = await this.prisma.user.findUnique({
           where: { id: userId },
@@ -98,7 +120,9 @@ export class OAuth2Controller {
           scope: scopes.join(' '),
         };
       } catch (err: any) {
-        throw new BadRequestException(err.message || 'Authorization code validation failed.');
+        throw new BadRequestException(
+          err.message || 'Authorization code validation failed.',
+        );
       }
     } else if (grantType === 'client_credentials') {
       const payload = { clientId, scopes: JSON.parse(client.scopes || '[]') };
@@ -118,7 +142,9 @@ export class OAuth2Controller {
   async userinfo(@Req() req: any) {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Missing or invalid Authorization header.');
+      throw new UnauthorizedException(
+        'Missing or invalid Authorization header.',
+      );
     }
     const token = authHeader.replace('Bearer ', '');
     try {
@@ -127,7 +153,7 @@ export class OAuth2Controller {
         // Client credentials token
         return { client_id: payload.clientId, scopes: payload.scopes };
       }
-      
+
       const user = await this.prisma.user.findUnique({
         where: { id: payload.id },
         select: {

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { CommonStatus } from '@prisma/client';
 
@@ -6,9 +10,17 @@ import { CommonStatus } from '@prisma/client';
 export class PayChannelService {
   constructor(private prisma: PrismaService) {}
 
-  async createOrUpdate(data: { appId: number; code: string; config: any; status?: CommonStatus; remark?: string }) {
+  async createOrUpdate(data: {
+    appId: number;
+    code: string;
+    config: any;
+    status?: CommonStatus;
+    remark?: string;
+  }) {
     // Verify pay app exists
-    const app = await this.prisma.payApp.findUnique({ where: { id: data.appId } });
+    const app = await this.prisma.payApp.findUnique({
+      where: { id: data.appId },
+    });
     if (!app) {
       throw new NotFoundException('支付应用不存在');
     }

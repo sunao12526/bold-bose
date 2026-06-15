@@ -40,17 +40,19 @@ let SpuService = class SpuService {
                     minPrice,
                     maxPrice,
                     totalStock,
-                    skus: skus && skus.length > 0 ? {
-                        create: skus.map((sku) => ({
-                            properties: sku.properties || [],
-                            price: sku.price || 0,
-                            marketPrice: sku.marketPrice || null,
-                            costPrice: sku.costPrice || null,
-                            stock: sku.stock || 0,
-                            picUrl: sku.picUrl || null,
-                            barCode: sku.barCode || null,
-                        })),
-                    } : undefined,
+                    skus: skus && skus.length > 0
+                        ? {
+                            create: skus.map((sku) => ({
+                                properties: sku.properties || [],
+                                price: sku.price || 0,
+                                marketPrice: sku.marketPrice || null,
+                                costPrice: sku.costPrice || null,
+                                stock: sku.stock || 0,
+                                picUrl: sku.picUrl || null,
+                                barCode: sku.barCode || null,
+                            })),
+                        }
+                        : undefined,
                 },
                 include: { skus: true },
             });
@@ -103,17 +105,19 @@ let SpuService = class SpuService {
                     minPrice,
                     maxPrice,
                     totalStock,
-                    skus: skus && skus.length > 0 ? {
-                        create: skus.map((sku) => ({
-                            properties: sku.properties || [],
-                            price: sku.price || 0,
-                            marketPrice: sku.marketPrice || null,
-                            costPrice: sku.costPrice || null,
-                            stock: sku.stock || 0,
-                            picUrl: sku.picUrl || null,
-                            barCode: sku.barCode || null,
-                        })),
-                    } : undefined,
+                    skus: skus && skus.length > 0
+                        ? {
+                            create: skus.map((sku) => ({
+                                properties: sku.properties || [],
+                                price: sku.price || 0,
+                                marketPrice: sku.marketPrice || null,
+                                costPrice: sku.costPrice || null,
+                                stock: sku.stock || 0,
+                                picUrl: sku.picUrl || null,
+                                barCode: sku.barCode || null,
+                            })),
+                        }
+                        : undefined,
                 },
                 include: { skus: true },
             });

@@ -69,7 +69,9 @@ let SmsService = class SmsService {
     }
     async removeChannel(id) {
         await this.findOneChannel(id);
-        const templates = await this.prisma.smsTemplate.findFirst({ where: { channelId: id } });
+        const templates = await this.prisma.smsTemplate.findFirst({
+            where: { channelId: id },
+        });
         if (templates) {
             throw new Error('该渠道下还有绑定的短信模板，无法删除');
         }

@@ -1,7 +1,16 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { NotifyService } from './notify.service';
-import { PayRefundStatus, PayOrderStatus, PayNotifyType, CommonStatus } from '@prisma/client';
+import {
+  PayRefundStatus,
+  PayOrderStatus,
+  PayNotifyType,
+  CommonStatus,
+} from '@prisma/client';
 
 @Injectable()
 export class PayRefundService {
@@ -19,7 +28,9 @@ export class PayRefundService {
     reason: string;
     merchantNotifyUrl: string;
   }) {
-    const app = await this.prisma.payApp.findUnique({ where: { code: data.appCode } });
+    const app = await this.prisma.payApp.findUnique({
+      where: { code: data.appCode },
+    });
     if (!app) {
       throw new NotFoundException(`支付应用 [${data.appCode}] 不存在`);
     }
@@ -68,7 +79,10 @@ export class PayRefundService {
       },
     });
 
-    const totalRefunded = historicalRefunds.reduce((sum, r) => sum + r.refundPrice, 0);
+    const totalRefunded = historicalRefunds.reduce(
+      (sum, r) => sum + r.refundPrice,
+      0,
+    );
     if (totalRefunded + data.refundPrice > order.price) {
       throw new BadRequestException('退款金额超出订单实付总金额');
     }

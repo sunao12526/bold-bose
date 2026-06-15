@@ -14,7 +14,7 @@ export class LocalFileClient implements FileClient {
   async upload(file: Buffer, filePath: string): Promise<string> {
     const fullPath = path.join(this.baseFolder, filePath);
     const dir = path.dirname(fullPath);
-    
+
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }

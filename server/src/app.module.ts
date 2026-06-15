@@ -13,14 +13,14 @@ import { LogInterceptor } from './shared/interceptors/log.interceptor';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(), 
-    PrismaModule, 
-    AuthModule, 
-    SystemModule, 
-    InfraModule, 
+    ScheduleModule.forRoot(),
+    PrismaModule,
+    AuthModule,
+    SystemModule,
+    InfraModule,
     MallModule,
     MemberModule,
-    PayModule
+    PayModule,
   ],
   providers: [
     {

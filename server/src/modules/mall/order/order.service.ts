@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { MallOrderStatus } from '@prisma/client';
 import { PayOrderService } from '../../pay/pay-order.service';
@@ -64,7 +68,8 @@ export class OrderService {
       merchantOrderId: order.no,
       subject: `商城订单: ${order.no}`,
       price: order.payPrice,
-      merchantNotifyUrl: 'http://localhost:3000/admin-api/mall/order/pay-notify',
+      merchantNotifyUrl:
+        'http://localhost:3000/admin-api/mall/order/pay-notify',
     });
 
     await this.payOrderService.submitPayOrder(payOrder.id, 'mock');
@@ -75,7 +80,12 @@ export class OrderService {
     });
   }
 
-  async payNotify(merchantOrderId: string, payOrderId: number, status: string, payTime: Date | string) {
+  async payNotify(
+    merchantOrderId: string,
+    payOrderId: number,
+    status: string,
+    payTime: Date | string,
+  ) {
     const order = await this.prisma.mallOrder.findFirst({
       where: { no: merchantOrderId },
     });
@@ -126,12 +136,39 @@ export class OrderService {
     if (order.status !== MallOrderStatus.UNPAID) {
       throw new BadRequestException('只有未支付的订单才能取消');
     }
-    return this.prisma.mallOrder.update({
-      where: { id },
-      data: {
-        status: MallOrderStatus.CANCELLED,
-      },
-      include: { items: true },
+
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Update order status to CANCELLED
+      const updatedOrder = await tx.mallOrder.update({
+        where: { id },
+        data: {
+          status: MallOrderStatus.CANCELLED,
+        },
+        include: { items: true },
+      });
+
+      // 2. Roll back stock for each item
+      for (const item of updatedOrder.items) {
+        await tx.mallSku.update({
+          where: { id: item.skuId },
+          data: {
+            stock: {
+              increment: item.count,
+            },
+          },
+        });
+
+        await tx.mallSpu.update({
+          where: { id: item.spuId },
+          data: {
+            totalStock: {
+              increment: item.count,
+            },
+          },
+        });
+      }
+
+      return updatedOrder;
     });
   }
 }

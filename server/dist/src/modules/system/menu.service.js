@@ -35,7 +35,9 @@ let MenuService = class MenuService {
         });
     }
     async remove(id) {
-        const children = await this.prisma.menu.findFirst({ where: { parentId: id } });
+        const children = await this.prisma.menu.findFirst({
+            where: { parentId: id },
+        });
         if (children) {
             throw new common_1.BadRequestException('该菜单包含子菜单，无法删除');
         }

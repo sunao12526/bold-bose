@@ -44,7 +44,11 @@ exports.MailAccountController = MailAccountController;
 __decorate([
     (0, common_1.Post)(),
     (0, require_permissions_decorator_1.RequirePermissions)('system:mail:create'),
-    (0, log_decorator_1.Log)({ module: 'system_mail_account', type: 'CREATE', description: '创建邮件账号' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_mail_account',
+        type: 'CREATE',
+        description: '创建邮件账号',
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -69,7 +73,11 @@ __decorate([
 __decorate([
     (0, common_1.Put)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:mail:update'),
-    (0, log_decorator_1.Log)({ module: 'system_mail_account', type: 'UPDATE', description: '修改邮件账号' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_mail_account',
+        type: 'UPDATE',
+        description: '修改邮件账号',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -79,7 +87,11 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:mail:delete'),
-    (0, log_decorator_1.Log)({ module: 'system_mail_account', type: 'DELETE', description: '删除邮件账号' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_mail_account',
+        type: 'DELETE',
+        description: '删除邮件账号',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -119,7 +131,11 @@ exports.MailTemplateController = MailTemplateController;
 __decorate([
     (0, common_1.Post)(),
     (0, require_permissions_decorator_1.RequirePermissions)('system:mail:create'),
-    (0, log_decorator_1.Log)({ module: 'system_mail_template', type: 'CREATE', description: '创建邮件模板' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_mail_template',
+        type: 'CREATE',
+        description: '创建邮件模板',
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -144,7 +160,11 @@ __decorate([
 __decorate([
     (0, common_1.Put)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:mail:update'),
-    (0, log_decorator_1.Log)({ module: 'system_mail_template', type: 'UPDATE', description: '修改邮件模板' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_mail_template',
+        type: 'UPDATE',
+        description: '修改邮件模板',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -154,7 +174,11 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:mail:delete'),
-    (0, log_decorator_1.Log)({ module: 'system_mail_template', type: 'DELETE', description: '删除邮件模板' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_mail_template',
+        type: 'DELETE',
+        description: '删除邮件模板',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -163,7 +187,11 @@ __decorate([
 __decorate([
     (0, common_1.Post)(':id/send-mock'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:mail:create'),
-    (0, log_decorator_1.Log)({ module: 'system_mail_template', type: 'CREATE', description: '发送测试邮件' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_mail_template',
+        type: 'CREATE',
+        description: '发送测试邮件',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

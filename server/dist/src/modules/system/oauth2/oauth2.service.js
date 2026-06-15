@@ -24,8 +24,12 @@ let OAuth2Service = class OAuth2Service {
                 secret: data.secret,
                 name: data.name,
                 logo: data.logo || null,
-                redirectUris: typeof data.redirectUris === 'string' ? data.redirectUris : JSON.stringify(data.redirectUris || []),
-                scopes: typeof data.scopes === 'string' ? data.scopes : JSON.stringify(data.scopes || []),
+                redirectUris: typeof data.redirectUris === 'string'
+                    ? data.redirectUris
+                    : JSON.stringify(data.redirectUris || []),
+                scopes: typeof data.scopes === 'string'
+                    ? data.scopes
+                    : JSON.stringify(data.scopes || []),
                 status: data.status || 'ENABLE',
             },
         });
@@ -61,8 +65,16 @@ let OAuth2Service = class OAuth2Service {
                 secret: data.secret,
                 name: data.name,
                 logo: data.logo,
-                redirectUris: data.redirectUris !== undefined ? (typeof data.redirectUris === 'string' ? data.redirectUris : JSON.stringify(data.redirectUris)) : undefined,
-                scopes: data.scopes !== undefined ? (typeof data.scopes === 'string' ? data.scopes : JSON.stringify(data.scopes)) : undefined,
+                redirectUris: data.redirectUris !== undefined
+                    ? typeof data.redirectUris === 'string'
+                        ? data.redirectUris
+                        : JSON.stringify(data.redirectUris)
+                    : undefined,
+                scopes: data.scopes !== undefined
+                    ? typeof data.scopes === 'string'
+                        ? data.scopes
+                        : JSON.stringify(data.scopes)
+                    : undefined,
                 status: data.status,
             },
         });
@@ -73,7 +85,8 @@ let OAuth2Service = class OAuth2Service {
     }
     codes = new Map();
     async generateCode(userId, clientId, scopes) {
-        const code = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const code = Math.random().toString(36).substring(2, 15) +
+            Math.random().toString(36).substring(2, 15);
         this.codes.set(code, { userId, clientId, scopes });
         setTimeout(() => this.codes.delete(code), 10 * 60 * 1000);
         return code;

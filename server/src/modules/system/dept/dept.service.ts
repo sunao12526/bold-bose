@@ -7,7 +7,9 @@ export class DeptService {
 
   async create(data: any) {
     if (data.parentId && data.parentId !== 0) {
-      const parent = await this.prisma.dept.findUnique({ where: { id: data.parentId } });
+      const parent = await this.prisma.dept.findUnique({
+        where: { id: data.parentId },
+      });
       if (!parent) throw new NotFoundException('父级部门不存在');
     }
     return this.prisma.dept.create({
@@ -69,7 +71,9 @@ export class DeptService {
       throw new Error('不能选择自己作为父级部门');
     }
     if (data.parentId && data.parentId !== 0) {
-      const parent = await this.prisma.dept.findUnique({ where: { id: data.parentId } });
+      const parent = await this.prisma.dept.findUnique({
+        where: { id: data.parentId },
+      });
       if (!parent) throw new NotFoundException('父级部门不存在');
     }
     return this.prisma.dept.update({
@@ -88,7 +92,9 @@ export class DeptService {
 
   async remove(id: number) {
     await this.findOne(id);
-    const children = await this.prisma.dept.findFirst({ where: { parentId: id } });
+    const children = await this.prisma.dept.findFirst({
+      where: { parentId: id },
+    });
     if (children) {
       throw new Error('该部门下还有子部门，无法删除');
     }

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { CommonStatus } from '@prisma/client';
 import { MemberService } from './member.service';
@@ -65,8 +69,12 @@ export class LevelService {
       data: {
         name: data.name,
         level: data.level !== undefined ? Number(data.level) : undefined,
-        experience: data.experience !== undefined ? Number(data.experience) : undefined,
-        discountPercent: data.discountPercent !== undefined ? Number(data.discountPercent) : undefined,
+        experience:
+          data.experience !== undefined ? Number(data.experience) : undefined,
+        discountPercent:
+          data.discountPercent !== undefined
+            ? Number(data.discountPercent)
+            : undefined,
         status: data.status,
       },
     });

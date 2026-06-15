@@ -1,4 +1,12 @@
-import { Controller, Post, Get, Body, Req, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Req,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { Public } from '../../shared/decorators/public.decorator';
@@ -67,10 +75,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('social-unbind')
-  async socialUnbind(
-    @Req() req: any,
-    @Body('type') type: string,
-  ) {
+  async socialUnbind(@Req() req: any, @Body('type') type: string) {
     return this.authService.socialUnbind(req.user.id, type);
   }
 

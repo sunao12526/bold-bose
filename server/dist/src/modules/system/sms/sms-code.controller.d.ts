@@ -11,9 +11,9 @@ export declare class SmsCodeController {
     }>;
     findAll(query: any): Promise<{
         id: number;
-        code: string;
-        createdAt: Date;
         mobile: string;
+        createdAt: Date;
+        code: string;
         scene: number;
         todayIndex: number;
         used: boolean;

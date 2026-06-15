@@ -22,7 +22,9 @@ let PayOrderService = class PayOrderService {
         this.notifyService = notifyService;
     }
     async createPayOrder(data) {
-        const app = await this.prisma.payApp.findUnique({ where: { code: data.appCode } });
+        const app = await this.prisma.payApp.findUnique({
+            where: { code: data.appCode },
+        });
         if (!app) {
             throw new common_1.NotFoundException(`支付应用 [${data.appCode}] 不存在`);
         }

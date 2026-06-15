@@ -1,4 +1,13 @@
-import { Controller, Get, Put, Post, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { RefundService } from './refund.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { Public } from '../../../shared/decorators/public.decorator';
@@ -19,7 +28,12 @@ export class RefundController {
     @Body('status') status: string,
     @Body('refundTime') refundTime: Date | string,
   ) {
-    await this.refundService.refundNotify(merchantRefundId, refundId, status, refundTime);
+    await this.refundService.refundNotify(
+      merchantRefundId,
+      refundId,
+      status,
+      refundTime,
+    );
     return 'success';
   }
 

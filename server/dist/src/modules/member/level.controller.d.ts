@@ -4,52 +4,52 @@ export declare class LevelController {
     constructor(levelService: LevelService);
     findAll(): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        level: number;
+        name: string;
         experience: number;
+        level: number;
         discountPercent: number;
     }[]>;
     findOne(id: number): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        level: number;
+        name: string;
         experience: number;
+        level: number;
         discountPercent: number;
     }>;
     create(data: any): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        level: number;
+        name: string;
         experience: number;
+        level: number;
         discountPercent: number;
     }>;
     update(id: number, data: any): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        level: number;
+        name: string;
         experience: number;
+        level: number;
         discountPercent: number;
     }>;
     remove(id: number): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        level: number;
+        name: string;
         experience: number;
+        level: number;
         discountPercent: number;
     }>;
 }

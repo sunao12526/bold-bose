@@ -27,18 +27,8 @@ exports.MemberModule = MemberModule = __decorate([
             tag_controller_1.TagController,
             sign_in_controller_1.SignInController,
         ],
-        providers: [
-            member_service_1.MemberService,
-            level_service_1.LevelService,
-            tag_service_1.TagService,
-            sign_in_service_1.SignInService,
-        ],
-        exports: [
-            member_service_1.MemberService,
-            level_service_1.LevelService,
-            tag_service_1.TagService,
-            sign_in_service_1.SignInService,
-        ],
+        providers: [member_service_1.MemberService, level_service_1.LevelService, tag_service_1.TagService, sign_in_service_1.SignInService],
+        exports: [member_service_1.MemberService, level_service_1.LevelService, tag_service_1.TagService, sign_in_service_1.SignInService],
     })
 ], MemberModule);
 //# sourceMappingURL=member.module.js.map

@@ -27,10 +27,7 @@ let LogInterceptor = class LogInterceptor {
         const startTime = Date.now();
         const httpContext = context.switchToHttp();
         const request = httpContext.getRequest();
-        const logOptions = this.reflector.getAllAndOverride(log_decorator_1.LOG_METADATA_KEY, [
-            context.getHandler(),
-            context.getClass(),
-        ]);
+        const logOptions = this.reflector.getAllAndOverride(log_decorator_1.LOG_METADATA_KEY, [context.getHandler(), context.getClass()]);
         return next.handle().pipe((0, operators_1.tap)(() => {
             if (logOptions) {
                 const duration = Date.now() - startTime;

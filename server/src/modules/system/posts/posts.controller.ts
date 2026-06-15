@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
@@ -12,7 +23,11 @@ export class PostsController {
 
   @Post()
   @RequirePermissions('system:posts:create')
-  @Log({ module: 'system_posts', type: 'CREATE', description: '创建system_posts' })
+  @Log({
+    module: 'system_posts',
+    type: 'CREATE',
+    description: '创建system_posts',
+  })
   async create(@Body() data: any) {
     return this.service.create(data);
   }
@@ -31,14 +46,22 @@ export class PostsController {
 
   @Put(':id')
   @RequirePermissions('system:posts:update')
-  @Log({ module: 'system_posts', type: 'UPDATE', description: '修改system_posts' })
+  @Log({
+    module: 'system_posts',
+    type: 'UPDATE',
+    description: '修改system_posts',
+  })
   async update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
     return this.service.update(id, data);
   }
 
   @Delete(':id')
   @RequirePermissions('system:posts:delete')
-  @Log({ module: 'system_posts', type: 'DELETE', description: '删除system_posts' })
+  @Log({
+    module: 'system_posts',
+    type: 'DELETE',
+    description: '删除system_posts',
+  })
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.service.remove(id);
   }

@@ -126,12 +126,33 @@ let OrderService = class OrderService {
         if (order.status !== client_1.MallOrderStatus.UNPAID) {
             throw new common_1.BadRequestException('只有未支付的订单才能取消');
         }
-        return this.prisma.mallOrder.update({
-            where: { id },
-            data: {
-                status: client_1.MallOrderStatus.CANCELLED,
-            },
-            include: { items: true },
+        return this.prisma.$transaction(async (tx) => {
+            const updatedOrder = await tx.mallOrder.update({
+                where: { id },
+                data: {
+                    status: client_1.MallOrderStatus.CANCELLED,
+                },
+                include: { items: true },
+            });
+            for (const item of updatedOrder.items) {
+                await tx.mallSku.update({
+                    where: { id: item.skuId },
+                    data: {
+                        stock: {
+                            increment: item.count,
+                        },
+                    },
+                });
+                await tx.mallSpu.update({
+                    where: { id: item.spuId },
+                    data: {
+                        totalStock: {
+                            increment: item.count,
+                        },
+                    },
+                });
+            }
+            return updatedOrder;
         });
     }
 };

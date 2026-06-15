@@ -44,7 +44,11 @@ exports.SmsChannelController = SmsChannelController;
 __decorate([
     (0, common_1.Post)(),
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:create'),
-    (0, log_decorator_1.Log)({ module: 'system_sms_channel', type: 'CREATE', description: '创建短信渠道' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_sms_channel',
+        type: 'CREATE',
+        description: '创建短信渠道',
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -69,7 +73,11 @@ __decorate([
 __decorate([
     (0, common_1.Put)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:update'),
-    (0, log_decorator_1.Log)({ module: 'system_sms_channel', type: 'UPDATE', description: '修改短信渠道' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_sms_channel',
+        type: 'UPDATE',
+        description: '修改短信渠道',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -79,7 +87,11 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:delete'),
-    (0, log_decorator_1.Log)({ module: 'system_sms_channel', type: 'DELETE', description: '删除短信渠道' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_sms_channel',
+        type: 'DELETE',
+        description: '删除短信渠道',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -119,7 +131,11 @@ exports.SmsTemplateController = SmsTemplateController;
 __decorate([
     (0, common_1.Post)(),
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:create'),
-    (0, log_decorator_1.Log)({ module: 'system_sms_template', type: 'CREATE', description: '创建短信模板' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_sms_template',
+        type: 'CREATE',
+        description: '创建短信模板',
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -144,7 +160,11 @@ __decorate([
 __decorate([
     (0, common_1.Put)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:update'),
-    (0, log_decorator_1.Log)({ module: 'system_sms_template', type: 'UPDATE', description: '修改短信模板' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_sms_template',
+        type: 'UPDATE',
+        description: '修改短信模板',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -154,7 +174,11 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:delete'),
-    (0, log_decorator_1.Log)({ module: 'system_sms_template', type: 'DELETE', description: '删除短信模板' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_sms_template',
+        type: 'DELETE',
+        description: '删除短信模板',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -163,7 +187,11 @@ __decorate([
 __decorate([
     (0, common_1.Post)(':id/send-mock'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:create'),
-    (0, log_decorator_1.Log)({ module: 'system_sms_template', type: 'CREATE', description: '发送测试短信' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_sms_template',
+        type: 'CREATE',
+        description: '发送测试短信',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

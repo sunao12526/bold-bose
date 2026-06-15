@@ -14,51 +14,51 @@ export declare class JobService implements OnApplicationBootstrap {
     runJobWrapper(jobId: number, handlerName: string): Promise<void>;
     create(data: any): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         handlerName: string;
         cronExpression: string;
     }>;
     findAll(): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         handlerName: string;
         cronExpression: string;
     }[]>;
     findOne(id: number): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         handlerName: string;
         cronExpression: string;
     }>;
     update(id: number, data: any): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         handlerName: string;
         cronExpression: string;
     }>;
     remove(id: number): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         handlerName: string;
         cronExpression: string;
     }>;
@@ -69,9 +69,9 @@ export declare class JobService implements OnApplicationBootstrap {
         id: number;
         status: number;
         createdAt: Date;
-        handlerName: string;
         errorMessage: string | null;
-        duration: number;
+        handlerName: string;
         jobId: number;
+        duration: number;
     }[]>;
 }

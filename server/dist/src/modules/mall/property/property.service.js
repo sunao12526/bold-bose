@@ -22,11 +22,13 @@ let PropertyService = class PropertyService {
         return this.prisma.mallProperty.create({
             data: {
                 ...rest,
-                values: values && values.length > 0 ? {
-                    create: values.map(v => ({ value: v }))
-                } : undefined
+                values: values && values.length > 0
+                    ? {
+                        create: values.map((v) => ({ value: v })),
+                    }
+                    : undefined,
             },
-            include: { values: true }
+            include: { values: true },
         });
     }
     async findAll() {
@@ -38,7 +40,7 @@ let PropertyService = class PropertyService {
     async findOne(id) {
         const property = await this.prisma.mallProperty.findUnique({
             where: { id },
-            include: { values: true }
+            include: { values: true },
         });
         if (!property)
             throw new common_1.NotFoundException('商品规格不存在');
@@ -49,29 +51,31 @@ let PropertyService = class PropertyService {
         const { values, ...rest } = data;
         await this.prisma.mallProperty.update({
             where: { id },
-            data: rest
+            data: rest,
         });
         if (values !== undefined) {
-            const keepIds = values.map(v => v.id).filter((vid) => !!vid);
+            const keepIds = values
+                .map((v) => v.id)
+                .filter((vid) => !!vid);
             await this.prisma.mallPropertyValue.deleteMany({
                 where: {
                     propertyId: id,
-                    id: { notIn: keepIds }
-                }
+                    id: { notIn: keepIds },
+                },
             });
             for (const val of values) {
                 if (val.id) {
                     await this.prisma.mallPropertyValue.update({
                         where: { id: val.id },
-                        data: { value: val.value }
+                        data: { value: val.value },
                     });
                 }
                 else {
                     await this.prisma.mallPropertyValue.create({
                         data: {
                             propertyId: id,
-                            value: val.value
-                        }
+                            value: val.value,
+                        },
                     });
                 }
             }
@@ -81,7 +85,7 @@ let PropertyService = class PropertyService {
     async remove(id) {
         await this.findOne(id);
         return this.prisma.mallProperty.delete({
-            where: { id }
+            where: { id },
         });
     }
 };

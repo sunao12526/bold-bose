@@ -6,9 +6,9 @@ export declare class JobLogController {
         id: number;
         status: number;
         createdAt: Date;
-        handlerName: string;
         errorMessage: string | null;
-        duration: number;
+        handlerName: string;
         jobId: number;
+        duration: number;
     }[]>;
 }

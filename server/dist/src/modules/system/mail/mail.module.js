@@ -15,7 +15,11 @@ let MailModule = class MailModule {
 exports.MailModule = MailModule;
 exports.MailModule = MailModule = __decorate([
     (0, common_1.Module)({
-        controllers: [mail_controller_1.MailAccountController, mail_controller_1.MailTemplateController, mail_controller_1.MailLogController],
+        controllers: [
+            mail_controller_1.MailAccountController,
+            mail_controller_1.MailTemplateController,
+            mail_controller_1.MailLogController,
+        ],
         providers: [mail_service_1.MailService],
         exports: [mail_service_1.MailService],
     })

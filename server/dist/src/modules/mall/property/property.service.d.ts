@@ -17,10 +17,10 @@ export declare class PropertyService {
         }[];
     } & {
         id: number;
-        name: string;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }>;
     findAll(): Promise<({
         values: {
@@ -33,10 +33,10 @@ export declare class PropertyService {
         }[];
     } & {
         id: number;
-        name: string;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     })[]>;
     findOne(id: number): Promise<{
         values: {
@@ -49,10 +49,10 @@ export declare class PropertyService {
         }[];
     } & {
         id: number;
-        name: string;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }>;
     update(id: number, data: {
         name?: string;
@@ -72,16 +72,16 @@ export declare class PropertyService {
         }[];
     } & {
         id: number;
-        name: string;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }>;
     remove(id: number): Promise<{
         id: number;
-        name: string;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }>;
 }

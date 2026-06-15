@@ -44,7 +44,11 @@ exports.PostsController = PostsController;
 __decorate([
     (0, common_1.Post)(),
     (0, require_permissions_decorator_1.RequirePermissions)('system:posts:create'),
-    (0, log_decorator_1.Log)({ module: 'system_posts', type: 'CREATE', description: '创建system_posts' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_posts',
+        type: 'CREATE',
+        description: '创建system_posts',
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -69,7 +73,11 @@ __decorate([
 __decorate([
     (0, common_1.Put)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:posts:update'),
-    (0, log_decorator_1.Log)({ module: 'system_posts', type: 'UPDATE', description: '修改system_posts' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_posts',
+        type: 'UPDATE',
+        description: '修改system_posts',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -79,7 +87,11 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:posts:delete'),
-    (0, log_decorator_1.Log)({ module: 'system_posts', type: 'DELETE', description: '删除system_posts' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_posts',
+        type: 'DELETE',
+        description: '删除system_posts',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),

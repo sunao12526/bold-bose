@@ -6,176 +6,176 @@ export declare class MemberController {
     findAll(): Promise<({
         level: {
             id: number;
-            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
-            level: number;
+            name: string;
             experience: number;
+            level: number;
             discountPercent: number;
         } | null;
     } & {
         id: number;
+        nickname: string;
+        mobile: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        nickname: string;
-        mobile: string;
-        experience: number;
         avatar: string | null;
         points: number;
         balance: number;
         levelId: number | null;
+        experience: number;
         tagIds: import("@prisma/client/runtime/library").JsonValue | null;
     })[]>;
     findOne(id: number): Promise<{
         level: {
             id: number;
-            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
-            level: number;
+            name: string;
             experience: number;
+            level: number;
             discountPercent: number;
         } | null;
     } & {
         id: number;
+        nickname: string;
+        mobile: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        nickname: string;
-        mobile: string;
-        experience: number;
         avatar: string | null;
         points: number;
         balance: number;
         levelId: number | null;
+        experience: number;
         tagIds: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     updateStatus(id: number, status: CommonStatus): Promise<{
         level: {
             id: number;
-            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
-            level: number;
+            name: string;
             experience: number;
+            level: number;
             discountPercent: number;
         } | null;
     } & {
         id: number;
+        nickname: string;
+        mobile: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        nickname: string;
-        mobile: string;
-        experience: number;
         avatar: string | null;
         points: number;
         balance: number;
         levelId: number | null;
+        experience: number;
         tagIds: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     adjustPoints(id: number, amount: number): Promise<{
         level: {
             id: number;
-            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
-            level: number;
+            name: string;
             experience: number;
+            level: number;
             discountPercent: number;
         } | null;
     } & {
         id: number;
+        nickname: string;
+        mobile: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        nickname: string;
-        mobile: string;
-        experience: number;
         avatar: string | null;
         points: number;
         balance: number;
         levelId: number | null;
+        experience: number;
         tagIds: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     adjustBalance(id: number, amount: number): Promise<{
         level: {
             id: number;
-            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
-            level: number;
+            name: string;
             experience: number;
+            level: number;
             discountPercent: number;
         } | null;
     } & {
         id: number;
+        nickname: string;
+        mobile: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        nickname: string;
-        mobile: string;
-        experience: number;
         avatar: string | null;
         points: number;
         balance: number;
         levelId: number | null;
+        experience: number;
         tagIds: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     adjustExperience(id: number, amount: number): Promise<{
         level: {
             id: number;
-            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
-            level: number;
+            name: string;
             experience: number;
+            level: number;
             discountPercent: number;
         } | null;
     } & {
         id: number;
+        nickname: string;
+        mobile: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        nickname: string;
-        mobile: string;
-        experience: number;
         avatar: string | null;
         points: number;
         balance: number;
         levelId: number | null;
+        experience: number;
         tagIds: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     assignTags(id: number, tagIds: number[]): Promise<{
         level: {
             id: number;
-            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
-            level: number;
+            name: string;
             experience: number;
+            level: number;
             discountPercent: number;
         } | null;
     } & {
         id: number;
+        nickname: string;
+        mobile: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        nickname: string;
-        mobile: string;
-        experience: number;
         avatar: string | null;
         points: number;
         balance: number;
         levelId: number | null;
+        experience: number;
         tagIds: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
 }

@@ -191,7 +191,7 @@ let UserService = class UserService {
                 nickname: true,
                 email: true,
                 mobile: true,
-            }
+            },
         });
     }
     async updatePassword(userId, data) {

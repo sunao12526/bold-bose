@@ -93,12 +93,20 @@ let FileService = class FileService {
     }
     async remove(id) {
         const file = await this.findOne(id);
-        const config = await this.prisma.fileConfig.findUnique({ where: { id: file.configId } });
+        const config = await this.prisma.fileConfig.findUnique({
+            where: { id: file.configId },
+        });
         if (config) {
             const c = config.config;
             const client = config.storage === 'LOCAL'
                 ? new local_file_client_1.LocalFileClient({ baseFolder: c.baseFolder, domain: c.domain })
-                : new s3_file_client_1.S3FileClient({ endpoint: c.endpoint, bucket: c.bucket, accessKey: c.accessKey, secretKey: c.secretKey, domain: c.domain });
+                : new s3_file_client_1.S3FileClient({
+                    endpoint: c.endpoint,
+                    bucket: c.bucket,
+                    accessKey: c.accessKey,
+                    secretKey: c.secretKey,
+                    domain: c.domain,
+                });
             try {
                 await client.delete(file.path);
             }

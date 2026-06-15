@@ -32,7 +32,7 @@ exports.AppModule = AppModule = __decorate([
             infra_module_1.InfraModule,
             mall_module_1.MallModule,
             member_module_1.MemberModule,
-            pay_module_1.PayModule
+            pay_module_1.PayModule,
         ],
         providers: [
             {

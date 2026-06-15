@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { ConfigService } from '../config/config.service';
 import * as nodemailer from 'nodemailer';
@@ -60,18 +64,27 @@ export class NotifyService {
   /**
    * Renders the variables in the string, e.g. "Welcome {nickname}" -> "Welcome John"
    */
-  private render(templateStr: string, variables: Record<string, string>): string {
+  private render(
+    templateStr: string,
+    variables: Record<string, string>,
+  ): string {
     if (!templateStr) return '';
     return templateStr.replace(/\{([^{}]+)\}/g, (match, key) => {
       const cleanedKey = key.trim();
-      return variables[cleanedKey] !== undefined ? variables[cleanedKey] : match;
+      return variables[cleanedKey] !== undefined
+        ? variables[cleanedKey]
+        : match;
     });
   }
 
   /**
    * Dispatches a notification to a specific user using a template code
    */
-  async send(userId: number, templateCode: string, variables: Record<string, string> = {}) {
+  async send(
+    userId: number,
+    templateCode: string,
+    variables: Record<string, string> = {},
+  ) {
     // 1. Get Template
     const template = await this.prisma.notifyTemplate.findUnique({
       where: { code: templateCode },
@@ -154,7 +167,9 @@ export class NotifyService {
       });
     } else if (template.type === 'SMS') {
       // SMS Notification (Simulated)
-      console.log(`[SMS SEND SIMULATION] To: ${user.mobile || 'Unknown'}, Body: ${renderedContent}`);
+      console.log(
+        `[SMS SEND SIMULATION] To: ${user.mobile || 'Unknown'}, Body: ${renderedContent}`,
+      );
       if (!user.mobile) {
         status = 500;
         errorMessage = `用户 [${user.username}] 未绑定手机号`;
@@ -200,16 +215,20 @@ export class NotifyService {
       host = configHost.value;
       const configPort = await this.configService.findByKey('sys.mail.port');
       port = parseInt(configPort.value, 10) || port;
-      const configUsername = await this.configService.findByKey('sys.mail.username');
+      const configUsername =
+        await this.configService.findByKey('sys.mail.username');
       username = configUsername.value;
-      const configPassword = await this.configService.findByKey('sys.mail.password');
+      const configPassword =
+        await this.configService.findByKey('sys.mail.password');
       password = configPassword.value;
       const configSsl = await this.configService.findByKey('sys.mail.ssl');
       secure = configSsl.value === 'true' || configSsl.value === '1';
       const configFrom = await this.configService.findByKey('sys.mail.from');
       from = configFrom.value;
     } catch (err) {
-      console.warn('Unable to load SMTP configurations from SysConfig, falling back to process env defaults.');
+      console.warn(
+        'Unable to load SMTP configurations from SysConfig, falling back to process env defaults.',
+      );
       host = process.env.SMTP_HOST || host;
       port = parseInt(process.env.SMTP_PORT || '', 10) || port;
       username = process.env.SMTP_USERNAME || username;
@@ -222,7 +241,8 @@ export class NotifyService {
       host,
       port,
       secure,
-      auth: username && password ? { user: username, pass: password } : undefined,
+      auth:
+        username && password ? { user: username, pass: password } : undefined,
     });
 
     await transporter.sendMail({

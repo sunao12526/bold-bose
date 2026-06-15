@@ -1,4 +1,14 @@
-import { Controller, Get, Put, Post, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { OrderService } from './order.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { Public } from '../../../shared/decorators/public.decorator';
@@ -50,7 +60,12 @@ export class OrderController {
     @Body('status') status: string,
     @Body('payTime') payTime: Date | string,
   ) {
-    await this.orderService.payNotify(merchantOrderId, payOrderId, status, payTime);
+    await this.orderService.payNotify(
+      merchantOrderId,
+      payOrderId,
+      status,
+      payTime,
+    );
     return 'success';
   }
 

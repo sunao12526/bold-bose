@@ -63,7 +63,7 @@ export class UserService {
   async findOne(id: number) {
     return this.prisma.user.findUnique({
       where: { id },
-      include: { 
+      include: {
         roles: { select: { roleId: true } },
         posts: { select: { postId: true } },
       },
@@ -152,7 +152,10 @@ export class UserService {
     };
   }
 
-  async updateProfile(userId: number, data: { nickname: string; email?: string; mobile?: string }) {
+  async updateProfile(
+    userId: number,
+    data: { nickname: string; email?: string; mobile?: string },
+  ) {
     return this.prisma.user.update({
       where: { id: userId },
       data: {
@@ -166,7 +169,7 @@ export class UserService {
         nickname: true,
         email: true,
         mobile: true,
-      }
+      },
     });
   }
 
@@ -176,7 +179,10 @@ export class UserService {
     });
     if (!user) throw new BadRequestException('用户不存在');
 
-    const isPasswordValid = await bcrypt.compare(data.oldPassword, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      data.oldPassword,
+      user.password,
+    );
     if (!isPasswordValid) {
       throw new BadRequestException('原密码错误，请重新输入');
     }

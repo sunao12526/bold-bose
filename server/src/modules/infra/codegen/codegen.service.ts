@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -33,17 +37,23 @@ export class CodegenService {
   }
 
   // 2. Import tables and auto-generate fields configuration metadata
-  async importTables(tableNames: string[], author: string = 'Antigravity'): Promise<void> {
+  async importTables(
+    tableNames: string[],
+    author: string = 'Antigravity',
+  ): Promise<void> {
     for (const tableName of tableNames) {
       // Fetch table comment
-      const tableInfo: any[] = await this.prisma.$queryRawUnsafe(`
+      const tableInfo: any[] = await this.prisma.$queryRawUnsafe(
+        `
         SELECT 
           c.relname AS "tableName",
           COALESCE(obj_description(c.oid, 'pg_class'), '') AS "tableComment"
         FROM pg_class c
         JOIN pg_namespace n ON n.oid = c.relnamespace
         WHERE n.nspname = 'public' AND c.relname = $1;
-      `, tableName);
+      `,
+        tableName,
+      );
 
       if (tableInfo.length === 0) {
         throw new NotFoundException(`数据库表 ${tableName} 未找到`);
@@ -82,7 +92,8 @@ export class CodegenService {
       });
 
       // Fetch Columns metadata from PG catalog
-      const columns: any[] = await this.prisma.$queryRawUnsafe(`
+      const columns: any[] = await this.prisma.$queryRawUnsafe(
+        `
         SELECT 
           a.attname AS "columnName",
           format_type(a.atttypid, a.atttypmod) AS "dataType",
@@ -102,12 +113,18 @@ export class CodegenService {
           AND a.attnum > 0 
           AND NOT a.attisdropped
         ORDER BY a.attnum;
-      `, tableName);
+      `,
+        tableName,
+      );
 
       // Save CodegenColumns
       for (const col of columns) {
         const mappedTypes = this.mapPostgresType(col.dataType, col.columnName);
-        const defaults = this.getDefaultHtmlType(col.columnName, mappedTypes.tsType, col.primaryKey);
+        const defaults = this.getDefaultHtmlType(
+          col.columnName,
+          mappedTypes.tsType,
+          col.primaryKey,
+        );
 
         await this.prisma.codegenColumn.create({
           data: {
@@ -120,10 +137,24 @@ export class CodegenService {
             autoIncrement: col.autoIncrement,
             tsType: mappedTypes.tsType,
             prismaType: mappedTypes.prismaType,
-            crud: !['id', 'created_at', 'updated_at', 'createdAt', 'updatedAt'].includes(col.columnName),
+            crud: ![
+              'id',
+              'created_at',
+              'updated_at',
+              'createdAt',
+              'updatedAt',
+            ].includes(col.columnName),
             listOperation: !['password', 'secret_key'].includes(col.columnName),
             listOperationCondition: '=',
-            formOperation: !['id', 'created_at', 'updated_at', 'createdAt', 'updatedAt', 'autoIncrement'].includes(col.columnName) && !col.autoIncrement,
+            formOperation:
+              ![
+                'id',
+                'created_at',
+                'updated_at',
+                'createdAt',
+                'updatedAt',
+                'autoIncrement',
+              ].includes(col.columnName) && !col.autoIncrement,
             htmlType: defaults.htmlType,
             dictType: defaults.dictType,
           },
@@ -133,23 +164,46 @@ export class CodegenService {
   }
 
   // 3. Helper to map PG type to TS/Prisma type
-  private mapPostgresType(dataType: string, columnName: string): { tsType: string; prismaType: string } {
+  private mapPostgresType(
+    dataType: string,
+    columnName: string,
+  ): { tsType: string; prismaType: string } {
     const type = dataType.toLowerCase();
-    
+
     if (type.includes('bool')) {
       return { tsType: 'boolean', prismaType: 'Boolean' };
     }
-    if (type.includes('int') || type.includes('serial') || type.includes('float') || type.includes('double') || type.includes('numeric') || type.includes('decimal') || type.includes('real')) {
-      return { tsType: 'number', prismaType: type.includes('int') || type.includes('serial') ? 'Int' : 'Float' };
+    if (
+      type.includes('int') ||
+      type.includes('serial') ||
+      type.includes('float') ||
+      type.includes('double') ||
+      type.includes('numeric') ||
+      type.includes('decimal') ||
+      type.includes('real')
+    ) {
+      return {
+        tsType: 'number',
+        prismaType:
+          type.includes('int') || type.includes('serial') ? 'Int' : 'Float',
+      };
     }
-    if (type.includes('date') || type.includes('time') || type.includes('timestamp')) {
+    if (
+      type.includes('date') ||
+      type.includes('time') ||
+      type.includes('timestamp')
+    ) {
       return { tsType: 'Date', prismaType: 'DateTime' };
     }
     return { tsType: 'string', prismaType: 'String' };
   }
 
   // 4. Helper to map default html inputs
-  private getDefaultHtmlType(columnName: string, tsType: string, isPrimaryKey: boolean): { htmlType: string; dictType: string | null } {
+  private getDefaultHtmlType(
+    columnName: string,
+    tsType: string,
+    isPrimaryKey: boolean,
+  ): { htmlType: string; dictType: string | null } {
     if (isPrimaryKey) {
       return { htmlType: 'input', dictType: null };
     }
@@ -160,10 +214,20 @@ export class CodegenService {
     if (name.includes('password')) {
       return { htmlType: 'input', dictType: null }; // handled by form as input.password
     }
-    if (name.includes('remark') || name.includes('content') || name.includes('description') || name.includes('memo')) {
+    if (
+      name.includes('remark') ||
+      name.includes('content') ||
+      name.includes('description') ||
+      name.includes('memo')
+    ) {
       return { htmlType: 'textarea', dictType: null };
     }
-    if (name.includes('time') || name.includes('date') || name.endsWith('_at') || name.startsWith('at_')) {
+    if (
+      name.includes('time') ||
+      name.includes('date') ||
+      name.endsWith('_at') ||
+      name.startsWith('at_')
+    ) {
       return { htmlType: 'date', dictType: null };
     }
     if (tsType === 'boolean') {
@@ -194,7 +258,7 @@ export class CodegenService {
   // 6. Update table and columns metadata
   async updateTableMetadata(id: number, data: any) {
     const { columns, ...tableData } = data;
-    
+
     // Update main table settings
     await this.prisma.codegenTable.update({
       where: { id },
@@ -223,7 +287,7 @@ export class CodegenService {
   // 8. Generate codes preview
   async generateCodePreview(tableId: number): Promise<any[]> {
     const table = await this.findOneTable(tableId);
-    
+
     const controllerCode = this.renderController(table);
     const serviceCode = this.renderService(table);
     const moduleCode = this.renderModule(table);
@@ -261,18 +325,20 @@ export class CodegenService {
   }
 
   // 9. Write generated files directly into codebase
-  async writeCodeToDisk(tableId: number): Promise<{ success: boolean; files: string[]; parentRegistered: boolean }> {
+  async writeCodeToDisk(
+    tableId: number,
+  ): Promise<{ success: boolean; files: string[]; parentRegistered: boolean }> {
     const preview = await this.generateCodePreview(tableId);
     const table = await this.findOneTable(tableId);
     const filesWritten: string[] = [];
 
     // Base Workspace directory (resolved from process.cwd() or parent folder)
     const baseDir = path.resolve(process.cwd(), '..'); // process.cwd() is inside 'server/' since NestJS executes there.
-    
+
     for (const file of preview) {
       const fullPath = path.join(baseDir, file.path);
       const dir = path.dirname(fullPath);
-      
+
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
@@ -283,7 +349,12 @@ export class CodegenService {
     // Attempt to auto-register module in parent module file (e.g. system.module.ts)
     let parentRegistered = false;
     try {
-      parentRegistered = await this.registerInParentModule(baseDir, table.moduleName, table.businessName, table.className);
+      parentRegistered = await this.registerInParentModule(
+        baseDir,
+        table.moduleName,
+        table.businessName,
+        table.className,
+      );
     } catch (err) {
       console.error('Failed to auto register in parent module:', err);
     }
@@ -296,14 +367,24 @@ export class CodegenService {
   }
 
   // 10. Auto-register in parent module helper
-  private async registerInParentModule(baseDir: string, moduleName: string, businessName: string, className: string): Promise<boolean> {
-    const parentModulePath = path.join(baseDir, 'server/src/modules', moduleName, `${moduleName}.module.ts`);
+  private async registerInParentModule(
+    baseDir: string,
+    moduleName: string,
+    businessName: string,
+    className: string,
+  ): Promise<boolean> {
+    const parentModulePath = path.join(
+      baseDir,
+      'server/src/modules',
+      moduleName,
+      `${moduleName}.module.ts`,
+    );
     if (!fs.existsSync(parentModulePath)) return false;
 
     let content = fs.readFileSync(parentModulePath, 'utf8');
     const moduleImportName = `${className}Module`;
     const importPath = `./${businessName}/${businessName}.module`;
-    
+
     // 1. Check if already imported
     if (content.includes(moduleImportName)) {
       return true; // Already registered
@@ -312,11 +393,14 @@ export class CodegenService {
     // 2. Add Import statement at the top
     const lastImportIndex = content.lastIndexOf('import ');
     if (lastImportIndex === -1) return false;
-    
+
     const endOfLastImportLine = content.indexOf('\n', lastImportIndex);
     const importStatement = `\nimport { ${moduleImportName} } from '${importPath}';`;
-    
-    content = content.slice(0, endOfLastImportLine) + importStatement + content.slice(endOfLastImportLine);
+
+    content =
+      content.slice(0, endOfLastImportLine) +
+      importStatement +
+      content.slice(endOfLastImportLine);
 
     // 3. Find imports array in @Module, or create it if not present
     const moduleDecoratorRegex = /@Module\s*\(\s*\{([\s\S]*?)\}\s*\)/;
@@ -324,7 +408,7 @@ export class CodegenService {
     if (!match) return false;
 
     const moduleProps = match[1];
-    
+
     if (moduleProps.includes('imports:')) {
       // Append moduleImportName to existing imports array
       const importsRegex = /(imports\s*:\s*\[)([\s\S]*?)(\])/;
@@ -336,7 +420,10 @@ export class CodegenService {
     } else {
       // Add imports property to @Module
       const firstPropIndex = content.indexOf('{', match.index);
-      content = content.slice(0, firstPropIndex + 1) + `\n  imports: [${moduleImportName}],` + content.slice(firstPropIndex + 1);
+      content =
+        content.slice(0, firstPropIndex + 1) +
+        `\n  imports: [${moduleImportName}],` +
+        content.slice(firstPropIndex + 1);
     }
 
     fs.writeFileSync(parentModulePath, content, 'utf8');
@@ -347,7 +434,7 @@ export class CodegenService {
 
   private renderController(table: any): string {
     const { moduleName, businessName, className, classComment } = table;
-    
+
     return `import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { ${className}Service } from './${businessName}.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
@@ -398,12 +485,15 @@ export class ${className}Controller {
 
   private renderService(table: any): string {
     const { className } = table;
-    const camelClassName = className.charAt(0).toLowerCase() + className.slice(1);
+    const camelClassName =
+      className.charAt(0).toLowerCase() + className.slice(1);
 
     // Build filter expressions based on CodegenColumns
     let filterLogics = '';
-    const searchColumns = table.columns.filter((c: any) => c.listOperation && !c.primaryKey);
-    
+    const searchColumns = table.columns.filter(
+      (c: any) => c.listOperation && !c.primaryKey,
+    );
+
     for (const col of searchColumns) {
       const field = col.columnName;
       if (col.listOperationCondition === 'LIKE') {
@@ -479,9 +569,9 @@ export class ${className}Module {}
     // Columns definitions
     let listColumnsText = '';
     let formsItemsText = '';
-    let refSelectsProps = '';
+    const refSelectsProps = '';
     let refSelectHooks = '';
-    let formRefResets = '';
+    const formRefResets = '';
 
     const listCols = table.columns.filter((c: any) => c.listOperation);
     const formCols = table.columns.filter((c: any) => c.formOperation);
@@ -521,7 +611,9 @@ export class ${className}Module {}
     for (const col of formCols) {
       const field = col.columnName;
       const title = col.columnComment || field;
-      const requiredRule = col.nullable ? '' : `rules={[{ required: true, message: '请输入${title}' }]}`;
+      const requiredRule = col.nullable
+        ? ''
+        : `rules={[{ required: true, message: '请输入${title}' }]}`;
 
       if (col.dictType) {
         const selectHookName = `${field}SelectProps`;

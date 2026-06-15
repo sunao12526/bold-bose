@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { PayChannelService } from './channel.service';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../shared/guards/permissions.guard';
@@ -21,7 +30,13 @@ export class PayChannelController {
     @Body('status') status?: CommonStatus,
     @Body('remark') remark?: string,
   ) {
-    return this.channelService.createOrUpdate({ appId, code, config, status, remark });
+    return this.channelService.createOrUpdate({
+      appId,
+      code,
+      config,
+      status,
+      remark,
+    });
   }
 
   @Get('app/:appId')

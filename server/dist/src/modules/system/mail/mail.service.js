@@ -96,14 +96,18 @@ let MailService = class MailService {
                 password: data.password,
                 host: data.host,
                 port: data.port !== undefined ? Number(data.port) : undefined,
-                ssl: data.ssl !== undefined ? (data.ssl === true || data.ssl === 'true') : undefined,
+                ssl: data.ssl !== undefined
+                    ? data.ssl === true || data.ssl === 'true'
+                    : undefined,
                 status: data.status,
             },
         });
     }
     async removeAccount(id) {
         await this.findOneAccount(id);
-        const templates = await this.prisma.mailTemplate.findFirst({ where: { accountId: id } });
+        const templates = await this.prisma.mailTemplate.findFirst({
+            where: { accountId: id },
+        });
         if (templates) {
             throw new Error('该账号下还有绑定的邮件模板，无法删除');
         }

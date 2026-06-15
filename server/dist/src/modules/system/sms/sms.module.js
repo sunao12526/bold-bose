@@ -17,7 +17,12 @@ let SmsModule = class SmsModule {
 exports.SmsModule = SmsModule;
 exports.SmsModule = SmsModule = __decorate([
     (0, common_1.Module)({
-        controllers: [sms_controller_1.SmsChannelController, sms_controller_1.SmsTemplateController, sms_controller_1.SmsLogController, sms_code_controller_1.SmsCodeController],
+        controllers: [
+            sms_controller_1.SmsChannelController,
+            sms_controller_1.SmsTemplateController,
+            sms_controller_1.SmsLogController,
+            sms_code_controller_1.SmsCodeController,
+        ],
         providers: [sms_service_1.SmsService, sms_code_service_1.SmsCodeService],
         exports: [sms_service_1.SmsService, sms_code_service_1.SmsCodeService],
     })

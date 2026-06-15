@@ -4,15 +4,15 @@ export declare class DeptController {
     constructor(service: DeptService);
     create(data: any): Promise<{
         id: number;
-        name: string;
-        sort: number;
+        email: string | null;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        sort: number;
         parentId: number;
-        email: string | null;
-        phone: string | null;
         leaderId: number | null;
+        phone: string | null;
     }>;
     findAll(query: any): Promise<({
         leader: {
@@ -22,15 +22,15 @@ export declare class DeptController {
         } | null;
     } & {
         id: number;
-        name: string;
-        sort: number;
+        email: string | null;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        sort: number;
         parentId: number;
-        email: string | null;
-        phone: string | null;
         leaderId: number | null;
+        phone: string | null;
     })[]>;
     findOne(id: number): Promise<{
         leader: {
@@ -40,38 +40,38 @@ export declare class DeptController {
         } | null;
     } & {
         id: number;
-        name: string;
-        sort: number;
+        email: string | null;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        sort: number;
         parentId: number;
-        email: string | null;
-        phone: string | null;
         leaderId: number | null;
+        phone: string | null;
     }>;
     update(id: number, data: any): Promise<{
         id: number;
-        name: string;
-        sort: number;
+        email: string | null;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        sort: number;
         parentId: number;
-        email: string | null;
-        phone: string | null;
         leaderId: number | null;
+        phone: string | null;
     }>;
     remove(id: number): Promise<{
         id: number;
-        name: string;
-        sort: number;
+        email: string | null;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        sort: number;
         parentId: number;
-        email: string | null;
-        phone: string | null;
         leaderId: number | null;
+        phone: string | null;
     }>;
 }

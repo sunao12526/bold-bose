@@ -18,7 +18,9 @@ let PayAppService = class PayAppService {
         this.prisma = prisma;
     }
     async create(data) {
-        const existing = await this.prisma.payApp.findUnique({ where: { code: data.code } });
+        const existing = await this.prisma.payApp.findUnique({
+            where: { code: data.code },
+        });
         if (existing) {
             throw new common_1.BadRequestException('应用编码已存在');
         }

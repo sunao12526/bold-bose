@@ -82,7 +82,11 @@ __decorate([
 __decorate([
     (0, common_1.Put)(':id/status'),
     (0, require_permissions_decorator_1.RequirePermissions)('mall:coupon:update'),
-    (0, log_decorator_1.Log)({ module: '营销管理', type: 'UPDATE', description: '更新优惠券模板状态' }),
+    (0, log_decorator_1.Log)({
+        module: '营销管理',
+        type: 'UPDATE',
+        description: '更新优惠券模板状态',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)('status')),
     __metadata("design:type", Function),

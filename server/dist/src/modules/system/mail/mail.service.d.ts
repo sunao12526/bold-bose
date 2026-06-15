@@ -4,11 +4,11 @@ export declare class MailService {
     constructor(prisma: PrismaService);
     createAccount(data: any): Promise<{
         id: number;
+        username: string;
+        password: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        username: string;
-        password: string;
         mail: string;
         host: string;
         port: number;
@@ -16,11 +16,11 @@ export declare class MailService {
     }>;
     findAllAccounts(query?: any): Promise<{
         id: number;
+        username: string;
+        password: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        username: string;
-        password: string;
         mail: string;
         host: string;
         port: number;
@@ -28,11 +28,11 @@ export declare class MailService {
     }[]>;
     findOneAccount(id: number): Promise<{
         id: number;
+        username: string;
+        password: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        username: string;
-        password: string;
         mail: string;
         host: string;
         port: number;
@@ -40,11 +40,11 @@ export declare class MailService {
     }>;
     updateAccount(id: number, data: any): Promise<{
         id: number;
+        username: string;
+        password: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        username: string;
-        password: string;
         mail: string;
         host: string;
         port: number;
@@ -52,11 +52,11 @@ export declare class MailService {
     }>;
     removeAccount(id: number): Promise<{
         id: number;
+        username: string;
+        password: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        username: string;
-        password: string;
         mail: string;
         host: string;
         port: number;
@@ -64,12 +64,12 @@ export declare class MailService {
     }>;
     createTemplate(data: any): Promise<{
         id: number;
-        code: string;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        code: string;
         title: string;
         content: string;
         accountId: number;
@@ -77,11 +77,11 @@ export declare class MailService {
     findAllTemplates(query?: any): Promise<({
         account: {
             id: number;
+            username: string;
+            password: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
-            username: string;
-            password: string;
             mail: string;
             host: string;
             port: number;
@@ -89,12 +89,12 @@ export declare class MailService {
         };
     } & {
         id: number;
-        code: string;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        code: string;
         title: string;
         content: string;
         accountId: number;
@@ -102,11 +102,11 @@ export declare class MailService {
     findOneTemplate(id: number): Promise<{
         account: {
             id: number;
+            username: string;
+            password: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
-            username: string;
-            password: string;
             mail: string;
             host: string;
             port: number;
@@ -114,36 +114,36 @@ export declare class MailService {
         };
     } & {
         id: number;
-        code: string;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        code: string;
         title: string;
         content: string;
         accountId: number;
     }>;
     updateTemplate(id: number, data: any): Promise<{
         id: number;
-        code: string;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        code: string;
         title: string;
         content: string;
         accountId: number;
     }>;
     removeTemplate(id: number): Promise<{
         id: number;
-        code: string;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        code: string;
         title: string;
         content: string;
         accountId: number;
@@ -152,11 +152,11 @@ export declare class MailService {
         template: {
             account: {
                 id: number;
+                username: string;
+                password: string;
                 status: import("@prisma/client").$Enums.CommonStatus;
                 createdAt: Date;
                 updatedAt: Date;
-                username: string;
-                password: string;
                 mail: string;
                 host: string;
                 port: number;
@@ -164,12 +164,12 @@ export declare class MailService {
             };
         } & {
             id: number;
-            code: string;
-            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             remark: string | null;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
+            code: string;
             title: string;
             content: string;
             accountId: number;

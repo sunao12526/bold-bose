@@ -143,10 +143,23 @@ let CodegenService = class CodegenService {
                         autoIncrement: col.autoIncrement,
                         tsType: mappedTypes.tsType,
                         prismaType: mappedTypes.prismaType,
-                        crud: !['id', 'created_at', 'updated_at', 'createdAt', 'updatedAt'].includes(col.columnName),
+                        crud: ![
+                            'id',
+                            'created_at',
+                            'updated_at',
+                            'createdAt',
+                            'updatedAt',
+                        ].includes(col.columnName),
                         listOperation: !['password', 'secret_key'].includes(col.columnName),
                         listOperationCondition: '=',
-                        formOperation: !['id', 'created_at', 'updated_at', 'createdAt', 'updatedAt', 'autoIncrement'].includes(col.columnName) && !col.autoIncrement,
+                        formOperation: ![
+                            'id',
+                            'created_at',
+                            'updated_at',
+                            'createdAt',
+                            'updatedAt',
+                            'autoIncrement',
+                        ].includes(col.columnName) && !col.autoIncrement,
                         htmlType: defaults.htmlType,
                         dictType: defaults.dictType,
                     },
@@ -159,10 +172,21 @@ let CodegenService = class CodegenService {
         if (type.includes('bool')) {
             return { tsType: 'boolean', prismaType: 'Boolean' };
         }
-        if (type.includes('int') || type.includes('serial') || type.includes('float') || type.includes('double') || type.includes('numeric') || type.includes('decimal') || type.includes('real')) {
-            return { tsType: 'number', prismaType: type.includes('int') || type.includes('serial') ? 'Int' : 'Float' };
+        if (type.includes('int') ||
+            type.includes('serial') ||
+            type.includes('float') ||
+            type.includes('double') ||
+            type.includes('numeric') ||
+            type.includes('decimal') ||
+            type.includes('real')) {
+            return {
+                tsType: 'number',
+                prismaType: type.includes('int') || type.includes('serial') ? 'Int' : 'Float',
+            };
         }
-        if (type.includes('date') || type.includes('time') || type.includes('timestamp')) {
+        if (type.includes('date') ||
+            type.includes('time') ||
+            type.includes('timestamp')) {
             return { tsType: 'Date', prismaType: 'DateTime' };
         }
         return { tsType: 'string', prismaType: 'String' };
@@ -178,10 +202,16 @@ let CodegenService = class CodegenService {
         if (name.includes('password')) {
             return { htmlType: 'input', dictType: null };
         }
-        if (name.includes('remark') || name.includes('content') || name.includes('description') || name.includes('memo')) {
+        if (name.includes('remark') ||
+            name.includes('content') ||
+            name.includes('description') ||
+            name.includes('memo')) {
             return { htmlType: 'textarea', dictType: null };
         }
-        if (name.includes('time') || name.includes('date') || name.endsWith('_at') || name.startsWith('at_')) {
+        if (name.includes('time') ||
+            name.includes('date') ||
+            name.endsWith('_at') ||
+            name.startsWith('at_')) {
             return { htmlType: 'date', dictType: null };
         }
         if (tsType === 'boolean') {
@@ -303,7 +333,10 @@ let CodegenService = class CodegenService {
             return false;
         const endOfLastImportLine = content.indexOf('\n', lastImportIndex);
         const importStatement = `\nimport { ${moduleImportName} } from '${importPath}';`;
-        content = content.slice(0, endOfLastImportLine) + importStatement + content.slice(endOfLastImportLine);
+        content =
+            content.slice(0, endOfLastImportLine) +
+                importStatement +
+                content.slice(endOfLastImportLine);
         const moduleDecoratorRegex = /@Module\s*\(\s*\{([\s\S]*?)\}\s*\)/;
         const match = content.match(moduleDecoratorRegex);
         if (!match)
@@ -319,7 +352,10 @@ let CodegenService = class CodegenService {
         }
         else {
             const firstPropIndex = content.indexOf('{', match.index);
-            content = content.slice(0, firstPropIndex + 1) + `\n  imports: [${moduleImportName}],` + content.slice(firstPropIndex + 1);
+            content =
+                content.slice(0, firstPropIndex + 1) +
+                    `\n  imports: [${moduleImportName}],` +
+                    content.slice(firstPropIndex + 1);
         }
         fs.writeFileSync(parentModulePath, content, 'utf8');
         return true;
@@ -447,9 +483,9 @@ export class ${className}Module {}
         const resourcePath = `${moduleName}/${businessName}`;
         let listColumnsText = '';
         let formsItemsText = '';
-        let refSelectsProps = '';
+        const refSelectsProps = '';
         let refSelectHooks = '';
-        let formRefResets = '';
+        const formRefResets = '';
         const listCols = table.columns.filter((c) => c.listOperation);
         const formCols = table.columns.filter((c) => c.formOperation);
         for (const col of listCols) {
@@ -488,7 +524,9 @@ export class ${className}Module {}
         for (const col of formCols) {
             const field = col.columnName;
             const title = col.columnComment || field;
-            const requiredRule = col.nullable ? '' : `rules={[{ required: true, message: '请输入${title}' }]}`;
+            const requiredRule = col.nullable
+                ? ''
+                : `rules={[{ required: true, message: '请输入${title}' }]}`;
             if (col.dictType) {
                 const selectHookName = `${field}SelectProps`;
                 refSelectHooks += `  const { selectProps: ${selectHookName} } = useSelect({

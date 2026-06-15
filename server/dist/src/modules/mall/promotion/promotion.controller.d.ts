@@ -5,10 +5,10 @@ export declare class PromotionController {
     constructor(promotionService: PromotionService);
     findAll(): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         type: import("@prisma/client").$Enums.MallCouponType;
         value: number;
         minPrice: number;
@@ -30,10 +30,10 @@ export declare class PromotionController {
         };
         coupon: {
             id: number;
-            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             type: import("@prisma/client").$Enums.MallCouponType;
             value: number;
             minPrice: number;
@@ -55,16 +55,16 @@ export declare class PromotionController {
         memberId: number;
         validStartTime: Date;
         validEndTime: Date;
+        couponId: number;
         useOrderId: number | null;
         useTime: Date | null;
-        couponId: number;
     })[]>;
     findOne(id: number): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         type: import("@prisma/client").$Enums.MallCouponType;
         value: number;
         minPrice: number;
@@ -80,10 +80,10 @@ export declare class PromotionController {
     }>;
     create(data: any): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         type: import("@prisma/client").$Enums.MallCouponType;
         value: number;
         minPrice: number;
@@ -99,10 +99,10 @@ export declare class PromotionController {
     }>;
     updateStatus(id: number, status: CommonStatus): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         type: import("@prisma/client").$Enums.MallCouponType;
         value: number;
         minPrice: number;
@@ -119,10 +119,10 @@ export declare class PromotionController {
     sendCoupon(id: number, memberIds: number[]): Promise<any[]>;
     remove(id: number): Promise<{
         id: number;
-        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         type: import("@prisma/client").$Enums.MallCouponType;
         value: number;
         minPrice: number;

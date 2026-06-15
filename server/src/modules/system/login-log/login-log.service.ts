@@ -5,7 +5,13 @@ import { PrismaService } from '../../../shared/prisma/prisma.service';
 export class LoginLogService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: { username: string; ip: string; userAgent: string; status: string; message?: string }) {
+  async create(data: {
+    username: string;
+    ip: string;
+    userAgent: string;
+    status: string;
+    message?: string;
+  }) {
     return this.prisma.loginLog.create({
       data: {
         username: data.username,

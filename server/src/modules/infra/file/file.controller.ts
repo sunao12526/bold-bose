@@ -1,18 +1,27 @@
-import { Controller, Get, Post, Delete, Param, UseGuards, UseInterceptors, UploadedFile, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
-import { Public } from '../../../shared/decorators/public.decorator';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('infra/file')
 export class FileController {
   constructor(private fileService: FileService) {}
 
-  @Public()
   @Post('upload')
+  @RequirePermissions('infra:file:create')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     return this.fileService.upload(file);

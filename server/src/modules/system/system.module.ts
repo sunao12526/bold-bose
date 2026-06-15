@@ -33,11 +33,11 @@ import { ProfileController } from './profile.controller';
     SmsModule,
     MailModule,
     OAuth2Module,
-    LoginLogModule
+    LoginLogModule,
   ],
   controllers: [
-    UserController, 
-    RoleController, 
+    UserController,
+    RoleController,
     MenuController,
     DictTypeController,
     DictDataController,
@@ -45,27 +45,27 @@ import { ProfileController } from './profile.controller';
     NotifyTemplateController,
     NotifyMessageController,
     UserSessionController,
-    ProfileController
+    ProfileController,
   ],
   providers: [
-    UserService, 
-    RoleService, 
+    UserService,
+    RoleService,
     MenuService,
     DictTypeService,
     DictDataService,
     ConfigService,
     NotifyService,
-    UserSessionService
+    UserSessionService,
   ],
   exports: [
-    UserService, 
-    RoleService, 
+    UserService,
+    RoleService,
     MenuService,
     DictTypeService,
     DictDataService,
     ConfigService,
     NotifyService,
-    UserSessionService
+    UserSessionService,
   ],
 })
 export class SystemModule {}

@@ -20,8 +20,9 @@ export declare class CodegenController {
     }[]>;
     findOne(id: number): Promise<{
         columns: {
-            id: number;
             dictType: string | null;
+            id: number;
+            tableId: number;
             columnName: string;
             dataType: string;
             columnComment: string;
@@ -35,7 +36,6 @@ export declare class CodegenController {
             listOperationCondition: string;
             formOperation: boolean;
             htmlType: string;
-            tableId: number;
         }[];
     } & {
         id: number;
@@ -51,8 +51,9 @@ export declare class CodegenController {
     }>;
     update(id: number, data: any): Promise<{
         columns: {
-            id: number;
             dictType: string | null;
+            id: number;
+            tableId: number;
             columnName: string;
             dataType: string;
             columnComment: string;
@@ -66,7 +67,6 @@ export declare class CodegenController {
             listOperationCondition: string;
             formOperation: boolean;
             htmlType: string;
-            tableId: number;
         }[];
     } & {
         id: number;

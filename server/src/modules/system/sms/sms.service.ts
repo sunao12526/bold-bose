@@ -62,7 +62,9 @@ export class SmsService {
 
   async removeChannel(id: number) {
     await this.findOneChannel(id);
-    const templates = await this.prisma.smsTemplate.findFirst({ where: { channelId: id } });
+    const templates = await this.prisma.smsTemplate.findFirst({
+      where: { channelId: id },
+    });
     if (templates) {
       throw new Error('该渠道下还有绑定的短信模板，无法删除');
     }
@@ -121,7 +123,8 @@ export class SmsService {
     return this.prisma.smsTemplate.update({
       where: { id },
       data: {
-        channelId: data.channelId !== undefined ? Number(data.channelId) : undefined,
+        channelId:
+          data.channelId !== undefined ? Number(data.channelId) : undefined,
         code: data.code,
         name: data.name,
         content: data.content,
@@ -162,7 +165,11 @@ export class SmsService {
 
   // ================= SMS Sending Simulation =================
 
-  async sendSms(templateCode: string, mobile: string, params: Record<string, any>) {
+  async sendSms(
+    templateCode: string,
+    mobile: string,
+    params: Record<string, any>,
+  ) {
     const template = await this.prisma.smsTemplate.findUnique({
       where: { code: templateCode },
       include: { channel: true },
@@ -183,10 +190,15 @@ export class SmsService {
     // Replace placeholders e.g. "您的验证码是 {code}" -> "您的验证码是 1234"
     let content = template.content;
     Object.keys(params).forEach((key) => {
-      content = content.replace(new RegExp(`{${key}}`, 'g'), String(params[key]));
+      content = content.replace(
+        new RegExp(`{${key}}`, 'g'),
+        String(params[key]),
+      );
     });
 
-    console.log(`[SMS Simulation] Sending SMS to ${mobile} via channel ${template.channel.name}. Content: "${content}"`);
+    console.log(
+      `[SMS Simulation] Sending SMS to ${mobile} via channel ${template.channel.name}. Content: "${content}"`,
+    );
 
     // Create log
     return this.prisma.smsLog.create({

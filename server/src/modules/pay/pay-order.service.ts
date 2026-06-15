@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { NotifyService } from './notify.service';
 import { PayOrderStatus, PayNotifyType, CommonStatus } from '@prisma/client';
@@ -19,7 +23,9 @@ export class PayOrderService {
     merchantNotifyUrl: string;
     expireTime?: Date;
   }) {
-    const app = await this.prisma.payApp.findUnique({ where: { code: data.appCode } });
+    const app = await this.prisma.payApp.findUnique({
+      where: { code: data.appCode },
+    });
     if (!app) {
       throw new NotFoundException(`支付应用 [${data.appCode}] 不存在`);
     }
@@ -50,7 +56,8 @@ export class PayOrderService {
           price: data.price,
           subject: data.subject,
           merchantNotifyUrl: data.merchantNotifyUrl,
-          expireTime: data.expireTime ?? new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h default
+          expireTime:
+            data.expireTime ?? new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h default
         },
       });
     }
@@ -63,7 +70,8 @@ export class PayOrderService {
         price: data.price,
         status: PayOrderStatus.UNPAID,
         merchantNotifyUrl: data.merchantNotifyUrl,
-        expireTime: data.expireTime ?? new Date(Date.now() + 24 * 60 * 60 * 1000),
+        expireTime:
+          data.expireTime ?? new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
     });
   }

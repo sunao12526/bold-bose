@@ -72,7 +72,9 @@ let PromotionService = class PromotionService {
                 if (currentCoupon.takeCount >= currentCoupon.totalCount) {
                     throw new common_1.BadRequestException(`优惠券 [${currentCoupon.name}] 库存不足，分发终止`);
                 }
-                const member = await tx.memberUser.findUnique({ where: { id: memberId } });
+                const member = await tx.memberUser.findUnique({
+                    where: { id: memberId },
+                });
                 if (!member)
                     throw new common_1.NotFoundException(`会员(ID: ${memberId})不存在`);
                 let validStartTime;

@@ -44,7 +44,11 @@ exports.OAuth2ClientController = OAuth2ClientController;
 __decorate([
     (0, common_1.Post)(),
     (0, require_permissions_decorator_1.RequirePermissions)('system:oauth2:create'),
-    (0, log_decorator_1.Log)({ module: 'system_oauth2_client', type: 'CREATE', description: '创建 OAuth2 客户端' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_oauth2_client',
+        type: 'CREATE',
+        description: '创建 OAuth2 客户端',
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -69,7 +73,11 @@ __decorate([
 __decorate([
     (0, common_1.Put)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:oauth2:update'),
-    (0, log_decorator_1.Log)({ module: 'system_oauth2_client', type: 'UPDATE', description: '修改 OAuth2 客户端' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_oauth2_client',
+        type: 'UPDATE',
+        description: '修改 OAuth2 客户端',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -79,7 +87,11 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, require_permissions_decorator_1.RequirePermissions)('system:oauth2:delete'),
-    (0, log_decorator_1.Log)({ module: 'system_oauth2_client', type: 'DELETE', description: '删除 OAuth2 客户端' }),
+    (0, log_decorator_1.Log)({
+        module: 'system_oauth2_client',
+        type: 'DELETE',
+        description: '删除 OAuth2 客户端',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),

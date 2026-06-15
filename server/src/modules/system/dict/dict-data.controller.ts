@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { DictDataService } from './dict-data.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
@@ -17,7 +28,10 @@ export class DictDataController {
 
   @Get()
   @RequirePermissions('system:dict:query')
-  async findAll(@Query('dictType') dictType?: string, @Query('status') status?: string) {
+  async findAll(
+    @Query('dictType') dictType?: string,
+    @Query('status') status?: string,
+  ) {
     return this.dictDataService.findAll({ dictType, status });
   }
 

@@ -37,11 +37,7 @@ exports.PayModule = PayModule = __decorate([
             pay_refund_service_1.PayRefundService,
             notify_service_1.NotifyService,
         ],
-        exports: [
-            pay_order_service_1.PayOrderService,
-            pay_refund_service_1.PayRefundService,
-            notify_service_1.NotifyService,
-        ],
+        exports: [pay_order_service_1.PayOrderService, pay_refund_service_1.PayRefundService, notify_service_1.NotifyService],
     })
 ], PayModule);
 //# sourceMappingURL=pay.module.js.map

@@ -221,7 +221,7 @@ let AuthService = class AuthService {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
+                        Accept: 'application/json',
                     },
                     body: JSON.stringify({
                         client_id: client.clientId,
@@ -236,7 +236,7 @@ let AuthService = class AuthService {
                 }
                 const userRes = await fetch('https://api.github.com/user', {
                     headers: {
-                        'Authorization': `token ${tokenData.access_token}`,
+                        Authorization: `token ${tokenData.access_token}`,
                         'User-Agent': 'bold-bose-server',
                     },
                 });
@@ -273,7 +273,9 @@ let AuthService = class AuthService {
         let username;
         if (!socialUser) {
             username = `github_${nickname.toLowerCase()}_${openid}`;
-            const existingUser = await this.prisma.user.findUnique({ where: { username } });
+            const existingUser = await this.prisma.user.findUnique({
+                where: { username },
+            });
             let userRecord;
             if (existingUser) {
                 userRecord = existingUser;
@@ -371,7 +373,7 @@ let AuthService = class AuthService {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
+                        Accept: 'application/json',
                     },
                     body: JSON.stringify({
                         client_id: client.clientId,
@@ -386,7 +388,7 @@ let AuthService = class AuthService {
                 }
                 const userRes = await fetch('https://api.github.com/user', {
                     headers: {
-                        'Authorization': `token ${tokenData.access_token}`,
+                        Authorization: `token ${tokenData.access_token}`,
                         'User-Agent': 'bold-bose-server',
                     },
                 });

@@ -18,7 +18,9 @@ let ConfigService = class ConfigService {
         this.prisma = prisma;
     }
     async create(data) {
-        const existing = await this.prisma.sysConfig.findUnique({ where: { key: data.key } });
+        const existing = await this.prisma.sysConfig.findUnique({
+            where: { key: data.key },
+        });
         if (existing)
             throw new common_1.BadRequestException('配置键名已存在');
         return this.prisma.sysConfig.create({ data });

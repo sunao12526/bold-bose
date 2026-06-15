@@ -40,7 +40,7 @@ export class UserSessionService {
     const session = await this.prisma.userSession.findUnique({
       where: { id },
     });
-    
+
     if (!session) {
       throw new NotFoundException('该在线会话不存在或已过期');
     }

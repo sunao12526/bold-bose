@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
@@ -15,21 +19,21 @@ export class AuthService {
     let browser = 'Unknown Browser';
     let os = 'Unknown OS';
     if (!userAgentStr) return { browser, os };
-    
+
     const ua = userAgentStr.toLowerCase();
-    
+
     if (ua.includes('chrome')) browser = 'Chrome';
     else if (ua.includes('firefox')) browser = 'Firefox';
     else if (ua.includes('safari')) browser = 'Safari';
     else if (ua.includes('edge')) browser = 'Edge';
     else if (ua.includes('opera') || ua.includes('opr')) browser = 'Opera';
-    
+
     if (ua.includes('windows')) os = 'Windows';
     else if (ua.includes('macintosh') || ua.includes('mac os')) os = 'macOS';
     else if (ua.includes('linux')) os = 'Linux';
     else if (ua.includes('iphone') || ua.includes('ipad')) os = 'iOS';
     else if (ua.includes('android')) os = 'Android';
-    
+
     return { browser, os };
   }
 
@@ -64,7 +68,10 @@ export class AuthService {
       throw new UnauthorizedException('用户已被禁用');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.password,
+    );
     if (!isPasswordValid) {
       await writeLog('FAIL', '密码错误');
       throw new UnauthorizedException('用户名或密码错误');
@@ -169,7 +176,13 @@ export class AuthService {
     throw new BadRequestException('目前仅支持 GitHub 社交登录');
   }
 
-  async socialLogin(type: string, code: string, redirectUri?: string, ip = '127.0.0.1', userAgent = '') {
+  async socialLogin(
+    type: string,
+    code: string,
+    redirectUri?: string,
+    ip = '127.0.0.1',
+    userAgent = '',
+  ) {
     const client = await this.prisma.socialClient.findUnique({
       where: { type },
     });
@@ -188,27 +201,32 @@ export class AuthService {
       avatar = 'https://avatars.githubusercontent.com/u/9919?v=4';
     } else {
       try {
-        const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
+        const tokenRes = await fetch(
+          'https://github.com/login/oauth/access_token',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              client_id: client.clientId,
+              client_secret: client.clientSecret,
+              code,
+              redirect_uri: redirectUri || client.redirectUri,
+            }),
           },
-          body: JSON.stringify({
-            client_id: client.clientId,
-            client_secret: client.clientSecret,
-            code,
-            redirect_uri: redirectUri || client.redirectUri,
-          }),
-        });
+        );
         const tokenData: any = await tokenRes.json();
         if (!tokenData.access_token) {
-          throw new BadRequestException('GitHub OAuth token exchange failed: ' + JSON.stringify(tokenData));
+          throw new BadRequestException(
+            'GitHub OAuth token exchange failed: ' + JSON.stringify(tokenData),
+          );
         }
 
         const userRes = await fetch('https://api.github.com/user', {
           headers: {
-            'Authorization': `token ${tokenData.access_token}`,
+            Authorization: `token ${tokenData.access_token}`,
             'User-Agent': 'bold-bose-server',
           },
         });
@@ -220,7 +238,10 @@ export class AuthService {
         nickname = userData.login;
         avatar = userData.avatar_url;
       } catch (err: any) {
-        console.warn('GitHub API call failed, using mock fallback:', err.message);
+        console.warn(
+          'GitHub API call failed, using mock fallback:',
+          err.message,
+        );
         openid = 'mock_github_user_123';
         nickname = 'Mock GitHub User';
         avatar = 'https://avatars.githubusercontent.com/u/9919?v=4';
@@ -233,7 +254,11 @@ export class AuthService {
       include: { user: true },
     });
 
-    const writeLog = async (username: string, status: string, message: string) => {
+    const writeLog = async (
+      username: string,
+      status: string,
+      message: string,
+    ) => {
       try {
         await this.prisma.loginLog.create({
           data: { username, ip, userAgent, status, message },
@@ -249,7 +274,9 @@ export class AuthService {
     if (!socialUser) {
       // Auto-register user
       username = `github_${nickname.toLowerCase()}_${openid}`;
-      const existingUser = await this.prisma.user.findUnique({ where: { username } });
+      const existingUser = await this.prisma.user.findUnique({
+        where: { username },
+      });
       let userRecord: any;
       if (existingUser) {
         userRecord = existingUser;
@@ -328,7 +355,12 @@ export class AuthService {
     };
   }
 
-  async socialBind(userId: number, type: string, code: string, redirectUri?: string) {
+  async socialBind(
+    userId: number,
+    type: string,
+    code: string,
+    redirectUri?: string,
+  ) {
     const client = await this.prisma.socialClient.findUnique({
       where: { type },
     });
@@ -346,27 +378,32 @@ export class AuthService {
       avatar = 'https://avatars.githubusercontent.com/u/9919?v=4';
     } else {
       try {
-        const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
+        const tokenRes = await fetch(
+          'https://github.com/login/oauth/access_token',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              client_id: client.clientId,
+              client_secret: client.clientSecret,
+              code,
+              redirect_uri: redirectUri || client.redirectUri,
+            }),
           },
-          body: JSON.stringify({
-            client_id: client.clientId,
-            client_secret: client.clientSecret,
-            code,
-            redirect_uri: redirectUri || client.redirectUri,
-          }),
-        });
+        );
         const tokenData: any = await tokenRes.json();
         if (!tokenData.access_token) {
-          throw new BadRequestException('GitHub OAuth token exchange failed: ' + JSON.stringify(tokenData));
+          throw new BadRequestException(
+            'GitHub OAuth token exchange failed: ' + JSON.stringify(tokenData),
+          );
         }
 
         const userRes = await fetch('https://api.github.com/user', {
           headers: {
-            'Authorization': `token ${tokenData.access_token}`,
+            Authorization: `token ${tokenData.access_token}`,
             'User-Agent': 'bold-bose-server',
           },
         });
@@ -378,7 +415,10 @@ export class AuthService {
         nickname = userData.login;
         avatar = userData.avatar_url;
       } catch (err: any) {
-        console.warn('GitHub API failed, using mock fallback for binding:', err.message);
+        console.warn(
+          'GitHub API failed, using mock fallback for binding:',
+          err.message,
+        );
         openid = 'mock_github_user_123';
         nickname = 'Mock GitHub User';
         avatar = 'https://avatars.githubusercontent.com/u/9919?v=4';

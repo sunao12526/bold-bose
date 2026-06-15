@@ -1,4 +1,9 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
@@ -16,11 +21,11 @@ export class LogInterceptor implements NestInterceptor {
     const startTime = Date.now();
     const httpContext = context.switchToHttp();
     const request = httpContext.getRequest();
-    
-    const logOptions = this.reflector.getAllAndOverride<LogOptions>(LOG_METADATA_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+
+    const logOptions = this.reflector.getAllAndOverride<LogOptions>(
+      LOG_METADATA_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     return next.handle().pipe(
       tap(() => {
@@ -40,7 +45,12 @@ export class LogInterceptor implements NestInterceptor {
     );
   }
 
-  private async saveLog(request: any, options: LogOptions, status: number, duration: number) {
+  private async saveLog(
+    request: any,
+    options: LogOptions,
+    status: number,
+    duration: number,
+  ) {
     try {
       const user = request.user;
       let ip = request.ip || request.headers['x-forwarded-for'] || '';
@@ -50,7 +60,7 @@ export class LogInterceptor implements NestInterceptor {
       if (!ip && request.socket) {
         ip = request.socket.remoteAddress;
       }
-      
+
       await this.prisma.operationLog.create({
         data: {
           userId: user?.id || null,

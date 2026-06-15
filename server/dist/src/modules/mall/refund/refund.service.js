@@ -93,11 +93,12 @@ let RefundService = class RefundService {
                         auditTime: new Date(refundTime),
                     },
                 });
-                await tx.mallOrder.update({
+                const updatedOrder = await tx.mallOrder.update({
                     where: { id: refund.orderId },
                     data: {
                         status: client_1.MallOrderStatus.CANCELLED,
                     },
+                    include: { items: true },
                 });
                 await tx.memberUser.update({
                     where: { id: refund.memberId },
@@ -107,6 +108,24 @@ let RefundService = class RefundService {
                         },
                     },
                 });
+                for (const item of updatedOrder.items) {
+                    await tx.mallSku.update({
+                        where: { id: item.skuId },
+                        data: {
+                            stock: {
+                                increment: item.count,
+                            },
+                        },
+                    });
+                    await tx.mallSpu.update({
+                        where: { id: item.spuId },
+                        data: {
+                            totalStock: {
+                                increment: item.count,
+                            },
+                        },
+                    });
+                }
                 return updatedRefund;
             });
         }

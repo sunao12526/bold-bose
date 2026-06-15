@@ -113,7 +113,11 @@ __decorate([
 __decorate([
     (0, common_1.Post)('write/:id'),
     (0, require_permissions_decorator_1.RequirePermissions)('infra:codegen:create'),
-    (0, log_decorator_1.Log)({ module: '代码生成', type: 'CREATE', description: '同步写入代码到磁盘' }),
+    (0, log_decorator_1.Log)({
+        module: '代码生成',
+        type: 'CREATE',
+        description: '同步写入代码到磁盘',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),

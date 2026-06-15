@@ -55,7 +55,10 @@ export class MailService {
         password: data.password,
         host: data.host,
         port: data.port !== undefined ? Number(data.port) : undefined,
-        ssl: data.ssl !== undefined ? (data.ssl === true || data.ssl === 'true') : undefined,
+        ssl:
+          data.ssl !== undefined
+            ? data.ssl === true || data.ssl === 'true'
+            : undefined,
         status: data.status,
       },
     });
@@ -63,7 +66,9 @@ export class MailService {
 
   async removeAccount(id: number) {
     await this.findOneAccount(id);
-    const templates = await this.prisma.mailTemplate.findFirst({ where: { accountId: id } });
+    const templates = await this.prisma.mailTemplate.findFirst({
+      where: { accountId: id },
+    });
     if (templates) {
       throw new Error('该账号下还有绑定的邮件模板，无法删除');
     }
@@ -122,7 +127,8 @@ export class MailService {
     return this.prisma.mailTemplate.update({
       where: { id },
       data: {
-        accountId: data.accountId !== undefined ? Number(data.accountId) : undefined,
+        accountId:
+          data.accountId !== undefined ? Number(data.accountId) : undefined,
         code: data.code,
         name: data.name,
         title: data.title,
@@ -164,7 +170,11 @@ export class MailService {
 
   // ================= Mail Sending Simulation =================
 
-  async sendMail(templateCode: string, receiver: string, params: Record<string, any>) {
+  async sendMail(
+    templateCode: string,
+    receiver: string,
+    params: Record<string, any>,
+  ) {
     const template = await this.prisma.mailTemplate.findUnique({
       where: { code: templateCode },
       include: { account: true },
@@ -213,7 +223,9 @@ export class MailService {
         html: content,
       });
 
-      console.log(`[Mail Service] Email sent successfully to ${receiver} using template ${templateCode}`);
+      console.log(
+        `[Mail Service] Email sent successfully to ${receiver} using template ${templateCode}`,
+      );
     } catch (err: any) {
       console.error(`[Mail Service] Failed to send email to ${receiver}:`, err);
       status = 'FAIL';

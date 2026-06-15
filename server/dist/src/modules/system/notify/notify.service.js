@@ -100,7 +100,9 @@ let NotifyService = class NotifyService {
             return '';
         return templateStr.replace(/\{([^{}]+)\}/g, (match, key) => {
             const cleanedKey = key.trim();
-            return variables[cleanedKey] !== undefined ? variables[cleanedKey] : match;
+            return variables[cleanedKey] !== undefined
+                ? variables[cleanedKey]
+                : match;
         });
     }
     async send(userId, templateCode, variables = {}) {

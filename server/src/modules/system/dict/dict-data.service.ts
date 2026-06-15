@@ -19,10 +19,7 @@ export class DictDataService {
     }
     return this.prisma.dictData.findMany({
       where,
-      orderBy: [
-        { sort: 'asc' },
-        { id: 'asc' },
-      ],
+      orderBy: [{ sort: 'asc' }, { id: 'asc' }],
     });
   }
 

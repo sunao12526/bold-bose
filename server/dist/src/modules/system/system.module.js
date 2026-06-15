@@ -45,7 +45,7 @@ exports.SystemModule = SystemModule = __decorate([
             sms_module_1.SmsModule,
             mail_module_1.MailModule,
             oauth2_module_1.OAuth2Module,
-            login_log_module_1.LoginLogModule
+            login_log_module_1.LoginLogModule,
         ],
         controllers: [
             user_controller_1.UserController,
@@ -57,7 +57,7 @@ exports.SystemModule = SystemModule = __decorate([
             notify_template_controller_1.NotifyTemplateController,
             notify_message_controller_1.NotifyMessageController,
             user_session_controller_1.UserSessionController,
-            profile_controller_1.ProfileController
+            profile_controller_1.ProfileController,
         ],
         providers: [
             user_service_1.UserService,
@@ -67,7 +67,7 @@ exports.SystemModule = SystemModule = __decorate([
             dict_data_service_1.DictDataService,
             config_service_1.ConfigService,
             notify_service_1.NotifyService,
-            user_session_service_1.UserSessionService
+            user_session_service_1.UserSessionService,
         ],
         exports: [
             user_service_1.UserService,
@@ -77,7 +77,7 @@ exports.SystemModule = SystemModule = __decorate([
             dict_data_service_1.DictDataService,
             config_service_1.ConfigService,
             notify_service_1.NotifyService,
-            user_session_service_1.UserSessionService
+            user_session_service_1.UserSessionService,
         ],
     })
 ], SystemModule);

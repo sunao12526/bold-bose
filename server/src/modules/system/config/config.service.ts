@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 
 @Injectable()
@@ -6,7 +10,9 @@ export class ConfigService {
   constructor(private prisma: PrismaService) {}
 
   async create(data: any) {
-    const existing = await this.prisma.sysConfig.findUnique({ where: { key: data.key } });
+    const existing = await this.prisma.sysConfig.findUnique({
+      where: { key: data.key },
+    });
     if (existing) throw new BadRequestException('配置键名已存在');
     return this.prisma.sysConfig.create({ data });
   }

@@ -19,7 +19,6 @@ const file_service_1 = require("./file.service");
 const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
-const public_decorator_1 = require("../../../shared/decorators/public.decorator");
 let FileController = class FileController {
     fileService;
     constructor(fileService) {
@@ -37,8 +36,8 @@ let FileController = class FileController {
 };
 exports.FileController = FileController;
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Post)('upload'),
+    (0, require_permissions_decorator_1.RequirePermissions)('infra:file:create'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
     __param(0, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),

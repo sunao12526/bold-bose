@@ -15,12 +15,16 @@ export class NotifyService {
     let refundId: number | null = null;
 
     if (type === PayNotifyType.ORDER) {
-      const order = await this.prisma.payOrder.findUnique({ where: { id: dataId } });
+      const order = await this.prisma.payOrder.findUnique({
+        where: { id: dataId },
+      });
       if (!order) return;
       appId = order.appId;
       payOrderId = order.id;
     } else {
-      const refund = await this.prisma.payRefund.findUnique({ where: { id: dataId } });
+      const refund = await this.prisma.payRefund.findUnique({
+        where: { id: dataId },
+      });
       if (!refund) return;
       appId = refund.appId;
       refundId = refund.id;
@@ -39,7 +43,9 @@ export class NotifyService {
 
     // Execute immediately in background
     this.sendNotification(log.id).catch((err) => {
-      this.logger.error(`Immediate notify failed for log ${log.id}: ${err.message}`);
+      this.logger.error(
+        `Immediate notify failed for log ${log.id}: ${err.message}`,
+      );
     });
 
     return log;
@@ -96,7 +102,9 @@ export class NotifyService {
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 seconds timeout
 
     try {
-      this.logger.log(`Sending notification to ${targetUrl} (Attempt #${nextAttemptCount})...`);
+      this.logger.log(
+        `Sending notification to ${targetUrl} (Attempt #${nextAttemptCount})...`,
+      );
       const response = await fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -107,7 +115,13 @@ export class NotifyService {
       clearTimeout(timeoutId);
       responseText = await response.text();
 
-      if (response.ok && (responseText.trim().toLowerCase() === 'success' || responseText.trim().toLowerCase() === 'ok' || response.status === 200 || response.status === 201)) {
+      if (
+        response.ok &&
+        (responseText.trim().toLowerCase() === 'success' ||
+          responseText.trim().toLowerCase() === 'ok' ||
+          response.status === 200 ||
+          response.status === 201)
+      ) {
         notifyStatus = PayNotifyStatus.SUCCESS;
       } else {
         notifyStatus = PayNotifyStatus.FAIL;
@@ -151,6 +165,8 @@ export class NotifyService {
       });
     }
 
-    this.logger.log(`Notification log ${logId} updated to ${notifyStatus}. Response: ${responseText.substring(0, 100)}`);
+    this.logger.log(
+      `Notification log ${logId} updated to ${notifyStatus}. Response: ${responseText.substring(0, 100)}`,
+    );
   }
 }

@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { JobService } from './job.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
@@ -45,7 +55,11 @@ export class JobController {
 
   @Post(':id/run')
   @RequirePermissions('infra:job:update')
-  @Log({ module: '定时任务', type: 'UPDATE', description: '触发执行一次定时任务' })
+  @Log({
+    module: '定时任务',
+    type: 'UPDATE',
+    description: '触发执行一次定时任务',
+  })
   async executeOnce(@Param('id', ParseIntPipe) id: number) {
     return this.jobService.executeOnce(id);
   }

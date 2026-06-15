@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { MailService } from './mail.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
@@ -14,7 +25,11 @@ export class MailAccountController {
 
   @Post()
   @RequirePermissions('system:mail:create')
-  @Log({ module: 'system_mail_account', type: 'CREATE', description: '创建邮件账号' })
+  @Log({
+    module: 'system_mail_account',
+    type: 'CREATE',
+    description: '创建邮件账号',
+  })
   async create(@Body() data: any) {
     return this.service.createAccount(data);
   }
@@ -33,14 +48,22 @@ export class MailAccountController {
 
   @Put(':id')
   @RequirePermissions('system:mail:update')
-  @Log({ module: 'system_mail_account', type: 'UPDATE', description: '修改邮件账号' })
+  @Log({
+    module: 'system_mail_account',
+    type: 'UPDATE',
+    description: '修改邮件账号',
+  })
   async update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
     return this.service.updateAccount(id, data);
   }
 
   @Delete(':id')
   @RequirePermissions('system:mail:delete')
-  @Log({ module: 'system_mail_account', type: 'DELETE', description: '删除邮件账号' })
+  @Log({
+    module: 'system_mail_account',
+    type: 'DELETE',
+    description: '删除邮件账号',
+  })
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.service.removeAccount(id);
   }
@@ -55,7 +78,11 @@ export class MailTemplateController {
 
   @Post()
   @RequirePermissions('system:mail:create')
-  @Log({ module: 'system_mail_template', type: 'CREATE', description: '创建邮件模板' })
+  @Log({
+    module: 'system_mail_template',
+    type: 'CREATE',
+    description: '创建邮件模板',
+  })
   async create(@Body() data: any) {
     return this.service.createTemplate(data);
   }
@@ -74,24 +101,40 @@ export class MailTemplateController {
 
   @Put(':id')
   @RequirePermissions('system:mail:update')
-  @Log({ module: 'system_mail_template', type: 'UPDATE', description: '修改邮件模板' })
+  @Log({
+    module: 'system_mail_template',
+    type: 'UPDATE',
+    description: '修改邮件模板',
+  })
   async update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
     return this.service.updateTemplate(id, data);
   }
 
   @Delete(':id')
   @RequirePermissions('system:mail:delete')
-  @Log({ module: 'system_mail_template', type: 'DELETE', description: '删除邮件模板' })
+  @Log({
+    module: 'system_mail_template',
+    type: 'DELETE',
+    description: '删除邮件模板',
+  })
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.service.removeTemplate(id);
   }
 
   @Post(':id/send-mock')
   @RequirePermissions('system:mail:create')
-  @Log({ module: 'system_mail_template', type: 'CREATE', description: '发送测试邮件' })
+  @Log({
+    module: 'system_mail_template',
+    type: 'CREATE',
+    description: '发送测试邮件',
+  })
   async sendMock(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
     const template = await this.service.findOneTemplate(id);
-    return this.service.sendMail(template.code, body.receiver, body.params || {});
+    return this.service.sendMail(
+      template.code,
+      body.receiver,
+      body.params || {},
+    );
   }
 }
 

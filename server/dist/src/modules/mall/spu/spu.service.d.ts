@@ -7,9 +7,9 @@ export declare class SpuService {
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            price: number;
             picUrl: string | null;
             properties: import("@prisma/client/runtime/library").JsonValue;
-            price: number;
             marketPrice: number | null;
             costPrice: number | null;
             stock: number;
@@ -18,16 +18,16 @@ export declare class SpuService {
         }[];
     } & {
         id: number;
-        name: string;
-        sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        sort: number;
+        description: string | null;
         picUrl: string;
         categoryId: number;
         brandId: number | null;
         sliderPicUrls: import("@prisma/client/runtime/library").JsonValue;
-        description: string | null;
         salesCount: number;
         minPrice: number;
         maxPrice: number;
@@ -46,9 +46,9 @@ export declare class SpuService {
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            price: number;
             picUrl: string | null;
             properties: import("@prisma/client/runtime/library").JsonValue;
-            price: number;
             marketPrice: number | null;
             costPrice: number | null;
             stock: number;
@@ -57,16 +57,16 @@ export declare class SpuService {
         }[];
     } & {
         id: number;
-        name: string;
-        sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        sort: number;
+        description: string | null;
         picUrl: string;
         categoryId: number;
         brandId: number | null;
         sliderPicUrls: import("@prisma/client/runtime/library").JsonValue;
-        description: string | null;
         salesCount: number;
         minPrice: number;
         maxPrice: number;
@@ -77,9 +77,9 @@ export declare class SpuService {
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            price: number;
             picUrl: string | null;
             properties: import("@prisma/client/runtime/library").JsonValue;
-            price: number;
             marketPrice: number | null;
             costPrice: number | null;
             stock: number;
@@ -88,16 +88,16 @@ export declare class SpuService {
         }[];
     } & {
         id: number;
-        name: string;
-        sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        sort: number;
+        description: string | null;
         picUrl: string;
         categoryId: number;
         brandId: number | null;
         sliderPicUrls: import("@prisma/client/runtime/library").JsonValue;
-        description: string | null;
         salesCount: number;
         minPrice: number;
         maxPrice: number;
@@ -108,9 +108,9 @@ export declare class SpuService {
             id: number;
             createdAt: Date;
             updatedAt: Date;
+            price: number;
             picUrl: string | null;
             properties: import("@prisma/client/runtime/library").JsonValue;
-            price: number;
             marketPrice: number | null;
             costPrice: number | null;
             stock: number;
@@ -119,16 +119,16 @@ export declare class SpuService {
         }[];
     } & {
         id: number;
-        name: string;
-        sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        sort: number;
+        description: string | null;
         picUrl: string;
         categoryId: number;
         brandId: number | null;
         sliderPicUrls: import("@prisma/client/runtime/library").JsonValue;
-        description: string | null;
         salesCount: number;
         minPrice: number;
         maxPrice: number;
@@ -136,16 +136,16 @@ export declare class SpuService {
     }>;
     remove(id: number): Promise<{
         id: number;
-        name: string;
-        sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        sort: number;
+        description: string | null;
         picUrl: string;
         categoryId: number;
         brandId: number | null;
         sliderPicUrls: import("@prisma/client/runtime/library").JsonValue;
-        description: string | null;
         salesCount: number;
         minPrice: number;
         maxPrice: number;

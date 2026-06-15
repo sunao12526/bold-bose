@@ -72,7 +72,9 @@ let LevelService = class LevelService {
                 name: data.name,
                 level: data.level !== undefined ? Number(data.level) : undefined,
                 experience: data.experience !== undefined ? Number(data.experience) : undefined,
-                discountPercent: data.discountPercent !== undefined ? Number(data.discountPercent) : undefined,
+                discountPercent: data.discountPercent !== undefined
+                    ? Number(data.discountPercent)
+                    : undefined,
                 status: data.status,
             },
         });

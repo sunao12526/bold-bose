@@ -12,8 +12,14 @@ export class OAuth2Service {
         secret: data.secret,
         name: data.name,
         logo: data.logo || null,
-        redirectUris: typeof data.redirectUris === 'string' ? data.redirectUris : JSON.stringify(data.redirectUris || []),
-        scopes: typeof data.scopes === 'string' ? data.scopes : JSON.stringify(data.scopes || []),
+        redirectUris:
+          typeof data.redirectUris === 'string'
+            ? data.redirectUris
+            : JSON.stringify(data.redirectUris || []),
+        scopes:
+          typeof data.scopes === 'string'
+            ? data.scopes
+            : JSON.stringify(data.scopes || []),
         status: data.status || 'ENABLE',
       },
     });
@@ -51,8 +57,18 @@ export class OAuth2Service {
         secret: data.secret,
         name: data.name,
         logo: data.logo,
-        redirectUris: data.redirectUris !== undefined ? (typeof data.redirectUris === 'string' ? data.redirectUris : JSON.stringify(data.redirectUris)) : undefined,
-        scopes: data.scopes !== undefined ? (typeof data.scopes === 'string' ? data.scopes : JSON.stringify(data.scopes)) : undefined,
+        redirectUris:
+          data.redirectUris !== undefined
+            ? typeof data.redirectUris === 'string'
+              ? data.redirectUris
+              : JSON.stringify(data.redirectUris)
+            : undefined,
+        scopes:
+          data.scopes !== undefined
+            ? typeof data.scopes === 'string'
+              ? data.scopes
+              : JSON.stringify(data.scopes)
+            : undefined,
         status: data.status,
       },
     });
@@ -63,16 +79,28 @@ export class OAuth2Service {
     return this.prisma.oAuth2Client.delete({ where: { id } });
   }
 
-  private codes = new Map<string, { userId: number; clientId: string; scopes: string[] }>();
+  private codes = new Map<
+    string,
+    { userId: number; clientId: string; scopes: string[] }
+  >();
 
-  async generateCode(userId: number, clientId: string, scopes: string[]): Promise<string> {
-    const code = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  async generateCode(
+    userId: number,
+    clientId: string,
+    scopes: string[],
+  ): Promise<string> {
+    const code =
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
     this.codes.set(code, { userId, clientId, scopes });
     setTimeout(() => this.codes.delete(code), 10 * 60 * 1000);
     return code;
   }
 
-  async verifyCode(code: string, clientId: string): Promise<{ userId: number; scopes: string[] }> {
+  async verifyCode(
+    code: string,
+    clientId: string,
+  ): Promise<{ userId: number; scopes: string[] }> {
     const payload = this.codes.get(code);
     if (!payload) {
       throw new Error('授权码无效或已过期');

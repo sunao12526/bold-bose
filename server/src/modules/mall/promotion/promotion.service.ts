@@ -1,6 +1,14 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
-import { CommonStatus, MallCouponValidityType, MallCouponUserStatus } from '@prisma/client';
+import {
+  CommonStatus,
+  MallCouponValidityType,
+  MallCouponUserStatus,
+} from '@prisma/client';
 
 @Injectable()
 export class PromotionService {
@@ -63,13 +71,17 @@ export class PromotionService {
           where: { id: couponId },
         });
         if (!currentCoupon) throw new NotFoundException('优惠券模板不存在');
-        
+
         if (currentCoupon.takeCount >= currentCoupon.totalCount) {
-          throw new BadRequestException(`优惠券 [${currentCoupon.name}] 库存不足，分发终止`);
+          throw new BadRequestException(
+            `优惠券 [${currentCoupon.name}] 库存不足，分发终止`,
+          );
         }
 
         // Check if member exists
-        const member = await tx.memberUser.findUnique({ where: { id: memberId } });
+        const member = await tx.memberUser.findUnique({
+          where: { id: memberId },
+        });
         if (!member) throw new NotFoundException(`会员(ID: ${memberId})不存在`);
 
         // Compute valid range
@@ -78,7 +90,9 @@ export class PromotionService {
 
         if (currentCoupon.validityType === MallCouponValidityType.DATE) {
           if (!currentCoupon.validStartTime || !currentCoupon.validEndTime) {
-            throw new BadRequestException('固定时间类型的优惠券必须配置起止日期');
+            throw new BadRequestException(
+              '固定时间类型的优惠券必须配置起止日期',
+            );
           }
           validStartTime = currentCoupon.validStartTime;
           validEndTime = currentCoupon.validEndTime;

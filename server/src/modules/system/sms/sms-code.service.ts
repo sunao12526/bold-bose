@@ -11,18 +11,22 @@ export class SmsCodeService {
 
   async sendCode(mobile: string, scene: number, ip: string) {
     const now = new Date();
-    
+
     // Cooldown check (60 seconds)
     const lastCode = await this.prisma.smsCode.findFirst({
       where: { mobile },
       orderBy: { createdAt: 'desc' },
     });
-    if (lastCode && (now.getTime() - lastCode.createdAt.getTime() < 60 * 1000)) {
+    if (lastCode && now.getTime() - lastCode.createdAt.getTime() < 60 * 1000) {
       throw new BadRequestException('发送验证码间隔未满 60 秒');
     }
 
     // Daily limit check (10 per day)
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
     const todayCount = await this.prisma.smsCode.count({
       where: {
         mobile,
@@ -60,7 +64,7 @@ export class SmsCodeService {
 
   async verifyCode(mobile: string, code: string, scene: number, ip: string) {
     const now = new Date();
-    
+
     const record = await this.prisma.smsCode.findFirst({
       where: {
         mobile,

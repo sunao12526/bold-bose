@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { PromotionService } from './promotion.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
@@ -38,7 +48,11 @@ export class PromotionController {
 
   @Put(':id/status')
   @RequirePermissions('mall:coupon:update')
-  @Log({ module: '营销管理', type: 'UPDATE', description: '更新优惠券模板状态' })
+  @Log({
+    module: '营销管理',
+    type: 'UPDATE',
+    description: '更新优惠券模板状态',
+  })
   async updateStatus(
     @Param('id', ParseIntPipe) id: number,
     @Body('status') status: CommonStatus,

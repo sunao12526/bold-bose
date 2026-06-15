@@ -26,7 +26,7 @@ let SmsCodeService = class SmsCodeService {
             where: { mobile },
             orderBy: { createdAt: 'desc' },
         });
-        if (lastCode && (now.getTime() - lastCode.createdAt.getTime() < 60 * 1000)) {
+        if (lastCode && now.getTime() - lastCode.createdAt.getTime() < 60 * 1000) {
             throw new common_1.BadRequestException('发送验证码间隔未满 60 秒');
         }
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());

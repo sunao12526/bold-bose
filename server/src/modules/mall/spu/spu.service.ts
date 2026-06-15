@@ -7,7 +7,7 @@ export class SpuService {
 
   async create(data: any) {
     const { skus, ...spuData } = data;
-    
+
     // Calculate SPU aggregate fields based on SKUs
     let minPrice = Infinity;
     let maxPrice = -Infinity;
@@ -31,17 +31,20 @@ export class SpuService {
           minPrice,
           maxPrice,
           totalStock,
-          skus: skus && skus.length > 0 ? {
-            create: skus.map((sku: any) => ({
-              properties: sku.properties || [],
-              price: sku.price || 0,
-              marketPrice: sku.marketPrice || null,
-              costPrice: sku.costPrice || null,
-              stock: sku.stock || 0,
-              picUrl: sku.picUrl || null,
-              barCode: sku.barCode || null,
-            })),
-          } : undefined,
+          skus:
+            skus && skus.length > 0
+              ? {
+                  create: skus.map((sku: any) => ({
+                    properties: sku.properties || [],
+                    price: sku.price || 0,
+                    marketPrice: sku.marketPrice || null,
+                    costPrice: sku.costPrice || null,
+                    stock: sku.stock || 0,
+                    picUrl: sku.picUrl || null,
+                    barCode: sku.barCode || null,
+                  })),
+                }
+              : undefined,
         },
         include: { skus: true },
       });
@@ -102,17 +105,20 @@ export class SpuService {
           minPrice,
           maxPrice,
           totalStock,
-          skus: skus && skus.length > 0 ? {
-            create: skus.map((sku: any) => ({
-              properties: sku.properties || [],
-              price: sku.price || 0,
-              marketPrice: sku.marketPrice || null,
-              costPrice: sku.costPrice || null,
-              stock: sku.stock || 0,
-              picUrl: sku.picUrl || null,
-              barCode: sku.barCode || null,
-            })),
-          } : undefined,
+          skus:
+            skus && skus.length > 0
+              ? {
+                  create: skus.map((sku: any) => ({
+                    properties: sku.properties || [],
+                    price: sku.price || 0,
+                    marketPrice: sku.marketPrice || null,
+                    costPrice: sku.costPrice || null,
+                    stock: sku.stock || 0,
+                    picUrl: sku.picUrl || null,
+                    barCode: sku.barCode || null,
+                  })),
+                }
+              : undefined,
         },
         include: { skus: true },
       });

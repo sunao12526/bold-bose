@@ -4,9 +4,9 @@ export declare class NotifyMessageController {
     constructor(notifyService: NotifyService);
     getMyInbox(req: any): Promise<{
         id: number;
+        username: string;
         status: number;
         createdAt: Date;
-        username: string;
         userId: number;
         title: string;
         content: string;
@@ -18,9 +18,9 @@ export declare class NotifyMessageController {
     }[]>;
     markRead(req: any, id: number): Promise<{
         id: number;
+        username: string;
         status: number;
         createdAt: Date;
-        username: string;
         userId: number;
         title: string;
         content: string;

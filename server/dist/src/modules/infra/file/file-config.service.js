@@ -74,7 +74,10 @@ let FileConfigService = class FileConfigService {
         const c = config.config;
         if (config.storage === 'LOCAL') {
             return {
-                client: new local_file_client_1.LocalFileClient({ baseFolder: c.baseFolder, domain: c.domain }),
+                client: new local_file_client_1.LocalFileClient({
+                    baseFolder: c.baseFolder,
+                    domain: c.domain,
+                }),
                 configId: config.id,
             };
         }

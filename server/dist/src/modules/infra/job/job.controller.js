@@ -90,7 +90,11 @@ __decorate([
 __decorate([
     (0, common_1.Post)(':id/run'),
     (0, require_permissions_decorator_1.RequirePermissions)('infra:job:update'),
-    (0, log_decorator_1.Log)({ module: '定时任务', type: 'UPDATE', description: '触发执行一次定时任务' }),
+    (0, log_decorator_1.Log)({
+        module: '定时任务',
+        type: 'UPDATE',
+        description: '触发执行一次定时任务',
+    }),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),

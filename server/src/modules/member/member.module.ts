@@ -15,17 +15,7 @@ import { SignInController } from './sign-in.controller';
     TagController,
     SignInController,
   ],
-  providers: [
-    MemberService,
-    LevelService,
-    TagService,
-    SignInService,
-  ],
-  exports: [
-    MemberService,
-    LevelService,
-    TagService,
-    SignInService,
-  ],
+  providers: [MemberService, LevelService, TagService, SignInService],
+  exports: [MemberService, LevelService, TagService, SignInService],
 })
 export class MemberModule {}

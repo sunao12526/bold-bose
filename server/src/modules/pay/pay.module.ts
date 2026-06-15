@@ -25,10 +25,6 @@ import { NotifyService } from './notify.service';
     PayRefundService,
     NotifyService,
   ],
-  exports: [
-    PayOrderService,
-    PayRefundService,
-    NotifyService,
-  ],
+  exports: [PayOrderService, PayRefundService, NotifyService],
 })
 export class PayModule {}

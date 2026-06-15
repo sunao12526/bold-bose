@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { CommonStatus } from '@prisma/client';
 
@@ -6,8 +10,15 @@ import { CommonStatus } from '@prisma/client';
 export class PayAppService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: { name: string; code: string; status?: CommonStatus; remark?: string }) {
-    const existing = await this.prisma.payApp.findUnique({ where: { code: data.code } });
+  async create(data: {
+    name: string;
+    code: string;
+    status?: CommonStatus;
+    remark?: string;
+  }) {
+    const existing = await this.prisma.payApp.findUnique({
+      where: { code: data.code },
+    });
     if (existing) {
       throw new BadRequestException('应用编码已存在');
     }
@@ -42,7 +53,15 @@ export class PayAppService {
     return app;
   }
 
-  async update(id: number, data: { name?: string; code?: string; status?: CommonStatus; remark?: string }) {
+  async update(
+    id: number,
+    data: {
+      name?: string;
+      code?: string;
+      status?: CommonStatus;
+      remark?: string;
+    },
+  ) {
     await this.findOne(id);
     if (data.code) {
       const existing = await this.prisma.payApp.findFirst({

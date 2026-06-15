@@ -1,5 +1,9 @@
 import { FileClient } from './file-client.interface';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 
 export class S3FileClient implements FileClient {
   private client: S3Client;
@@ -26,7 +30,11 @@ export class S3FileClient implements FileClient {
     });
   }
 
-  async upload(file: Buffer, filePath: string, mimeType: string): Promise<string> {
+  async upload(
+    file: Buffer,
+    filePath: string,
+    mimeType: string,
+  ): Promise<string> {
     const command = new PutObjectCommand({
       Bucket: this.bucket,
       Key: filePath,

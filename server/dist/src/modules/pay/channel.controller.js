@@ -26,7 +26,13 @@ let PayChannelController = class PayChannelController {
         this.channelService = channelService;
     }
     async createOrUpdate(appId, code, config, status, remark) {
-        return this.channelService.createOrUpdate({ appId, code, config, status, remark });
+        return this.channelService.createOrUpdate({
+            appId,
+            code,
+            config,
+            status,
+            remark,
+        });
     }
     async findByApp(appId) {
         return this.channelService.findByApp(appId);

@@ -19,7 +19,9 @@ let PayChannelService = class PayChannelService {
         this.prisma = prisma;
     }
     async createOrUpdate(data) {
-        const app = await this.prisma.payApp.findUnique({ where: { id: data.appId } });
+        const app = await this.prisma.payApp.findUnique({
+            where: { id: data.appId },
+        });
         if (!app) {
             throw new common_1.NotFoundException('支付应用不存在');
         }
