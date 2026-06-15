@@ -53,7 +53,7 @@ export default function Login() {
           background: 'rgba(255, 255, 255, 0.95)',
           overflow: 'hidden'
         }}
-        bodyStyle={{ padding: '32px 24px' }}
+        styles={{ body: { padding: '32px 24px' } }}
       >
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <Space align="center" style={{ marginBottom: '12px' }}>
