@@ -2,9 +2,14 @@ import { AuthProvider } from '@refinedev/core';
 import { axiosInstance } from '../lib/axios';
 
 export const authProvider: AuthProvider = {
-  login: async ({ username, password }) => {
+  login: async ({ username, password, captchaKey, captchaCode }) => {
     try {
-      const response = await axiosInstance.post('/system/auth/login', { username, password });
+      const response = await axiosInstance.post('/system/auth/login', {
+        username,
+        password,
+        captchaKey: captchaKey || '',
+        captchaCode: captchaCode || '',
+      });
       const { accessToken } = response.data;
       if (accessToken) {
         localStorage.setItem('token', accessToken);

@@ -18,12 +18,31 @@ const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
 const public_decorator_1 = require("../../shared/decorators/public.decorator");
 const jwt_auth_guard_1 = require("../../shared/guards/jwt-auth.guard");
+const captcha_service_1 = require("./captcha.service");
 let AuthController = class AuthController {
     authService;
-    constructor(authService) {
+    captchaService;
+    constructor(authService, captchaService) {
         this.authService = authService;
+        this.captchaService = captchaService;
+    }
+    getCaptcha() {
+        return this.captchaService.generate();
     }
     async login(loginDto, req) {
+        console.log('[Login] Received body:', {
+            username: loginDto.username,
+            captchaKey: loginDto.captchaKey,
+            captchaCode: loginDto.captchaCode,
+        });
+        if (!loginDto.captchaKey || !loginDto.captchaCode) {
+            throw new common_1.UnauthorizedException('请输入验证码');
+        }
+        const valid = this.captchaService.verify(loginDto.captchaKey, loginDto.captchaCode);
+        console.log('[Login] Captcha verify result:', valid);
+        if (!valid) {
+            throw new common_1.UnauthorizedException('验证码错误');
+        }
         const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
         const userAgent = req.headers['user-agent'] || '';
         return this.authService.login(loginDto, ip, userAgent);
@@ -57,6 +76,13 @@ let AuthController = class AuthController {
     }
 };
 exports.AuthController = AuthController;
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('captcha'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "getCaptcha", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Post)('login'),
@@ -132,6 +158,7 @@ __decorate([
 ], AuthController.prototype, "getSocialBindStatus", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('system/auth'),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
+    __metadata("design:paramtypes", [auth_service_1.AuthService,
+        captcha_service_1.CaptchaService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

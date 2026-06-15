@@ -20,9 +20,8 @@ export declare class CodegenService {
     }[]>;
     findOneTable(id: number): Promise<{
         columns: {
-            dictType: string | null;
             id: number;
-            tableId: number;
+            dictType: string | null;
             columnName: string;
             dataType: string;
             columnComment: string;
@@ -36,6 +35,7 @@ export declare class CodegenService {
             listOperationCondition: string;
             formOperation: boolean;
             htmlType: string;
+            tableId: number;
         }[];
     } & {
         id: number;
@@ -51,9 +51,8 @@ export declare class CodegenService {
     }>;
     updateTableMetadata(id: number, data: any): Promise<{
         columns: {
-            dictType: string | null;
             id: number;
-            tableId: number;
+            dictType: string | null;
             columnName: string;
             dataType: string;
             columnComment: string;
@@ -67,6 +66,7 @@ export declare class CodegenService {
             listOperationCondition: string;
             formOperation: boolean;
             htmlType: string;
+            tableId: number;
         }[];
     } & {
         id: number;

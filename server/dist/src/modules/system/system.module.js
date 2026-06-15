@@ -48,6 +48,7 @@ exports.SystemModule = SystemModule = __decorate([
             login_log_module_1.LoginLogModule,
         ],
         controllers: [
+            profile_controller_1.ProfileController,
             user_controller_1.UserController,
             role_controller_1.RoleController,
             menu_controller_1.MenuController,
@@ -57,7 +58,6 @@ exports.SystemModule = SystemModule = __decorate([
             notify_template_controller_1.NotifyTemplateController,
             notify_message_controller_1.NotifyMessageController,
             user_session_controller_1.UserSessionController,
-            profile_controller_1.ProfileController,
         ],
         providers: [
             user_service_1.UserService,

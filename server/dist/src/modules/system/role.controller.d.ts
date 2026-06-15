@@ -4,23 +4,23 @@ export declare class RoleController {
     constructor(roleService: RoleService);
     create(data: any): Promise<{
         id: number;
+        code: string;
+        name: string;
+        sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
-        sort: number;
     }>;
     findAll(): Promise<{
         id: number;
+        code: string;
+        name: string;
+        sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
-        sort: number;
     }[]>;
     findOne(id: number): Promise<({
         menus: {
@@ -28,33 +28,33 @@ export declare class RoleController {
         }[];
     } & {
         id: number;
+        code: string;
+        name: string;
+        sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
-        sort: number;
     }) | null>;
     update(id: number, data: any): Promise<{
         id: number;
+        code: string;
+        name: string;
+        sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
-        sort: number;
     }>;
     remove(id: number): Promise<{
         id: number;
+        code: string;
+        name: string;
+        sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
-        sort: number;
     }>;
     assignMenus(id: number, menuIds: number[]): Promise<{
         success: boolean;

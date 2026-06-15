@@ -4,56 +4,56 @@ export declare class UserController {
     constructor(userService: UserService);
     create(data: any): Promise<{
         id: number;
+        status: import("@prisma/client").$Enums.CommonStatus;
+        remark: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         username: string;
         password: string;
         nickname: string;
         email: string | null;
         mobile: string | null;
-        status: import("@prisma/client").$Enums.CommonStatus;
-        remark: string | null;
         deptId: number | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     findAll(): Promise<{
-        dept: {
-            id: number;
-            name: string;
-        } | null;
         id: number;
-        username: string;
-        nickname: string;
-        email: string | null;
-        mobile: string | null;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
-        deptId: number | null;
         createdAt: Date;
         updatedAt: Date;
         roles: ({
             role: {
                 id: number;
+                code: string;
+                name: string;
+                sort: number;
                 status: import("@prisma/client").$Enums.CommonStatus;
                 remark: string | null;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string;
-                code: string;
-                sort: number;
             };
         } & {
-            userId: number;
             roleId: number;
+            userId: number;
         })[];
+        username: string;
+        nickname: string;
+        email: string | null;
+        mobile: string | null;
+        deptId: number | null;
+        dept: {
+            id: number;
+            name: string;
+        } | null;
         posts: ({
             post: {
                 id: number;
+                code: string;
+                name: string;
+                sort: number;
                 status: import("@prisma/client").$Enums.CommonStatus;
                 remark: string | null;
                 createdAt: Date;
-                name: string;
-                code: string;
-                sort: number;
             };
         } & {
             userId: number;
@@ -69,42 +69,42 @@ export declare class UserController {
         }[];
     } & {
         id: number;
+        status: import("@prisma/client").$Enums.CommonStatus;
+        remark: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         username: string;
         password: string;
         nickname: string;
         email: string | null;
         mobile: string | null;
-        status: import("@prisma/client").$Enums.CommonStatus;
-        remark: string | null;
         deptId: number | null;
-        createdAt: Date;
-        updatedAt: Date;
     }) | null>;
     update(id: number, data: any): Promise<{
         id: number;
+        status: import("@prisma/client").$Enums.CommonStatus;
+        remark: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         username: string;
         password: string;
         nickname: string;
         email: string | null;
         mobile: string | null;
-        status: import("@prisma/client").$Enums.CommonStatus;
-        remark: string | null;
         deptId: number | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     remove(id: number): Promise<{
         id: number;
+        status: import("@prisma/client").$Enums.CommonStatus;
+        remark: string | null;
+        createdAt: Date;
+        updatedAt: Date;
         username: string;
         password: string;
         nickname: string;
         email: string | null;
         mobile: string | null;
-        status: import("@prisma/client").$Enums.CommonStatus;
-        remark: string | null;
         deptId: number | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     assignRoles(id: number, roleIds: number[]): Promise<{
         success: boolean;

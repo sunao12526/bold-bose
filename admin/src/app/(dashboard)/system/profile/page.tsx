@@ -3,7 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from 'react';
-import { Card, Tabs, Form, Input, Button, Row, Col, Space, Typography, Tag, message, Progress } from 'antd';
+import { Card, Tabs, Form, Input, Button, Row, Col, Space, Typography, Tag, Progress, App } from 'antd';
 import { UserOutlined, LockOutlined, SafetyCertificateOutlined, MailOutlined, PhoneOutlined, KeyOutlined, GithubOutlined, LinkOutlined } from '@ant-design/icons';
 import { useLogout } from '@refinedev/core';
 import { axiosInstance } from '../../../../lib/axios';
@@ -11,6 +11,7 @@ import { axiosInstance } from '../../../../lib/axios';
 const { Title, Text, Paragraph } = Typography;
 
 export default function UserProfile() {
+  const { message } = App.useApp();
   const { mutate: logout } = useLogout();
   
   const [profile, setProfile] = useState<any>(null);

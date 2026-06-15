@@ -6,4 +6,10 @@ export class LoginDto {
 
   @IsNotEmpty({ message: '密码不能为空' })
   password!: string;
+
+  @IsNotEmpty({ message: '验证码标识不能为空' })
+  captchaKey!: string;
+
+  @IsNotEmpty({ message: '验证码不能为空' })
+  captchaCode!: string;
 }

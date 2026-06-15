@@ -9,23 +9,23 @@ export declare class FileController {
             storage: import("@prisma/client").$Enums.FileStorageType;
         };
     } & {
-        id: number;
-        configId: number;
-        name: string;
         path: string;
-        url: string;
-        type: string | null;
-        size: number;
+        id: number;
+        name: string;
         createdAt: Date;
+        type: string | null;
+        url: string;
+        configId: number;
+        size: number;
     })[]>;
     remove(id: number): Promise<{
-        id: number;
-        configId: number;
-        name: string;
         path: string;
-        url: string;
-        type: string | null;
-        size: number;
+        id: number;
+        name: string;
         createdAt: Date;
+        type: string | null;
+        url: string;
+        configId: number;
+        size: number;
     }>;
 }

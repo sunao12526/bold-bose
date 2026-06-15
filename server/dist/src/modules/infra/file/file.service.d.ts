@@ -11,31 +11,31 @@ export declare class FileService {
             storage: import("@prisma/client").$Enums.FileStorageType;
         };
     } & {
-        id: number;
-        createdAt: Date;
-        name: string;
-        type: string | null;
         path: string;
+        id: number;
+        name: string;
+        createdAt: Date;
+        type: string | null;
         url: string;
         configId: number;
         size: number;
     })[]>;
     findOne(id: number): Promise<{
-        id: number;
-        createdAt: Date;
-        name: string;
-        type: string | null;
         path: string;
+        id: number;
+        name: string;
+        createdAt: Date;
+        type: string | null;
         url: string;
         configId: number;
         size: number;
     }>;
     remove(id: number): Promise<{
-        id: number;
-        createdAt: Date;
-        name: string;
-        type: string | null;
         path: string;
+        id: number;
+        name: string;
+        createdAt: Date;
+        type: string | null;
         url: string;
         configId: number;
         size: number;

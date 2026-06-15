@@ -36,6 +36,7 @@ import { ProfileController } from './profile.controller';
     LoginLogModule,
   ],
   controllers: [
+    ProfileController,
     UserController,
     RoleController,
     MenuController,
@@ -45,7 +46,6 @@ import { ProfileController } from './profile.controller';
     NotifyTemplateController,
     NotifyMessageController,
     UserSessionController,
-    ProfileController,
   ],
   providers: [
     UserService,

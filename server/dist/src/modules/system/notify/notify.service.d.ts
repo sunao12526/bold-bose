@@ -6,60 +6,60 @@ export declare class NotifyService {
     constructor(prisma: PrismaService, configService: ConfigService);
     createTemplate(data: any): Promise<{
         id: number;
+        code: string;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
         type: string;
         title: string;
         content: string;
     }>;
     findAllTemplates(): Promise<{
         id: number;
+        code: string;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
         type: string;
         title: string;
         content: string;
     }[]>;
     findOneTemplate(id: number): Promise<{
         id: number;
+        code: string;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
         type: string;
         title: string;
         content: string;
     }>;
     updateTemplate(id: number, data: any): Promise<{
         id: number;
+        code: string;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
         type: string;
         title: string;
         content: string;
     }>;
     removeTemplate(id: number): Promise<{
         id: number;
+        code: string;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
         type: string;
         title: string;
         content: string;
@@ -71,9 +71,9 @@ export declare class NotifyService {
     private sendEmail;
     getMyInbox(userId: number): Promise<{
         id: number;
-        username: string;
         status: number;
         createdAt: Date;
+        username: string;
         userId: number;
         title: string;
         content: string;
@@ -85,9 +85,9 @@ export declare class NotifyService {
     }[]>;
     markRead(userId: number, messageId: number): Promise<{
         id: number;
-        username: string;
         status: number;
         createdAt: Date;
+        username: string;
         userId: number;
         title: string;
         content: string;

@@ -13,10 +13,10 @@ export declare class PropertyController {
         }[];
     } & {
         id: number;
+        name: string;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
     }>;
     findAll(): Promise<({
         values: {
@@ -29,10 +29,10 @@ export declare class PropertyController {
         }[];
     } & {
         id: number;
+        name: string;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
     })[]>;
     findOne(id: number): Promise<{
         values: {
@@ -45,10 +45,10 @@ export declare class PropertyController {
         }[];
     } & {
         id: number;
+        name: string;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
     }>;
     update(id: number, data: any): Promise<{
         values: {
@@ -61,16 +61,16 @@ export declare class PropertyController {
         }[];
     } & {
         id: number;
+        name: string;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
     }>;
     remove(id: number): Promise<{
         id: number;
+        name: string;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
     }>;
 }

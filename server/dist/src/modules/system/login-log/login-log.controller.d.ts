@@ -4,8 +4,8 @@ export declare class LoginLogController {
     constructor(service: LoginLogService);
     findAll(query: any): Promise<{
         id: number;
-        username: string;
         status: string;
+        username: string;
         message: string | null;
         ip: string;
         userAgent: string;

@@ -4,11 +4,11 @@ export declare class MailAccountController {
     constructor(service: MailService);
     create(data: any): Promise<{
         id: number;
-        username: string;
-        password: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        username: string;
+        password: string;
         mail: string;
         host: string;
         port: number;
@@ -16,11 +16,11 @@ export declare class MailAccountController {
     }>;
     findAll(query: any): Promise<{
         id: number;
-        username: string;
-        password: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        username: string;
+        password: string;
         mail: string;
         host: string;
         port: number;
@@ -28,11 +28,11 @@ export declare class MailAccountController {
     }[]>;
     findOne(id: number): Promise<{
         id: number;
-        username: string;
-        password: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        username: string;
+        password: string;
         mail: string;
         host: string;
         port: number;
@@ -40,11 +40,11 @@ export declare class MailAccountController {
     }>;
     update(id: number, data: any): Promise<{
         id: number;
-        username: string;
-        password: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        username: string;
+        password: string;
         mail: string;
         host: string;
         port: number;
@@ -52,11 +52,11 @@ export declare class MailAccountController {
     }>;
     remove(id: number): Promise<{
         id: number;
-        username: string;
-        password: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
+        username: string;
+        password: string;
         mail: string;
         host: string;
         port: number;
@@ -68,12 +68,12 @@ export declare class MailTemplateController {
     constructor(service: MailService);
     create(data: any): Promise<{
         id: number;
+        code: string;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
         title: string;
         content: string;
         accountId: number;
@@ -81,11 +81,11 @@ export declare class MailTemplateController {
     findAll(query: any): Promise<({
         account: {
             id: number;
-            username: string;
-            password: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
+            username: string;
+            password: string;
             mail: string;
             host: string;
             port: number;
@@ -93,12 +93,12 @@ export declare class MailTemplateController {
         };
     } & {
         id: number;
+        code: string;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
         title: string;
         content: string;
         accountId: number;
@@ -106,11 +106,11 @@ export declare class MailTemplateController {
     findOne(id: number): Promise<{
         account: {
             id: number;
-            username: string;
-            password: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
+            username: string;
+            password: string;
             mail: string;
             host: string;
             port: number;
@@ -118,36 +118,36 @@ export declare class MailTemplateController {
         };
     } & {
         id: number;
+        code: string;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
         title: string;
         content: string;
         accountId: number;
     }>;
     update(id: number, data: any): Promise<{
         id: number;
+        code: string;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
         title: string;
         content: string;
         accountId: number;
     }>;
     remove(id: number): Promise<{
         id: number;
+        code: string;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        code: string;
         title: string;
         content: string;
         accountId: number;
@@ -170,11 +170,11 @@ export declare class MailLogController {
         template: {
             account: {
                 id: number;
-                username: string;
-                password: string;
                 status: import("@prisma/client").$Enums.CommonStatus;
                 createdAt: Date;
                 updatedAt: Date;
+                username: string;
+                password: string;
                 mail: string;
                 host: string;
                 port: number;
@@ -182,12 +182,12 @@ export declare class MailLogController {
             };
         } & {
             id: number;
+            code: string;
+            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             remark: string | null;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
-            code: string;
             title: string;
             content: string;
             accountId: number;

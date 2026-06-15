@@ -10,8 +10,8 @@ export declare class LoginLogService {
         message?: string;
     }): Promise<{
         id: number;
-        username: string;
         status: string;
+        username: string;
         message: string | null;
         ip: string;
         userAgent: string;
@@ -19,8 +19,8 @@ export declare class LoginLogService {
     }>;
     findAll(query?: any): Promise<{
         id: number;
-        username: string;
         status: string;
+        username: string;
         message: string | null;
         ip: string;
         userAgent: string;

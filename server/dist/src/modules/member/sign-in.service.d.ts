@@ -29,16 +29,16 @@ export declare class SignInService {
         id: number;
         createdAt: Date;
         day: number;
-        memberId: number;
         point: number;
+        memberId: number;
     })[]>;
     signIn(memberId: number): Promise<{
         record: {
             id: number;
             createdAt: Date;
             day: number;
-            memberId: number;
             point: number;
+            memberId: number;
         };
         pointsRewarded: number;
         consecutiveDays: number;

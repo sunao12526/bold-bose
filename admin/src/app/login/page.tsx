@@ -2,16 +2,31 @@
 
 export const dynamic = "force-dynamic";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLogin } from '@refinedev/core';
 import { Form, Input, Button, Card, Typography, Space, Divider, message } from 'antd';
-import { UserOutlined, LockOutlined, SafetyOutlined, GithubOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, SafetyOutlined, GithubOutlined, ReloadOutlined } from '@ant-design/icons';
 import { axiosInstance } from '../../lib/axios';
 
 const { Title, Text } = Typography;
 
 export default function Login() {
   const { mutate: login, isPending } = useLogin();
+  const [captcha, setCaptcha] = useState<{ key: string; image: string } | null>(null);
+  const [form] = Form.useForm();
+
+  const fetchCaptcha = async () => {
+    try {
+      const res = await axiosInstance.get('/system/auth/captcha');
+      setCaptcha(res.data);
+    } catch (err) {
+      console.error('Failed to load captcha:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCaptcha();
+  }, []);
 
   const handleGithubLogin = async () => {
     try {
@@ -28,9 +43,15 @@ export default function Login() {
   };
 
   const onFinish = (values: any) => {
+    if (!captcha?.key) {
+      message.error('验证码加载失败，请刷新重试');
+      return;
+    }
     login({
       username: values.username,
       password: values.password,
+      captchaKey: captcha.key,
+      captchaCode: values.captcha,
     });
   };
 
@@ -68,6 +89,7 @@ export default function Login() {
         </div>
 
         <Form
+          form={form}
           name="login"
           layout="vertical"
           initialValues={{ username: 'admin', password: 'admin123' }}
@@ -96,6 +118,41 @@ export default function Login() {
             <Input.Password
               prefix={<LockOutlined style={{ color: '#bfbfbf' }} />}
               placeholder="账户密码"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="captcha"
+            label="验证码"
+            rules={[{ required: true, message: '请输入验证码' }]}
+          >
+            <Input
+              prefix={<SafetyOutlined style={{ color: '#bfbfbf' }} />}
+              placeholder="请输入验证码"
+              maxLength={4}
+              suffix={
+                <div
+                  onClick={fetchCaptcha}
+                  style={{
+                    width: '100px',
+                    height: '32px',
+                    borderRadius: '4px',
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    background: '#f0f2f5',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  title="点击刷新验证码"
+                >
+                  {captcha?.image ? (
+                    <div dangerouslySetInnerHTML={{ __html: captcha.image }} style={{ width: '100%', height: '100%' }} />
+                  ) : (
+                    <ReloadOutlined spin style={{ fontSize: '14px', color: '#999' }} />
+                  )}
+                </div>
+              }
             />
           </Form.Item>
 

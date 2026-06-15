@@ -1,8 +1,11 @@
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { CaptchaService } from './captcha.service';
 export declare class AuthController {
     private authService;
-    constructor(authService: AuthService);
+    private captchaService;
+    constructor(authService: AuthService, captchaService: CaptchaService);
+    getCaptcha(): import("./captcha.service").CaptchaResult;
     login(loginDto: LoginDto, req: any): Promise<{
         accessToken: string;
         userId: number;

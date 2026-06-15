@@ -3,16 +3,16 @@ export declare class LogService {
     private prisma;
     constructor(prisma: PrismaService);
     findAll(): Promise<{
+        path: string;
         id: number;
-        username: string | null;
         status: number;
         createdAt: Date;
-        userId: number | null;
         type: string;
-        ip: string;
-        path: string;
-        method: string;
+        username: string | null;
+        userId: number | null;
         description: string;
+        ip: string;
+        method: string;
         duration: number;
         module: string;
     }[]>;

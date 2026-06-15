@@ -14,6 +14,8 @@ const class_validator_1 = require("class-validator");
 class LoginDto {
     username;
     password;
+    captchaKey;
+    captchaCode;
 }
 exports.LoginDto = LoginDto;
 __decorate([
@@ -24,4 +26,12 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)({ message: '密码不能为空' }),
     __metadata("design:type", String)
 ], LoginDto.prototype, "password", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)({ message: '验证码标识不能为空' }),
+    __metadata("design:type", String)
+], LoginDto.prototype, "captchaKey", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)({ message: '验证码不能为空' }),
+    __metadata("design:type", String)
+], LoginDto.prototype, "captchaCode", void 0);
 //# sourceMappingURL=login.dto.js.map

@@ -13,23 +13,22 @@ export declare class RefundService {
             };
             items: {
                 id: number;
-                price: number;
                 picUrl: string;
                 properties: import("@prisma/client/runtime/library").JsonValue;
+                price: number;
                 spuId: number;
-                orderId: number;
                 skuId: number;
                 spuName: string;
                 count: number;
+                orderId: number;
             }[];
         } & {
             id: number;
             status: import("@prisma/client").$Enums.MallOrderStatus;
             createdAt: Date;
             updatedAt: Date;
-            payTime: Date | null;
-            no: string;
             memberId: number;
+            no: string;
             payPrice: number;
             totalPrice: number;
             discountPrice: number;
@@ -40,6 +39,7 @@ export declare class RefundService {
             receiverMobile: string;
             receiverAddress: string;
             userRemark: string | null;
+            payTime: Date | null;
             deliveryTime: Date | null;
             receiveTime: Date | null;
         };
@@ -48,50 +48,49 @@ export declare class RefundService {
         status: import("@prisma/client").$Enums.MallRefundStatus;
         createdAt: Date;
         updatedAt: Date;
+        memberId: number;
+        no: string;
+        userRemark: string | null;
         refundPrice: number;
         reason: string;
-        no: string;
-        memberId: number;
-        userRemark: string | null;
-        orderId: number;
         auditRemark: string | null;
         auditTime: Date | null;
+        orderId: number;
     })[]>;
     findOne(id: number): Promise<{
         order: {
             member: {
                 id: number;
-                nickname: string;
-                mobile: string;
                 status: import("@prisma/client").$Enums.CommonStatus;
                 createdAt: Date;
                 updatedAt: Date;
+                nickname: string;
+                mobile: string;
+                experience: number;
                 avatar: string | null;
                 points: number;
                 balance: number;
                 levelId: number | null;
-                experience: number;
                 tagIds: import("@prisma/client/runtime/library").JsonValue | null;
             };
             items: {
                 id: number;
-                price: number;
                 picUrl: string;
                 properties: import("@prisma/client/runtime/library").JsonValue;
+                price: number;
                 spuId: number;
-                orderId: number;
                 skuId: number;
                 spuName: string;
                 count: number;
+                orderId: number;
             }[];
         } & {
             id: number;
             status: import("@prisma/client").$Enums.MallOrderStatus;
             createdAt: Date;
             updatedAt: Date;
-            payTime: Date | null;
-            no: string;
             memberId: number;
+            no: string;
             payPrice: number;
             totalPrice: number;
             discountPrice: number;
@@ -102,6 +101,7 @@ export declare class RefundService {
             receiverMobile: string;
             receiverAddress: string;
             userRemark: string | null;
+            payTime: Date | null;
             deliveryTime: Date | null;
             receiveTime: Date | null;
         };
@@ -110,14 +110,14 @@ export declare class RefundService {
         status: import("@prisma/client").$Enums.MallRefundStatus;
         createdAt: Date;
         updatedAt: Date;
+        memberId: number;
+        no: string;
+        userRemark: string | null;
         refundPrice: number;
         reason: string;
-        no: string;
-        memberId: number;
-        userRemark: string | null;
-        orderId: number;
         auditRemark: string | null;
         auditTime: Date | null;
+        orderId: number;
     }>;
     approve(id: number, auditRemark?: string): Promise<({
         order: {
@@ -125,9 +125,8 @@ export declare class RefundService {
             status: import("@prisma/client").$Enums.MallOrderStatus;
             createdAt: Date;
             updatedAt: Date;
-            payTime: Date | null;
-            no: string;
             memberId: number;
+            no: string;
             payPrice: number;
             totalPrice: number;
             discountPrice: number;
@@ -138,6 +137,7 @@ export declare class RefundService {
             receiverMobile: string;
             receiverAddress: string;
             userRemark: string | null;
+            payTime: Date | null;
             deliveryTime: Date | null;
             receiveTime: Date | null;
         };
@@ -146,41 +146,41 @@ export declare class RefundService {
         status: import("@prisma/client").$Enums.MallRefundStatus;
         createdAt: Date;
         updatedAt: Date;
+        memberId: number;
+        no: string;
+        userRemark: string | null;
         refundPrice: number;
         reason: string;
-        no: string;
-        memberId: number;
-        userRemark: string | null;
-        orderId: number;
         auditRemark: string | null;
         auditTime: Date | null;
+        orderId: number;
     }) | null>;
     refundNotify(merchantRefundId: string, payRefundId: number, status: string, refundTime: Date | string): Promise<{
         id: number;
         status: import("@prisma/client").$Enums.MallRefundStatus;
         createdAt: Date;
         updatedAt: Date;
+        memberId: number;
+        no: string;
+        userRemark: string | null;
         refundPrice: number;
         reason: string;
-        no: string;
-        memberId: number;
-        userRemark: string | null;
-        orderId: number;
         auditRemark: string | null;
         auditTime: Date | null;
+        orderId: number;
     }>;
     reject(id: number, auditRemark: string): Promise<{
         id: number;
         status: import("@prisma/client").$Enums.MallRefundStatus;
         createdAt: Date;
         updatedAt: Date;
+        memberId: number;
+        no: string;
+        userRemark: string | null;
         refundPrice: number;
         reason: string;
-        no: string;
-        memberId: number;
-        userRemark: string | null;
-        orderId: number;
         auditRemark: string | null;
         auditTime: Date | null;
+        orderId: number;
     }>;
 }

@@ -5,13 +5,13 @@ export declare class ProfileController {
     getProfile(req: any): Promise<{
         user: {
             id: number;
+            status: import("@prisma/client").$Enums.CommonStatus;
+            remark: string | null;
+            createdAt: Date;
             username: string;
             nickname: string;
             email: string | null;
             mobile: string | null;
-            status: import("@prisma/client").$Enums.CommonStatus;
-            remark: string | null;
-            createdAt: Date;
         };
         roles: {
             id: number;

@@ -5,10 +5,10 @@ export declare class PromotionService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: number;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         type: import("@prisma/client").$Enums.MallCouponType;
         value: number;
         minPrice: number;
@@ -24,10 +24,10 @@ export declare class PromotionService {
     }>;
     findAll(): Promise<{
         id: number;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         type: import("@prisma/client").$Enums.MallCouponType;
         value: number;
         minPrice: number;
@@ -43,10 +43,10 @@ export declare class PromotionService {
     }[]>;
     findOne(id: number): Promise<{
         id: number;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         type: import("@prisma/client").$Enums.MallCouponType;
         value: number;
         minPrice: number;
@@ -62,10 +62,10 @@ export declare class PromotionService {
     }>;
     updateStatus(id: number, status: CommonStatus): Promise<{
         id: number;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         type: import("@prisma/client").$Enums.MallCouponType;
         value: number;
         minPrice: number;
@@ -81,10 +81,10 @@ export declare class PromotionService {
     }>;
     remove(id: number): Promise<{
         id: number;
+        name: string;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         type: import("@prisma/client").$Enums.MallCouponType;
         value: number;
         minPrice: number;
@@ -107,10 +107,10 @@ export declare class PromotionService {
         };
         coupon: {
             id: number;
+            name: string;
             status: import("@prisma/client").$Enums.CommonStatus;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             type: import("@prisma/client").$Enums.MallCouponType;
             value: number;
             minPrice: number;
@@ -132,8 +132,8 @@ export declare class PromotionService {
         memberId: number;
         validStartTime: Date;
         validEndTime: Date;
-        couponId: number;
         useOrderId: number | null;
         useTime: Date | null;
+        couponId: number;
     })[]>;
 }

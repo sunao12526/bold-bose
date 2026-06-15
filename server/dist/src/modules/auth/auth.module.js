@@ -13,6 +13,7 @@ const passport_1 = require("@nestjs/passport");
 const auth_service_1 = require("./auth.service");
 const auth_controller_1 = require("./auth.controller");
 const jwt_strategy_1 = require("./jwt.strategy");
+const captcha_service_1 = require("./captcha.service");
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {
     throw new Error('JWT_SECRET environment variable is required but not defined in .env');
@@ -29,7 +30,7 @@ exports.AuthModule = AuthModule = __decorate([
                 signOptions: { expiresIn: '1d' },
             }),
         ],
-        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
+        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy, captcha_service_1.CaptchaService],
         controllers: [auth_controller_1.AuthController],
         exports: [auth_service_1.AuthService],
     })
