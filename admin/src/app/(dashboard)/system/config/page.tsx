@@ -71,7 +71,7 @@ export default function ConfigList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增参数配置' : '编辑参数配置'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

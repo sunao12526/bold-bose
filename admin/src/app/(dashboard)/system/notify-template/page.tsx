@@ -156,7 +156,7 @@ export default function NotifyTemplateList() {
       </List>
 
       {/* Create / Edit Modal */}
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增通知模板' : '编辑通知模板'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
@@ -249,7 +249,7 @@ export default function NotifyTemplateList() {
       </Modal>
 
       {/* Test Send Modal */}
-      <Modal
+      <Modal forceRender
         title={`测试发送通知 - ${testTemplate?.name || ''}`}
         open={isTestModalOpen}
         onCancel={() => setIsTestModalOpen(false)}

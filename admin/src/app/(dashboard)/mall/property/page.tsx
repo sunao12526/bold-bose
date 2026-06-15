@@ -130,7 +130,7 @@ export default function PropertyList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增规格' : '编辑规格'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

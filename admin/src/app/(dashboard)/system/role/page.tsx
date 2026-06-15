@@ -125,7 +125,7 @@ export default function RoleList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增角色' : '编辑角色'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

@@ -95,7 +95,7 @@ export default function LevelList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增会员等级' : '编辑会员等级'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

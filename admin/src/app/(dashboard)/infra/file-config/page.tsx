@@ -131,7 +131,7 @@ export default function FileConfigList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增文件配置' : '编辑文件配置'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

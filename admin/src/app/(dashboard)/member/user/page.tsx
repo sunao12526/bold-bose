@@ -318,7 +318,7 @@ export default function MemberList() {
       </List>
 
       {/* MODAL 1: Adjust Points */}
-      <Modal
+      <Modal forceRender
         title={selectedMember ? `调整积分 - ${selectedMember.nickname}` : '调整积分'}
         open={pointsModalOpen}
         onCancel={() => setPointsModalOpen(false)}
@@ -337,7 +337,7 @@ export default function MemberList() {
       </Modal>
 
       {/* MODAL 2: Adjust Balance */}
-      <Modal
+      <Modal forceRender
         title={selectedMember ? `调整余额 - ${selectedMember.nickname}` : '调整余额'}
         open={balanceModalOpen}
         onCancel={() => setBalanceModalOpen(false)}
@@ -356,7 +356,7 @@ export default function MemberList() {
       </Modal>
 
       {/* MODAL 3: Adjust Experience (Growth Value) */}
-      <Modal
+      <Modal forceRender
         title={selectedMember ? `调整成长值 - ${selectedMember.nickname}` : '调整成长值'}
         open={expModalOpen}
         onCancel={() => setExpModalOpen(false)}
@@ -375,7 +375,7 @@ export default function MemberList() {
       </Modal>
 
       {/* MODAL 4: Assign Tags */}
-      <Modal
+      <Modal forceRender
         title={selectedMember ? `分配标签 - ${selectedMember.nickname}` : '分配标签'}
         open={tagsModalOpen}
         onCancel={() => setTagsModalOpen(false)}

@@ -219,187 +219,214 @@ export default function UserProfile() {
         {/* Right Side: Tab Forms */}
         <Col xs={24} sm={24} md={16}>
           <Card variant="borderless" style={{ borderRadius: '8px' }}>
-            <Tabs defaultActiveKey="info">
-              {/* Tab 1: Basic Info */}
-              <Tabs.TabPane tab={<span><UserOutlined />基本资料</span>} key="info">
-                <Form
-                  form={profileForm}
-                  layout="vertical"
-                  onFinish={handleUpdateProfile}
-                  style={{ maxWidth: 480, marginTop: 16 }}
-                >
-                  <Form.Item label="用户账号">
-                    <Input disabled value={profile?.username} prefix={<UserOutlined style={{ color: '#bfbfbf' }} />} />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="nickname"
-                    label="用户昵称"
-                    rules={[{ required: true, message: '用户昵称不能为空' }]}
-                  >
-                    <Input placeholder="请输入用户昵称" prefix={<UserOutlined style={{ color: '#bfbfbf' }} />} />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="email"
-                    label="电子邮箱"
-                    rules={[
-                      { type: 'email', message: '邮箱格式不正确' },
-                      { required: true, message: '电子邮箱不能为空' }
-                    ]}
-                  >
-                    <Input placeholder="请输入电子邮箱" prefix={<MailOutlined style={{ color: '#bfbfbf' }} />} />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="mobile"
-                    label="手机号码"
-                    rules={[
-                      { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确' },
-                      { required: true, message: '手机号码不能为空' }
-                    ]}
-                  >
-                    <Input placeholder="请输入手机号码" prefix={<PhoneOutlined style={{ color: '#bfbfbf' }} />} />
-                  </Form.Item>
-
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={updatingProfile}>
-                      保存修改
-                    </Button>
-                  </Form.Item>
-                </Form>
-              </Tabs.TabPane>
-
-              {/* Tab 2: Change Password */}
-              <Tabs.TabPane tab={<span><KeyOutlined />安全设置</span>} key="security">
-                <Form
-                  form={passwordForm}
-                  layout="vertical"
-                  onFinish={handleUpdatePassword}
-                  style={{ maxWidth: 480, marginTop: 16 }}
-                >
-                  <Form.Item
-                    name="oldPassword"
-                    label="当前密码"
-                    rules={[{ required: true, message: '请输入当前密码' }]}
-                  >
-                    <Input.Password placeholder="请输入当前密码" prefix={<LockOutlined style={{ color: '#bfbfbf' }} />} />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="newPassword"
-                    label="新密码"
-                    rules={[
-                      { required: true, message: '请输入新密码' },
-                      { min: 6, message: '新密码长度至少为 6 位' }
-                    ]}
-                  >
-                    <Input.Password
-                      placeholder="请输入新密码"
-                      prefix={<LockOutlined style={{ color: '#bfbfbf' }} />}
-                      onChange={(e) => setNewPasswordVal(e.target.value)}
-                    />
-                  </Form.Item>
-
-                  {newPasswordVal && (
-                    <div style={{ marginBottom: 16 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <Text type="secondary" style={{ fontSize: 12 }}>密码强度:</Text>
-                        <Text style={{ fontSize: 12, color: strength.color, fontWeight: 'bold' }}>{strength.text}</Text>
-                      </div>
-                      <Progress 
-                        percent={strength.percent} 
-                        status={strength.status} 
-                        strokeColor={strength.color} 
-                        showInfo={false} 
-                        size="small"
-                      />
-                    </div>
-                  )}
-
-                  <Form.Item
-                    name="confirmPassword"
-                    label="确认新密码"
-                    rules={[
-                      { required: true, message: '请确认您的新密码' },
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (!value || getFieldValue('newPassword') === value) {
-                            return Promise.resolve();
-                          }
-                          return Promise.reject(new Error('两次输入的密码不匹配！'));
-                        },
-                      }),
-                    ]}
-                  >
-                    <Input.Password placeholder="请确认新密码" prefix={<LockOutlined style={{ color: '#bfbfbf' }} />} />
-                  </Form.Item>
-
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit" loading={updatingPassword} danger>
-                      修改密码
-                    </Button>
-                  </Form.Item>
-                </Form>
-              </Tabs.TabPane>
-
-              {/* Tab 3: Social Binds */}
-              <Tabs.TabPane tab={<span><LinkOutlined />社交账号绑定</span>} key="social">
-                <div style={{ marginTop: 16 }}>
-                  {socialBinds.map((bind) => (
-                    <Card 
-                      key={bind.type} 
-                      style={{ marginBottom: 16, borderRadius: '8px' }}
-                      styles={{ body: { padding: '20px' } }}
+            <Tabs
+              defaultActiveKey="info"
+              items={[
+                {
+                  key: 'info',
+                  forceRender: true,
+                  label: (
+                    <span>
+                      <UserOutlined />
+                      基本资料
+                    </span>
+                  ),
+                  children: (
+                    <Form
+                      form={profileForm}
+                      layout="vertical"
+                      onFinish={handleUpdateProfile}
+                      style={{ maxWidth: 480, marginTop: 16 }}
                     >
-                      <Row align="middle" justify="space-between">
-                        <Col>
-                          <Space size={16}>
-                            <div style={{ 
-                              fontSize: 32, 
-                              color: bind.type === 'GITHUB' ? '#000' : '#1890ff',
-                              display: 'flex',
-                              alignItems: 'center'
-                            }}>
-                              <GithubOutlined />
-                            </div>
-                            <div>
-                              <Text strong style={{ fontSize: 16 }}>{bind.type}</Text>
-                              <div style={{ marginTop: 4 }}>
-                                {bind.bound ? (
-                                  <Space>
-                                    <Tag color="green">已绑定</Tag>
-                                    <Text type="secondary">{bind.nickname}</Text>
-                                  </Space>
-                                ) : (
-                                  <Tag color="default">未绑定</Tag>
-                                )}
-                              </div>
-                            </div>
-                          </Space>
-                        </Col>
-                        <Col>
-                          {bind.bound ? (
-                            <Button danger onClick={() => handleSocialUnbind(bind.type)}>
-                              解绑
-                            </Button>
-                          ) : (
-                            <Space>
-                              <Button type="primary" onClick={() => handleSocialBind(bind.type)}>
-                                绑定
-                              </Button>
-                              <Button onClick={() => handleMockBind(bind.type)}>
-                                模拟绑定(测试)
-                              </Button>
-                            </Space>
-                          )}
-                        </Col>
-                      </Row>
-                    </Card>
-                  ))}
-                </div>
-              </Tabs.TabPane>
-            </Tabs>
+                      <Form.Item label="用户账号">
+                        <Input disabled value={profile?.username} prefix={<UserOutlined style={{ color: '#bfbfbf' }} />} />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="nickname"
+                        label="用户昵称"
+                        rules={[{ required: true, message: '用户昵称不能为空' }]}
+                      >
+                        <Input placeholder="请输入用户昵称" prefix={<UserOutlined style={{ color: '#bfbfbf' }} />} />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="email"
+                        label="电子邮箱"
+                        rules={[
+                          { type: 'email', message: '邮箱格式不正确' },
+                          { required: true, message: '电子邮箱不能为空' }
+                        ]}
+                      >
+                        <Input placeholder="请输入电子邮箱" prefix={<MailOutlined style={{ color: '#bfbfbf' }} />} />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="mobile"
+                        label="手机号码"
+                        rules={[
+                          { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确' },
+                          { required: true, message: '手机号码不能为空' }
+                        ]}
+                      >
+                        <Input placeholder="请输入手机号码" prefix={<PhoneOutlined style={{ color: '#bfbfbf' }} />} />
+                      </Form.Item>
+
+                      <Form.Item>
+                        <Button type="primary" htmlType="submit" loading={updatingProfile}>
+                          保存修改
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  ),
+                },
+                {
+                  key: 'security',
+                  forceRender: true,
+                  label: (
+                    <span>
+                      <KeyOutlined />
+                      安全设置
+                    </span>
+                  ),
+                  children: (
+                    <Form
+                      form={passwordForm}
+                      layout="vertical"
+                      onFinish={handleUpdatePassword}
+                      style={{ maxWidth: 480, marginTop: 16 }}
+                    >
+                      <Form.Item
+                        name="oldPassword"
+                        label="当前密码"
+                        rules={[{ required: true, message: '请输入当前密码' }]}
+                      >
+                        <Input.Password placeholder="请输入当前密码" prefix={<LockOutlined style={{ color: '#bfbfbf' }} />} />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="newPassword"
+                        label="新密码"
+                        rules={[
+                          { required: true, message: '请输入新密码' },
+                          { min: 6, message: '新密码长度至少为 6 位' }
+                        ]}
+                      >
+                        <Input.Password
+                          placeholder="请输入新密码"
+                          prefix={<LockOutlined style={{ color: '#bfbfbf' }} />}
+                          onChange={(e) => setNewPasswordVal(e.target.value)}
+                        />
+                      </Form.Item>
+
+                      {newPasswordVal && (
+                        <div style={{ marginBottom: 16 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                            <Text type="secondary" style={{ fontSize: 12 }}>密码强度:</Text>
+                            <Text style={{ fontSize: 12, color: strength.color, fontWeight: 'bold' }}>{strength.text}</Text>
+                          </div>
+                          <Progress 
+                            percent={strength.percent} 
+                            status={strength.status} 
+                            strokeColor={strength.color} 
+                            showInfo={false} 
+                            size="small"
+                          />
+                        </div>
+                      )}
+
+                      <Form.Item
+                        name="confirmPassword"
+                        label="确认新密码"
+                        rules={[
+                          { required: true, message: '请确认您的新密码' },
+                          ({ getFieldValue }) => ({
+                            validator(_, value) {
+                              if (!value || getFieldValue('newPassword') === value) {
+                                return Promise.resolve();
+                              }
+                              return Promise.reject(new Error('两次输入的密码不匹配！'));
+                            },
+                          }),
+                        ]}
+                      >
+                        <Input.Password placeholder="请确认新密码" prefix={<LockOutlined style={{ color: '#bfbfbf' }} />} />
+                      </Form.Item>
+
+                      <Form.Item>
+                        <Button type="primary" htmlType="submit" loading={updatingPassword} danger>
+                          修改密码
+                        </Button>
+                      </Form.Item>
+                    </Form>
+                  ),
+                },
+                {
+                  key: 'social',
+                  label: (
+                    <span>
+                      <LinkOutlined />
+                      社交账号绑定
+                    </span>
+                  ),
+                  children: (
+                    <div style={{ marginTop: 16 }}>
+                      {socialBinds.map((bind) => (
+                        <Card 
+                          key={bind.type} 
+                          style={{ marginBottom: 16, borderRadius: '8px' }}
+                          styles={{ body: { padding: '20px' } }}
+                        >
+                          <Row align="middle" justify="space-between">
+                            <Col>
+                              <Space size={16}>
+                                <div style={{ 
+                                  fontSize: 32, 
+                                  color: bind.type === 'GITHUB' ? '#000' : '#1890ff',
+                                  display: 'flex',
+                                  alignItems: 'center'
+                                }}>
+                                  <GithubOutlined />
+                                </div>
+                                <div>
+                                  <Text strong style={{ fontSize: 16 }}>{bind.type}</Text>
+                                  <div style={{ marginTop: 4 }}>
+                                    {bind.bound ? (
+                                      <Space>
+                                        <Tag color="green">已绑定</Tag>
+                                        <Text type="secondary">{bind.nickname}</Text>
+                                      </Space>
+                                    ) : (
+                                      <Tag color="default">未绑定</Tag>
+                                    )}
+                                  </div>
+                                </div>
+                              </Space>
+                            </Col>
+                            <Col>
+                              {bind.bound ? (
+                                <Button danger onClick={() => handleSocialUnbind(bind.type)}>
+                                  解绑
+                                </Button>
+                              ) : (
+                                <Space>
+                                  <Button type="primary" onClick={() => handleSocialBind(bind.type)}>
+                                    绑定
+                                  </Button>
+                                  <Button onClick={() => handleMockBind(bind.type)}>
+                                    模拟绑定(测试)
+                                  </Button>
+                                </Space>
+                              )}
+                            </Col>
+                          </Row>
+                        </Card>
+                      ))}
+                    </div>
+                  ),
+                },
+              ]}
+            />
           </Card>
         </Col>
       </Row>

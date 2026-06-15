@@ -142,7 +142,7 @@ export default function MailTemplateList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增邮件模板' : '编辑邮件模板'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
@@ -191,7 +191,7 @@ export default function MailTemplateList() {
         </Form>
       </Modal>
 
-      <Modal
+      <Modal forceRender
         title="邮件发送测试"
         open={isTestModalOpen}
         onCancel={() => setIsTestModalOpen(false)}

@@ -154,7 +154,7 @@ export default function JobList() {
       </List>
 
       {/* Create / Edit Job Modal */}
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增定时任务' : '编辑定时任务'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

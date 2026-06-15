@@ -89,7 +89,7 @@ export default function MailAccountList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增邮箱账号' : '编辑邮箱账号'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

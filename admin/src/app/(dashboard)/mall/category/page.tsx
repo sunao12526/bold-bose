@@ -135,7 +135,7 @@ export default function CategoryList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增分类' : '编辑分类'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
@@ -158,7 +158,7 @@ export default function CategoryList() {
             <TreeSelect
               showSearch
               style={{ width: '100%' }}
-              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              styles={{ popup: { root: { maxHeight: 400, overflow: 'auto' } } }}
               placeholder="请选择上级分类（留空代表顶级分类）"
               allowClear
               treeDefaultExpandAll

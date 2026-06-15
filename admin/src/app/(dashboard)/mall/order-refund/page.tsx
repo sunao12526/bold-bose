@@ -223,7 +223,7 @@ export default function RefundList() {
       </Modal>
 
       {/* Audit Modal */}
-      <Modal
+      <Modal forceRender
         title={`退款申请审核 [${selectedRefund?.no}]`}
         open={auditModalOpen}
         onCancel={() => setAuditModalOpen(false)}

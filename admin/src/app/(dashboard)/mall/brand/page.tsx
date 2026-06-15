@@ -95,7 +95,7 @@ export default function BrandList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增品牌' : '编辑品牌'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

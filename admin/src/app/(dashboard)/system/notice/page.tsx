@@ -90,7 +90,7 @@ export default function NoticeList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增通知公告' : '编辑通知公告'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

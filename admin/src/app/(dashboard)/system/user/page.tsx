@@ -121,7 +121,7 @@ export default function UserList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增用户' : '编辑用户'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

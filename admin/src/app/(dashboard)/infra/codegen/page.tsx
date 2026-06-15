@@ -270,7 +270,7 @@ export default function CodegenList() {
       </Modal>
 
       {/* 2. Configure Edit Drawer */}
-      <Drawer
+      <Drawer forceRender
         title={`生成器配置 - ${editingTable?.tableName || ''}`}
         open={isEditDrawerOpen}
         onClose={() => setIsEditDrawerOpen(false)}
@@ -291,157 +291,169 @@ export default function CodegenList() {
           layout="vertical"
           onFinish={handleEditSubmit}
         >
-          <Tabs defaultActiveKey="base">
-            <Tabs.TabPane tab="基本信息" key="base">
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item name="tableName" label="表名称"><Input disabled /></Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item name="tableComment" label="表描述" rules={[{ required: true }]}><Input /></Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item name="className" label="实体类名称" rules={[{ required: true }]}><Input /></Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item name="classComment" label="类注释描述" rules={[{ required: true }]}><Input /></Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={8}>
-                  <Form.Item name="moduleName" label="系统模块 (系统名)" rules={[{ required: true }]}><Input placeholder="例如: system" /></Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item name="businessName" label="业务模块 (表主名)" rules={[{ required: true }]}><Input placeholder="例如: post" /></Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item name="author" label="开发作者" rules={[{ required: true }]}><Input /></Form.Item>
-                </Col>
-              </Row>
-            </Tabs.TabPane>
-
-            <Tabs.TabPane tab="字段属性配置" key="fields">
-              <Table
-                dataSource={editingTable?.columns || []}
-                rowKey="id"
-                pagination={false}
-                scroll={{ y: 500 }}
-              >
-                <Table.Column
-                  dataIndex="columnName"
-                  title="字段名"
-                  width={150}
-                  render={(name, record: any) => (
-                    <div>
-                      <strong>{name}</strong>
-                      <div style={{ fontSize: '11px', color: '#999' }}>{record.dataType}</div>
-                    </div>
-                  )}
-                />
-                <Table.Column
-                  title="字段描述"
-                  width={180}
-                  render={(_, record: any) => (
-                    <Form.Item
-                      name={['col_' + record.id, 'columnComment']}
-                      initialValue={record.columnComment}
-                      style={{ margin: 0 }}
-                    >
-                      <Input size="small" />
-                    </Form.Item>
-                  )}
-                />
-                <Table.Column
-                  title="TS/Prisma类型"
-                  width={140}
-                  render={(_, record: any) => (
-                    <span style={{ fontSize: '12px' }}>
-                      <code>{record.tsType}</code> / <code>{record.prismaType}</code>
-                    </span>
-                  )}
-                />
-                <Table.Column
-                  title="CRUD"
-                  width={80}
-                  render={(_, record: any) => (
-                    <Form.Item
-                      name={['col_' + record.id, 'crud']}
-                      valuePropName="checked"
-                      initialValue={record.crud}
-                      style={{ margin: 0 }}
-                    >
-                      <Checkbox disabled={record.primaryKey} />
-                    </Form.Item>
-                  )}
-                />
-                <Table.Column
-                  title="列表显示"
-                  width={90}
-                  render={(_, record: any) => (
-                    <Form.Item
-                      name={['col_' + record.id, 'listOperation']}
-                      valuePropName="checked"
-                      initialValue={record.listOperation}
-                      style={{ margin: 0 }}
-                    >
-                      <Checkbox />
-                    </Form.Item>
-                  )}
-                />
-                <Table.Column
-                  title="表单展示"
-                  width={90}
-                  render={(_, record: any) => (
-                    <Form.Item
-                      name={['col_' + record.id, 'formOperation']}
-                      valuePropName="checked"
-                      initialValue={record.formOperation}
-                      style={{ margin: 0 }}
-                    >
-                      <Checkbox disabled={record.primaryKey} />
-                    </Form.Item>
-                  )}
-                />
-                <Table.Column
-                  title="展示组件"
-                  width={150}
-                  render={(_, record: any) => (
-                    <Form.Item
-                      name={['col_' + record.id, 'htmlType']}
-                      initialValue={record.htmlType}
-                      style={{ margin: 0 }}
-                    >
-                      <Select size="small" style={{ width: '100%' }}>
-                        <Select.Option value="input">单行文本 Input</Select.Option>
-                        <Select.Option value="textarea">多行文本 TextArea</Select.Option>
-                        <Select.Option value="number">数字框 Number</Select.Option>
-                        <Select.Option value="select">下拉选择 Select</Select.Option>
-                        <Select.Option value="switch">开关 Switch</Select.Option>
-                        <Select.Option value="date">日期 Date</Select.Option>
-                      </Select>
-                    </Form.Item>
-                  )}
-                />
-                <Table.Column
-                  title="绑定数据字典"
-                  width={180}
-                  render={(_, record: any) => (
-                    <Form.Item
-                      name={['col_' + record.id, 'dictType']}
-                      initialValue={record.dictType || ''}
-                      style={{ margin: 0 }}
-                    >
-                      <Select size="small" style={{ width: '100%' }} {...dictTypeSelectProps} allowClear placeholder="绑定字典">
-                        <Select.Option value="">-无-</Select.Option>
-                      </Select>
-                    </Form.Item>
-                  )}
-                />
-              </Table>
-            </Tabs.TabPane>
-          </Tabs>
+          <Tabs
+            defaultActiveKey="base"
+            items={[
+              {
+                key: 'base',
+                label: '基本信息',
+                children: (
+                  <>
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Form.Item name="tableName" label="表名称"><Input disabled /></Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item name="tableComment" label="表描述" rules={[{ required: true }]}><Input /></Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Form.Item name="className" label="实体类名称" rules={[{ required: true }]}><Input /></Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item name="classComment" label="类注释描述" rules={[{ required: true }]}><Input /></Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={16}>
+                      <Col span={8}>
+                        <Form.Item name="moduleName" label="系统模块 (系统名)" rules={[{ required: true }]}><Input placeholder="例如: system" /></Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item name="businessName" label="业务模块 (表主名)" rules={[{ required: true }]}><Input placeholder="例如: post" /></Form.Item>
+                      </Col>
+                      <Col span={8}>
+                        <Form.Item name="author" label="开发作者" rules={[{ required: true }]}><Input /></Form.Item>
+                      </Col>
+                    </Row>
+                  </>
+                )
+              },
+              {
+                key: 'fields',
+                label: '字段属性配置',
+                children: (
+                  <Table
+                    dataSource={editingTable?.columns || []}
+                    rowKey="id"
+                    pagination={false}
+                    scroll={{ y: 500 }}
+                  >
+                    <Table.Column
+                      dataIndex="columnName"
+                      title="字段名"
+                      width={150}
+                      render={(name, record: any) => (
+                        <div>
+                          <strong>{name}</strong>
+                          <div style={{ fontSize: '11px', color: '#999' }}>{record.dataType}</div>
+                        </div>
+                      )}
+                    />
+                    <Table.Column
+                      title="字段描述"
+                      width={180}
+                      render={(_, record: any) => (
+                        <Form.Item
+                          name={['col_' + record.id, 'columnComment']}
+                          initialValue={record.columnComment}
+                          style={{ margin: 0 }}
+                        >
+                          <Input size="small" />
+                        </Form.Item>
+                      )}
+                    />
+                    <Table.Column
+                      title="TS/Prisma类型"
+                      width={140}
+                      render={(_, record: any) => (
+                        <span style={{ fontSize: '12px' }}>
+                          <code>{record.tsType}</code> / <code>{record.prismaType}</code>
+                        </span>
+                      )}
+                    />
+                    <Table.Column
+                      title="CRUD"
+                      width={80}
+                      render={(_, record: any) => (
+                        <Form.Item
+                          name={['col_' + record.id, 'crud']}
+                          valuePropName="checked"
+                          initialValue={record.crud}
+                          style={{ margin: 0 }}
+                        >
+                          <Checkbox disabled={record.primaryKey} />
+                        </Form.Item>
+                      )}
+                    />
+                    <Table.Column
+                      title="列表显示"
+                      width={90}
+                      render={(_, record: any) => (
+                        <Form.Item
+                          name={['col_' + record.id, 'listOperation']}
+                          valuePropName="checked"
+                          initialValue={record.listOperation}
+                          style={{ margin: 0 }}
+                        >
+                          <Checkbox />
+                        </Form.Item>
+                      )}
+                    />
+                    <Table.Column
+                      title="表单展示"
+                      width={90}
+                      render={(_, record: any) => (
+                        <Form.Item
+                          name={['col_' + record.id, 'formOperation']}
+                          valuePropName="checked"
+                          initialValue={record.formOperation}
+                          style={{ margin: 0 }}
+                        >
+                          <Checkbox disabled={record.primaryKey} />
+                        </Form.Item>
+                      )}
+                    />
+                    <Table.Column
+                      title="展示组件"
+                      width={150}
+                      render={(_, record: any) => (
+                        <Form.Item
+                          name={['col_' + record.id, 'htmlType']}
+                          initialValue={record.htmlType}
+                          style={{ margin: 0 }}
+                        >
+                          <Select size="small" style={{ width: '100%' }}>
+                            <Select.Option value="input">单行文本 Input</Select.Option>
+                            <Select.Option value="textarea">多行文本 TextArea</Select.Option>
+                            <Select.Option value="number">数字框 Number</Select.Option>
+                            <Select.Option value="select">下拉选择 Select</Select.Option>
+                            <Select.Option value="switch">开关 Switch</Select.Option>
+                            <Select.Option value="date">日期 Date</Select.Option>
+                          </Select>
+                        </Form.Item>
+                      )}
+                    />
+                    <Table.Column
+                      title="绑定数据字典"
+                      width={180}
+                      render={(_, record: any) => (
+                        <Form.Item
+                          name={['col_' + record.id, 'dictType']}
+                          initialValue={record.dictType || ''}
+                          style={{ margin: 0 }}
+                        >
+                          <Select size="small" style={{ width: '100%' }} {...dictTypeSelectProps} allowClear placeholder="绑定字典">
+                            <Select.Option value="">-无-</Select.Option>
+                          </Select>
+                        </Form.Item>
+                      )}
+                    />
+                  </Table>
+                )
+              }
+            ]}
+          />
         </Form>
       </Drawer>
 
@@ -469,28 +481,33 @@ export default function CodegenList() {
         {previewLoading ? (
           <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>正在生成代码中...</div>
         ) : (
-          <Tabs defaultActiveKey="0">
-            {previewFiles.map((file, idx) => (
-              <Tabs.TabPane tab={file.name} key={idx.toString()}>
-                <div style={{ marginBottom: '8px' }}>
-                  <Tag color="geekblue">文件写入路径: <code>{file.path}</code></Tag>
-                </div>
-                <pre style={{
-                  backgroundColor: '#1e1e1e',
-                  color: '#d4d4d4',
-                  padding: '16px',
-                  borderRadius: '6px',
-                  overflow: 'auto',
-                  maxHeight: '500px',
-                  fontFamily: 'monospace',
-                  fontSize: '13px',
-                  lineHeight: '1.5'
-                }}>
-                  <code>{file.content}</code>
-                </pre>
-              </Tabs.TabPane>
-            ))}
-          </Tabs>
+          <Tabs
+            defaultActiveKey="0"
+            items={previewFiles.map((file, idx) => ({
+              key: idx.toString(),
+              label: file.name,
+              children: (
+                <>
+                  <div style={{ marginBottom: '8px' }}>
+                    <Tag color="geekblue">文件写入路径: <code>{file.path}</code></Tag>
+                  </div>
+                  <pre style={{
+                    backgroundColor: '#1e1e1e',
+                    color: '#d4d4d4',
+                    padding: '16px',
+                    borderRadius: '6px',
+                    overflow: 'auto',
+                    maxHeight: '500px',
+                    fontFamily: 'monospace',
+                    fontSize: '13px',
+                    lineHeight: '1.5'
+                  }}>
+                    <code>{file.content}</code>
+                  </pre>
+                </>
+              ),
+            }))}
+          />
         )}
       </Modal>
     </div>

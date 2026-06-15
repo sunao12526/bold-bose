@@ -195,7 +195,7 @@ export default function PayAppList() {
       </List>
 
       {/* App Form Modal */}
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增支付应用' : '编辑支付应用'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
@@ -239,152 +239,160 @@ export default function PayAppList() {
       </Modal>
 
       {/* Channels Configuration Drawer */}
-      <Drawer
+      <Drawer forceRender
         title={`配置支付渠道 - ${selectedApp?.name || ''}`}
         width={640}
         open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         loading={drawerLoading}
       >
-        <Tabs defaultActiveKey="mock" type="card">
-          <Tabs.TabPane 
-            tab={
-              <span>
-                <WalletOutlined />
-                模拟支付
-              </span>
-            } 
-            key="mock"
-          >
-            <Form
-              form={mockForm}
-              layout="vertical"
-              onFinish={(values) => saveChannel('mock', values)}
-            >
-              <Form.Item name="status" label="启用状态" valuePropName="checked">
-                <Switch checkedChildren="已开启" unCheckedChildren="已关闭" />
-              </Form.Item>
+        <Tabs
+          defaultActiveKey="mock"
+          type="card"
+          items={[
+            {
+              key: 'mock',
+              forceRender: true,
+              label: (
+                <span>
+                  <WalletOutlined />
+                  模拟支付
+                </span>
+              ),
+              children: (
+                <Form
+                  form={mockForm}
+                  layout="vertical"
+                  onFinish={(values) => saveChannel('mock', values)}
+                >
+                  <Form.Item name="status" label="启用状态" valuePropName="checked">
+                    <Switch checkedChildren="已开启" unCheckedChildren="已关闭" />
+                  </Form.Item>
 
-              <Form.Item name="remark" label="备注">
-                <Input.TextArea rows={2} placeholder="可记录测试相关说明" />
-              </Form.Item>
+                  <Form.Item name="remark" label="备注">
+                    <Input.TextArea rows={2} placeholder="可记录测试相关说明" />
+                  </Form.Item>
 
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  保存配置
-                </Button>
-              </Form.Item>
-            </Form>
-          </Tabs.TabPane>
+                  <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                      保存配置
+                    </Button>
+                  </Form.Item>
+                </Form>
+              ),
+            },
+            {
+              key: 'alipay',
+              forceRender: true,
+              label: (
+                <span>
+                  <AlipayOutlined style={{ color: '#1677ff' }} />
+                  支付宝
+                </span>
+              ),
+              children: (
+                <Form
+                  form={alipayForm}
+                  layout="vertical"
+                  onFinish={(values) => saveChannel('alipay', values)}
+                >
+                  <Form.Item name="status" label="启用状态" valuePropName="checked">
+                    <Switch checkedChildren="已开启" unCheckedChildren="已关闭" />
+                  </Form.Item>
 
-          <Tabs.TabPane 
-            tab={
-              <span>
-                <AlipayOutlined style={{ color: '#1677ff' }} />
-                支付宝
-              </span>
-            } 
-            key="alipay"
-          >
-            <Form
-              form={alipayForm}
-              layout="vertical"
-              onFinish={(values) => saveChannel('alipay', values)}
-            >
-              <Form.Item name="status" label="启用状态" valuePropName="checked">
-                <Switch checkedChildren="已开启" unCheckedChildren="已关闭" />
-              </Form.Item>
+                  <Form.Item
+                    name="appId"
+                    label="支付宝 AppID"
+                    rules={[{ required: true, message: '请输入支付宝 AppID' }]}
+                  >
+                    <Input placeholder="请输入 AppID" />
+                  </Form.Item>
 
-              <Form.Item
-                name="appId"
-                label="支付宝 AppID"
-                rules={[{ required: true, message: '请输入支付宝 AppID' }]}
-              >
-                <Input placeholder="请输入 AppID" />
-              </Form.Item>
+                  <Form.Item
+                    name="privateKey"
+                    label="商户应用私钥 (Merchant Private Key)"
+                    rules={[{ required: true, message: '请输入应用私钥' }]}
+                  >
+                    <Input.TextArea rows={4} placeholder="请输入商户私钥 PKCS8 格式" />
+                  </Form.Item>
 
-              <Form.Item
-                name="privateKey"
-                label="商户应用私钥 (Merchant Private Key)"
-                rules={[{ required: true, message: '请输入应用私钥' }]}
-              >
-                <Input.TextArea rows={4} placeholder="请输入商户私钥 PKCS8 格式" />
-              </Form.Item>
+                  <Form.Item
+                    name="publicKey"
+                    label="支付宝公钥 (Alipay Public Key)"
+                    rules={[{ required: true, message: '请输入公钥' }]}
+                  >
+                    <Input.TextArea rows={4} placeholder="请输入支付宝公钥" />
+                  </Form.Item>
 
-              <Form.Item
-                name="publicKey"
-                label="支付宝公钥 (Alipay Public Key)"
-                rules={[{ required: true, message: '请输入公钥' }]}
-              >
-                <Input.TextArea rows={4} placeholder="请输入支付宝公钥" />
-              </Form.Item>
+                  <Form.Item name="remark" label="备注">
+                    <Input.TextArea rows={2} placeholder="备注说明" />
+                  </Form.Item>
 
-              <Form.Item name="remark" label="备注">
-                <Input.TextArea rows={2} placeholder="备注说明" />
-              </Form.Item>
+                  <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                      保存配置
+                    </Button>
+                  </Form.Item>
+                </Form>
+              ),
+            },
+            {
+              key: 'wechat',
+              forceRender: true,
+              label: (
+                <span>
+                  <WechatOutlined style={{ color: '#52c41a' }} />
+                  微信支付
+                </span>
+              ),
+              children: (
+                <Form
+                  form={wechatForm}
+                  layout="vertical"
+                  onFinish={(values) => saveChannel('wechat', values)}
+                >
+                  <Form.Item name="status" label="启用状态" valuePropName="checked">
+                    <Switch checkedChildren="已开启" unCheckedChildren="已关闭" />
+                  </Form.Item>
 
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  保存配置
-                </Button>
-              </Form.Item>
-            </Form>
-          </Tabs.TabPane>
+                  <Form.Item
+                    name="appId"
+                    label="微信公众号/小程序 AppID"
+                    rules={[{ required: true, message: '请输入微信 AppID' }]}
+                  >
+                    <Input placeholder="请输入 AppID" />
+                  </Form.Item>
 
-          <Tabs.TabPane 
-            tab={
-              <span>
-                <WechatOutlined style={{ color: '#52c41a' }} />
-                微信支付
-              </span>
-            } 
-            key="wechat"
-          >
-            <Form
-              form={wechatForm}
-              layout="vertical"
-              onFinish={(values) => saveChannel('wechat', values)}
-            >
-              <Form.Item name="status" label="启用状态" valuePropName="checked">
-                <Switch checkedChildren="已开启" unCheckedChildren="已关闭" />
-              </Form.Item>
+                  <Form.Item
+                    name="mchId"
+                    label="微信支付商户号 MchID"
+                    rules={[{ required: true, message: '请输入商户号' }]}
+                  >
+                    <Input placeholder="请输入微信支付商户号" />
+                  </Form.Item>
 
-              <Form.Item
-                name="appId"
-                label="微信公众号/小程序 AppID"
-                rules={[{ required: true, message: '请输入微信 AppID' }]}
-              >
-                <Input placeholder="请输入 AppID" />
-              </Form.Item>
+                  <Form.Item
+                    name="apiKey"
+                    label="商户 API Key (V2/V3 Key)"
+                    rules={[{ required: true, message: '请输入 API 密钥' }]}
+                  >
+                    <Input placeholder="请输入商户 API 密钥" />
+                  </Form.Item>
 
-              <Form.Item
-                name="mchId"
-                label="微信支付商户号 MchID"
-                rules={[{ required: true, message: '请输入商户号' }]}
-              >
-                <Input placeholder="请输入微信支付商户号" />
-              </Form.Item>
+                  <Form.Item name="remark" label="备注">
+                    <Input.TextArea rows={2} placeholder="备注说明" />
+                  </Form.Item>
 
-              <Form.Item
-                name="apiKey"
-                label="商户 API Key (V2/V3 Key)"
-                rules={[{ required: true, message: '请输入 API 密钥' }]}
-              >
-                <Input placeholder="请输入商户 API 密钥" />
-              </Form.Item>
-
-              <Form.Item name="remark" label="备注">
-                <Input.TextArea rows={2} placeholder="备注说明" />
-              </Form.Item>
-
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  保存配置
-                </Button>
-              </Form.Item>
-            </Form>
-          </Tabs.TabPane>
-        </Tabs>
+                  <Form.Item>
+                    <Button type="primary" htmlType="submit">
+                      保存配置
+                    </Button>
+                  </Form.Item>
+                </Form>
+              ),
+            },
+          ]}
+        />
       </Drawer>
     </div>
   );

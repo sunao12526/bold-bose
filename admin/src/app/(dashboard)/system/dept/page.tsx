@@ -135,7 +135,7 @@ export default function DeptList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增部门' : '编辑部门'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

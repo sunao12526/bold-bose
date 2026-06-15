@@ -84,7 +84,7 @@ export default function PostsList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增岗位' : '编辑岗位'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

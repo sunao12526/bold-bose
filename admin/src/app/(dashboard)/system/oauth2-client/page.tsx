@@ -128,7 +128,7 @@ export default function OAuth2ClientList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增 OAuth2 客户端' : '编辑 OAuth2 客户端'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

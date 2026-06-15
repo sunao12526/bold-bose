@@ -142,7 +142,7 @@ export default function SmsTemplateList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增短信模板' : '编辑短信模板'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
@@ -186,7 +186,7 @@ export default function SmsTemplateList() {
         </Form>
       </Modal>
 
-      <Modal
+      <Modal forceRender
         title="短信发送测试"
         open={isTestModalOpen}
         onCancel={() => setIsTestModalOpen(false)}

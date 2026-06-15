@@ -81,7 +81,7 @@ export default function TagList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增会员标签' : '编辑会员标签'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

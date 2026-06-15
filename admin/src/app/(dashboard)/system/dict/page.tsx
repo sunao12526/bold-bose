@@ -225,7 +225,7 @@ export default function DictManagement() {
       </Row>
 
       {/* DictType Form Modal */}
-      <Modal
+      <Modal forceRender
         title={typeFormMode === 'create' ? '新增字典类型' : '编辑字典类型'}
         open={isTypeModalOpen}
         onCancel={() => setIsTypeModalOpen(false)}
@@ -269,7 +269,7 @@ export default function DictManagement() {
       </Modal>
 
       {/* DictData Form Modal */}
-      <Modal
+      <Modal forceRender
         title={dataFormMode === 'create' ? '新增字典数据' : '编辑字典数据'}
         open={isDataModalOpen}
         onCancel={() => setIsDataModalOpen(false)}

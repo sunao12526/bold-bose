@@ -73,7 +73,7 @@ export default function CouponPage() {
         const [catRes, spuRes, memRes] = await Promise.all([
           axiosInstance.get('/mall/category'),
           axiosInstance.get('/mall/spu'),
-          axiosInstance.get('/mall/member')
+          axiosInstance.get('/member/user')
         ]);
         setCategories(catRes.data || []);
         setSpus(spuRes.data || []);
@@ -319,242 +319,254 @@ export default function CouponPage() {
 
       {/* Tabs */}
       <Card variant="borderless" style={{ borderRadius: '8px' }}>
-        <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          
-          {/* TAB 1: 优惠券模板 */}
-          <Tabs.TabPane tab="优惠券模板" key="templates">
-            <div style={{ marginBottom: '16px', display: 'flex', gap: '12px' }}>
-              <Input
-                placeholder="搜索优惠券名称"
-                prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
-                style={{ width: 260 }}
-                value={templateSearchName}
-                onChange={e => setTemplateSearchName(e.target.value)}
-                allowClear
-              />
-              <Button icon={<ReloadOutlined />} onClick={fetchTemplates}>刷新</Button>
-            </div>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={[
+            {
+              key: 'templates',
+              label: '优惠券模板',
+              children: (
+                <>
+                  <div style={{ marginBottom: '16px', display: 'flex', gap: '12px' }}>
+                    <Input
+                      placeholder="搜索优惠券名称"
+                      prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+                      style={{ width: 260 }}
+                      value={templateSearchName}
+                      onChange={e => setTemplateSearchName(e.target.value)}
+                      allowClear
+                    />
+                    <Button icon={<ReloadOutlined />} onClick={fetchTemplates}>刷新</Button>
+                  </div>
 
-            <Table 
-              dataSource={filteredTemplates} 
-              rowKey="id" 
-              loading={loadingTemplates}
-              pagination={{ pageSize: 10 }}
-            >
-              <Table.Column dataIndex="id" title="ID" width={60} />
-              <Table.Column 
-                dataIndex="name" 
-                title="名称" 
-                render={(name) => <span style={{ fontWeight: '500', color: '#1890ff' }}>{name}</span>}
-              />
-              <Table.Column 
-                dataIndex="type" 
-                title="类型" 
-                width={100}
-                render={(type) => (
-                  <Tag color={type === 'CASH' ? 'red' : 'green'}>
-                    {type === 'CASH' ? '代金券' : '折扣券'}
-                  </Tag>
-                )}
-              />
-              <Table.Column 
-                title="优惠额度" 
-                width={120}
-                render={(_, record: any) => formatCouponValue(record)}
-              />
-              <Table.Column 
-                dataIndex="minPrice" 
-                title="使用门槛" 
-                width={120}
-                render={(price) => price === 0 ? '无门槛' : `满 ${formatMoney(price)}`}
-              />
-              <Table.Column 
-                title="适用范围" 
-                width={200}
-                render={(_, record: any) => renderScope(record)}
-              />
-              <Table.Column 
-                title="发放进度" 
-                width={200}
-                render={(_, record: any) => {
-                  const percent = record.totalCount > 0 ? (record.takeCount / record.totalCount) * 100 : 0;
-                  return (
-                    <div style={{ width: '150px' }}>
-                      <Progress percent={Math.round(percent)} size="small" status={percent >= 100 ? 'normal' : 'active'} />
-                      <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '4px' }}>
-                        已领 {record.takeCount} / 共 {record.totalCount} 张 (已用 {record.useCount})
-                      </div>
-                    </div>
-                  );
-                }}
-              />
-              <Table.Column 
-                title="有效期" 
-                width={220}
-                render={(_, record: any) => {
-                  if (record.validityType === 'DATE') {
-                    return (
-                      <span style={{ fontSize: '13px' }}>
-                        {dayjs(record.validStartTime).format('YYYY-MM-DD HH:mm')}<br/>
-                        至 {dayjs(record.validEndTime).format('YYYY-MM-DD HH:mm')}
-                      </span>
-                    );
-                  } else {
-                    return <Tag color="purple">领取后 {record.validDays} 天内有效</Tag>;
-                  }
-                }}
-              />
-              <Table.Column 
-                dataIndex="status" 
-                title="状态" 
-                width={80}
-                render={(status, record: any) => (
-                  <Switch
-                    checked={status === 'ENABLE'}
-                    onChange={async (checked) => {
-                      const newStatus = checked ? 'ENABLE' : 'DISABLE';
-                      try {
-                        await axiosInstance.put(`/mall/coupon/${record.id}/status`, { status: newStatus });
-                        message.success('更新状态成功');
-                        fetchTemplates();
-                      } catch (e: any) {
-                        message.error(e.response?.data?.message || '更新状态失败');
-                      }
-                    }}
-                  />
-                )}
-              />
-              <Table.Column
-                title="操作"
-                key="action"
-                width={180}
-                render={(_, record: any) => (
-                  <Space size="middle">
-                    <Button 
-                      type="link" 
-                      icon={<SendOutlined />} 
-                      onClick={() => handleOpenSendModal(record)}
-                      disabled={record.status !== 'ENABLE' || record.takeCount >= record.totalCount}
-                    >
-                      分发会员
-                    </Button>
-                    <Popconfirm
-                      title="确定要删除这个优惠券模板吗？"
-                      onConfirm={async () => {
-                        try {
-                          await axiosInstance.delete(`/mall/coupon/${record.id}`);
-                          message.success('删除成功');
-                          fetchTemplates();
-                        } catch (e: any) {
-                          message.error(e.response?.data?.message || '删除失败');
+                  <Table 
+                    dataSource={filteredTemplates} 
+                    rowKey="id" 
+                    loading={loadingTemplates}
+                    pagination={{ pageSize: 10 }}
+                  >
+                    <Table.Column dataIndex="id" title="ID" width={60} />
+                    <Table.Column 
+                      dataIndex="name" 
+                      title="名称" 
+                      render={(name) => <span style={{ fontWeight: '500', color: '#1890ff' }}>{name}</span>}
+                    />
+                    <Table.Column 
+                      dataIndex="type" 
+                      title="类型" 
+                      width={100}
+                      render={(type) => (
+                        <Tag color={type === 'CASH' ? 'red' : 'green'}>
+                          {type === 'CASH' ? '代金券' : '折扣券'}
+                        </Tag>
+                      )}
+                    />
+                    <Table.Column 
+                      title="优惠额度" 
+                      width={120}
+                      render={(_, record: any) => formatCouponValue(record)}
+                    />
+                    <Table.Column 
+                      dataIndex="minPrice" 
+                      title="使用门槛" 
+                      width={120}
+                      render={(price) => price === 0 ? '无门槛' : `满 ${formatMoney(price)}`}
+                    />
+                    <Table.Column 
+                      title="适用范围" 
+                      width={200}
+                      render={(_, record: any) => renderScope(record)}
+                    />
+                    <Table.Column 
+                      title="发放进度" 
+                      width={200}
+                      render={(_, record: any) => {
+                        const percent = record.totalCount > 0 ? (record.takeCount / record.totalCount) * 100 : 0;
+                        return (
+                          <div style={{ width: '150px' }}>
+                            <Progress percent={Math.round(percent)} size="small" status={percent >= 100 ? 'normal' : 'active'} />
+                            <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '4px' }}>
+                              已领 {record.takeCount} / 共 {record.totalCount} 张 (已用 {record.useCount})
+                            </div>
+                          </div>
+                        );
+                      }}
+                    />
+                    <Table.Column 
+                      title="有效期" 
+                      width={220}
+                      render={(_, record: any) => {
+                        if (record.validityType === 'DATE') {
+                          return (
+                            <span style={{ fontSize: '13px' }}>
+                              {dayjs(record.validStartTime).format('YYYY-MM-DD HH:mm')}<br/>
+                              至 {dayjs(record.validEndTime).format('YYYY-MM-DD HH:mm')}
+                            </span>
+                          );
+                        } else {
+                          return <Tag color="purple">领取后 {record.validDays} 天内有效</Tag>;
                         }
                       }}
-                      okText="确定"
-                      cancelText="取消"
+                    />
+                    <Table.Column 
+                      dataIndex="status" 
+                      title="状态" 
+                      width={80}
+                      render={(status, record: any) => (
+                        <Switch
+                          checked={status === 'ENABLE'}
+                          onChange={async (checked) => {
+                            const newStatus = checked ? 'ENABLE' : 'DISABLE';
+                            try {
+                              await axiosInstance.put(`/mall/coupon/${record.id}/status`, { status: newStatus });
+                              message.success('更新状态成功');
+                              fetchTemplates();
+                            } catch (e: any) {
+                              message.error(e.response?.data?.message || '更新状态失败');
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                    <Table.Column
+                      title="操作"
+                      key="action"
+                      width={180}
+                      render={(_, record: any) => (
+                        <Space size="middle">
+                          <Button 
+                            type="link" 
+                            icon={<SendOutlined />} 
+                            onClick={() => handleOpenSendModal(record)}
+                            disabled={record.status !== 'ENABLE' || record.takeCount >= record.totalCount}
+                          >
+                            分发会员
+                          </Button>
+                          <Popconfirm
+                            title="确定要删除这个优惠券模板吗？"
+                            onConfirm={async () => {
+                              try {
+                                await axiosInstance.delete(`/mall/coupon/${record.id}`);
+                                message.success('删除成功');
+                                fetchTemplates();
+                              } catch (e: any) {
+                                message.error(e.response?.data?.message || '删除失败');
+                              }
+                            }}
+                            okText="确定"
+                            cancelText="取消"
+                          >
+                            <Button type="link" danger icon={<DeleteOutlined />}>删除</Button>
+                          </Popconfirm>
+                        </Space>
+                      )}
+                    />
+                  </Table>
+                </>
+              ),
+            },
+            {
+              key: 'history',
+              label: '会员领用记录',
+              children: (
+                <>
+                  <div style={{ marginBottom: '16px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    <Input
+                      placeholder="搜索会员昵称/手机号"
+                      prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+                      style={{ width: 240 }}
+                      value={userCouponSearchMobile}
+                      onChange={e => setUserCouponSearchMobile(e.target.value)}
+                      allowClear
+                    />
+                    <Select
+                      placeholder="过滤使用状态"
+                      style={{ width: 150 }}
+                      value={userCouponSearchStatus}
+                      onChange={setUserCouponSearchStatus}
+                      allowClear
                     >
-                      <Button type="link" danger icon={<DeleteOutlined />}>删除</Button>
-                    </Popconfirm>
-                  </Space>
-                )}
-              />
-            </Table>
-          </Tabs.TabPane>
-
-          {/* TAB 2: 会员领用记录 */}
-          <Tabs.TabPane tab="会员领用记录" key="history">
-            <div style={{ marginBottom: '16px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <Input
-                placeholder="搜索会员昵称/手机号"
-                prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
-                style={{ width: 240 }}
-                value={userCouponSearchMobile}
-                onChange={e => setUserCouponSearchMobile(e.target.value)}
-                allowClear
-              />
-              <Select
-                placeholder="过滤使用状态"
-                style={{ width: 150 }}
-                value={userCouponSearchStatus}
-                onChange={setUserCouponSearchStatus}
-                allowClear
-              >
-                <Select.Option value="UNUSED">未使用</Select.Option>
-                <Select.Option value="USED">已使用</Select.Option>
-                <Select.Option value="EXPIRED">已过期</Select.Option>
-              </Select>
-              <Button icon={<ReloadOutlined />} onClick={fetchUserCoupons}>刷新</Button>
-            </div>
-
-            <Table 
-              dataSource={filteredUserCoupons} 
-              rowKey="id" 
-              loading={loadingUserCoupons}
-              pagination={{ pageSize: 10 }}
-            >
-              <Table.Column dataIndex="id" title="记录 ID" width={80} />
-              <Table.Column 
-                title="会员" 
-                render={(_, record: any) => (
-                  <div>
-                    <span style={{ fontWeight: '500' }}>{record.member?.nickname || '未知用户'}</span>
-                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>{record.member?.mobile || '-'}</div>
+                      <Select.Option value="UNUSED">未使用</Select.Option>
+                      <Select.Option value="USED">已使用</Select.Option>
+                      <Select.Option value="EXPIRED">已过期</Select.Option>
+                    </Select>
+                    <Button icon={<ReloadOutlined />} onClick={fetchUserCoupons}>刷新</Button>
                   </div>
-                )}
-              />
-              <Table.Column 
-                title="优惠券" 
-                render={(_, record: any) => (
-                  <div>
-                    <span style={{ fontWeight: '500', color: '#1890ff' }}>{record.coupon?.name}</span>
-                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
-                      {formatCouponValue(record.coupon)} | {record.coupon?.minPrice === 0 ? '无门槛' : `满 ${(record.coupon?.minPrice / 100).toFixed(2)}`}
-                    </div>
-                  </div>
-                )}
-              />
-              <Table.Column 
-                title="使用限制" 
-                render={(_, record: any) => renderScope(record.coupon)}
-              />
-              <Table.Column 
-                title="有效期限" 
-                width={220}
-                render={(_, record: any) => (
-                  <span style={{ fontSize: '13px' }}>
-                    {dayjs(record.validStartTime).format('YYYY-MM-DD HH:mm')}<br/>
-                    至 {dayjs(record.validEndTime).format('YYYY-MM-DD HH:mm')}
-                  </span>
-                )}
-              />
-              <Table.Column 
-                dataIndex="status" 
-                title="使用状态" 
-                width={120}
-                render={(status) => {
-                  if (status === 'UNUSED') return <Tag color="blue" icon={<ClockCircleOutlined />}>未使用</Tag>;
-                  if (status === 'USED') return <Tag color="green" icon={<CheckCircleOutlined />}>已使用</Tag>;
-                  return <Tag color="red" icon={<CloseCircleOutlined />}>已过期</Tag>;
-                }}
-              />
-              <Table.Column 
-                title="核销时间 / 订单ID" 
-                render={(_, record: any) => {
-                  if (record.status !== 'USED') return '-';
-                  return (
-                    <div>
-                      {record.useTime ? dayjs(record.useTime).format('YYYY-MM-DD HH:mm') : '-'}<br/>
-                      <Tag color="cyan">订单ID: {record.useOrderId || '-'}</Tag>
-                    </div>
-                  );
-                }}
-              />
-            </Table>
-          </Tabs.TabPane>
-        </Tabs>
+
+                  <Table 
+                    dataSource={filteredUserCoupons} 
+                    rowKey="id" 
+                    loading={loadingUserCoupons}
+                    pagination={{ pageSize: 10 }}
+                  >
+                    <Table.Column dataIndex="id" title="记录 ID" width={80} />
+                    <Table.Column 
+                      title="会员" 
+                      render={(_, record: any) => (
+                        <div>
+                          <span style={{ fontWeight: '500' }}>{record.member?.nickname || '未知用户'}</span>
+                          <div style={{ fontSize: '12px', color: '#8c8c8c' }}>{record.member?.mobile || '-'}</div>
+                        </div>
+                      )}
+                    />
+                    <Table.Column 
+                      title="优惠券" 
+                      render={(_, record: any) => (
+                        <div>
+                          <span style={{ fontWeight: '500', color: '#1890ff' }}>{record.coupon?.name}</span>
+                          <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                            {formatCouponValue(record.coupon)} | {record.coupon?.minPrice === 0 ? '无门槛' : `满 ${(record.coupon?.minPrice / 100).toFixed(2)}`}
+                          </div>
+                        </div>
+                      )}
+                    />
+                    <Table.Column 
+                      title="使用限制" 
+                      render={(_, record: any) => renderScope(record.coupon)}
+                    />
+                    <Table.Column 
+                      title="有效期限" 
+                      width={220}
+                      render={(_, record: any) => (
+                        <span style={{ fontSize: '13px' }}>
+                          {dayjs(record.validStartTime).format('YYYY-MM-DD HH:mm')}<br/>
+                          至 {dayjs(record.validEndTime).format('YYYY-MM-DD HH:mm')}
+                        </span>
+                      )}
+                    />
+                    <Table.Column 
+                      dataIndex="status" 
+                      title="使用状态" 
+                      width={120}
+                      render={(status) => {
+                        if (status === 'UNUSED') return <Tag color="blue" icon={<ClockCircleOutlined />}>未使用</Tag>;
+                        if (status === 'USED') return <Tag color="green" icon={<CheckCircleOutlined />}>已使用</Tag>;
+                        return <Tag color="red" icon={<CloseCircleOutlined />}>已过期</Tag>;
+                      }}
+                    />
+                    <Table.Column 
+                      title="核销时间 / 订单ID" 
+                      render={(_, record: any) => {
+                        if (record.status !== 'USED') return '-';
+                        return (
+                          <div>
+                            {record.useTime ? dayjs(record.useTime).format('YYYY-MM-DD HH:mm') : '-'}<br/>
+                            <Tag color="cyan">订单ID: {record.useOrderId || '-'}</Tag>
+                          </div>
+                        );
+                      }}
+                    />
+                  </Table>
+                </>
+              ),
+            },
+          ]}
+        />
       </Card>
 
       {/* MODAL 1: 创建优惠券模板 */}
-      <Modal
+      <Modal forceRender
         title="创建优惠券模板"
         open={isCreateModalOpen}
         onCancel={() => setIsCreateModalOpen(false)}
@@ -666,7 +678,7 @@ export default function CouponPage() {
                     <TreeSelect
                       treeDataSimpleMode
                       style={{ width: '100%' }}
-                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      styles={{ popup: { root: { maxHeight: 400, overflow: 'auto' } } }}
                       placeholder="可多选商品分类"
                       multiple
                       treeDefaultExpandAll
@@ -739,7 +751,7 @@ export default function CouponPage() {
       </Modal>
 
       {/* MODAL 2: 分发优惠券给会员 */}
-      <Modal
+      <Modal forceRender
         title={selectedTemplate ? `分发优惠券: ${selectedTemplate.name}` : '分发优惠券'}
         open={isSendModalOpen}
         onCancel={() => setIsSendModalOpen(false)}

@@ -402,7 +402,7 @@ export default function SpuList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增商品' : '编辑商品'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
@@ -436,7 +436,7 @@ export default function SpuList() {
               >
                 <TreeSelect
                   showSearch
-                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  styles={{ popup: { root: { maxHeight: 400, overflow: 'auto' } } }}
                   placeholder="请选择分类"
                   allowClear
                   treeDefaultExpandAll

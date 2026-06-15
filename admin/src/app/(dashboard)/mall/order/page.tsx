@@ -195,14 +195,19 @@ export default function OrderList() {
   return (
     <div style={{ padding: '24px' }}>
       <List title="订单管理">
-        <Tabs activeKey={activeTab} onChange={handleTabChange} style={{ marginBottom: 16 }}>
-          <Tabs.TabPane tab="全部" key="ALL" />
-          <Tabs.TabPane tab="待付款" key="UNPAID" />
-          <Tabs.TabPane tab="待发货" key="UNDELIVERED" />
-          <Tabs.TabPane tab="已发货" key="DELIVERED" />
-          <Tabs.TabPane tab="已完成" key="COMPLETED" />
-          <Tabs.TabPane tab="已取消" key="CANCELLED" />
-        </Tabs>
+        <Tabs
+          activeKey={activeTab}
+          onChange={handleTabChange}
+          style={{ marginBottom: 16 }}
+          items={[
+            { key: 'ALL', label: '全部' },
+            { key: 'UNPAID', label: '待付款' },
+            { key: 'UNDELIVERED', label: '待发货' },
+            { key: 'DELIVERED', label: '已发货' },
+            { key: 'COMPLETED', label: '已完成' },
+            { key: 'CANCELLED', label: '已取消' },
+          ]}
+        />
 
         <Table {...tableProps} rowKey="id">
           <Table.Column dataIndex="no" title="订单编号" width={160} />
@@ -417,7 +422,7 @@ export default function OrderList() {
       </Drawer>
 
       {/* Deliver Shipment Modal */}
-      <Modal
+      <Modal forceRender
         title={`订单发货 [${selectedOrder?.no}]`}
         open={shipModalOpen}
         onCancel={() => setShipModalOpen(false)}
@@ -456,7 +461,7 @@ export default function OrderList() {
       </Modal>
 
       {/* Adjust Price Modal */}
-      <Modal
+      <Modal forceRender
         title={`订单改价 [${selectedOrder?.no}]`}
         open={adjustModalOpen}
         onCancel={() => setAdjustModalOpen(false)}

@@ -101,7 +101,7 @@ export default function SignInConfigList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={selectedConfig ? `配置第 ${selectedConfig.day} 天签到奖励` : '配置签到奖励'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}

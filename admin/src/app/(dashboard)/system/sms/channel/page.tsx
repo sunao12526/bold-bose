@@ -83,7 +83,7 @@ export default function SmsChannelList() {
         </Table>
       </List>
 
-      <Modal
+      <Modal forceRender
         title={formMode === 'create' ? '新增短信渠道' : '编辑短信渠道'}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
