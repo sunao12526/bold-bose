@@ -393,6 +393,19 @@ async function main() {
             status: client_1.CommonStatus.ENABLE,
         },
     });
+    const smsCodeMenu = await prisma.menu.create({
+        data: {
+            name: '验证码日志',
+            type: client_1.MenuType.MENU,
+            parentId: smsDir.id,
+            path: '/system/sms/code',
+            icon: 'SafetyCertificateOutlined',
+            permission: 'system:sms:query',
+            component: 'system/sms/code',
+            sort: 4,
+            status: client_1.CommonStatus.ENABLE,
+        },
+    });
     const mailDir = await prisma.menu.create({
         data: {
             name: '邮件管理',
@@ -821,7 +834,7 @@ async function main() {
         deptMenu, deptCreate, deptUpdate, deptDelete,
         noticeMenu, noticeCreate, noticeUpdate, noticeDelete,
         smsDir, smsChannelMenu, smsChannelCreate, smsChannelUpdate, smsChannelDelete,
-        smsTemplateMenu, smsTemplateCreate, smsTemplateUpdate, smsTemplateDelete, smsLogMenu,
+        smsTemplateMenu, smsTemplateCreate, smsTemplateUpdate, smsTemplateDelete, smsLogMenu, smsCodeMenu,
         mailDir, mailAccountMenu, mailAccountCreate, mailAccountUpdate, mailAccountDelete,
         mailTemplateMenu, mailTemplateCreate, mailTemplateUpdate, mailTemplateDelete, mailLogMenu,
         oauth2ClientMenu, oauth2ClientCreate, oauth2ClientUpdate, oauth2ClientDelete,
@@ -1687,6 +1700,17 @@ async function main() {
             name: '单点登录测试客户端',
             redirectUris: '["http://localhost:3001/sso-callback"]',
             scopes: '["user_info", "roles"]',
+            status: client_1.CommonStatus.ENABLE,
+        },
+    });
+    console.log('Seeding Social Client configurations...');
+    await prisma.socialClient.deleteMany({});
+    await prisma.socialClient.create({
+        data: {
+            type: 'GITHUB',
+            clientId: 'github_client_id_placeholder',
+            clientSecret: 'github_client_secret_placeholder',
+            redirectUri: 'http://localhost:3001/social-callback',
             status: client_1.CommonStatus.ENABLE,
         },
     });

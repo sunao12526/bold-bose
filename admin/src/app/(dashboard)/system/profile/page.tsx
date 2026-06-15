@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from 'react';
 import { Card, Tabs, Form, Input, Button, Row, Col, Space, Typography, Tag, message, Progress } from 'antd';
-import { UserOutlined, LockOutlined, SafetyCertificateOutlined, MailOutlined, PhoneOutlined, KeyOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, SafetyCertificateOutlined, MailOutlined, PhoneOutlined, KeyOutlined, GithubOutlined, LinkOutlined } from '@ant-design/icons';
 import { useLogout } from '@refinedev/core';
 import { axiosInstance } from '../../../../lib/axios';
 
@@ -22,6 +22,9 @@ export default function UserProfile() {
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [newPasswordVal, setNewPasswordVal] = useState('');
+  
+  const [socialBinds, setSocialBinds] = useState<any[]>([]);
+  const [socialLoading, setSocialLoading] = useState(false);
 
   // 1. Fetch Profile
   const fetchProfile = async () => {
@@ -44,8 +47,21 @@ export default function UserProfile() {
     }
   };
 
+  const fetchSocialBinds = async () => {
+    try {
+      setSocialLoading(true);
+      const response = await axiosInstance.get('/system/auth/social-bind-status');
+      setSocialBinds(response.data || []);
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setSocialLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchProfile();
+    fetchSocialBinds();
   }, []);
 
   // 2. Update Profile Handler
@@ -83,6 +99,35 @@ export default function UserProfile() {
       message.error(err.response?.data?.message || '原密码错误，修改密码失败');
     } finally {
       setUpdatingPassword(false);
+    }
+  };
+
+  const handleSocialBind = async (type: string) => {
+    try {
+      const res = await axiosInstance.get(`/system/auth/social-login-url?type=${type}&redirectUri=${encodeURIComponent(window.location.origin + '/social-callback')}`);
+      window.location.href = res.data.url;
+    } catch (err: any) {
+      message.error(err.response?.data?.message || '获取绑定链接失败');
+    }
+  };
+
+  const handleMockBind = async (type: string) => {
+    try {
+      await axiosInstance.post('/system/auth/social-bind', { type, code: 'mock_code' });
+      message.success('模拟绑定成功！');
+      fetchSocialBinds();
+    } catch (err: any) {
+      message.error(err.response?.data?.message || '模拟绑定失败');
+    }
+  };
+
+  const handleSocialUnbind = async (type: string) => {
+    try {
+      await axiosInstance.post('/system/auth/social-unbind', { type });
+      message.success('解绑成功！');
+      fetchSocialBinds();
+    } catch (err: any) {
+      message.error(err.response?.data?.message || '解绑失败');
     }
   };
 
@@ -296,6 +341,63 @@ export default function UserProfile() {
                     </Button>
                   </Form.Item>
                 </Form>
+              </Tabs.TabPane>
+
+              {/* Tab 3: Social Binds */}
+              <Tabs.TabPane tab={<span><LinkOutlined />社交账号绑定</span>} key="social">
+                <div style={{ marginTop: 16 }}>
+                  {socialBinds.map((bind) => (
+                    <Card 
+                      key={bind.type} 
+                      style={{ marginBottom: 16, borderRadius: '8px' }}
+                      styles={{ body: { padding: '20px' } }}
+                    >
+                      <Row align="middle" justify="space-between">
+                        <Col>
+                          <Space size={16}>
+                            <div style={{ 
+                              fontSize: 32, 
+                              color: bind.type === 'GITHUB' ? '#000' : '#1890ff',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}>
+                              <GithubOutlined />
+                            </div>
+                            <div>
+                              <Text strong style={{ fontSize: 16 }}>{bind.type}</Text>
+                              <div style={{ marginTop: 4 }}>
+                                {bind.bound ? (
+                                  <Space>
+                                    <Tag color="green">已绑定</Tag>
+                                    <Text type="secondary">{bind.nickname}</Text>
+                                  </Space>
+                                ) : (
+                                  <Tag color="default">未绑定</Tag>
+                                )}
+                              </div>
+                            </div>
+                          </Space>
+                        </Col>
+                        <Col>
+                          {bind.bound ? (
+                            <Button danger onClick={() => handleSocialUnbind(bind.type)}>
+                              解绑
+                            </Button>
+                          ) : (
+                            <Space>
+                              <Button type="primary" onClick={() => handleSocialBind(bind.type)}>
+                                绑定
+                              </Button>
+                              <Button onClick={() => handleMockBind(bind.type)}>
+                                模拟绑定(测试)
+                              </Button>
+                            </Space>
+                          )}
+                        </Col>
+                      </Row>
+                    </Card>
+                  ))}
+                </div>
               </Tabs.TabPane>
             </Tabs>
           </Card>

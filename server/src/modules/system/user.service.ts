@@ -15,7 +15,7 @@ export class UserService {
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    const { roleIds, ...rest } = data;
+    const { roleIds, postIds, ...rest } = data;
 
     const user = await this.prisma.user.create({
       data: {
@@ -26,6 +26,10 @@ export class UserService {
 
     if (roleIds && roleIds.length > 0) {
       await this.assignRoles(user.id, roleIds);
+    }
+
+    if (postIds && postIds.length > 0) {
+      await this.assignPosts(user.id, postIds);
     }
 
     return user;
@@ -45,6 +49,7 @@ export class UserService {
         createdAt: true,
         updatedAt: true,
         roles: { include: { role: true } },
+        posts: { include: { post: true } },
         dept: {
           select: {
             id: true,
@@ -58,12 +63,15 @@ export class UserService {
   async findOne(id: number) {
     return this.prisma.user.findUnique({
       where: { id },
-      include: { roles: { select: { roleId: true } } },
+      include: { 
+        roles: { select: { roleId: true } },
+        posts: { select: { postId: true } },
+      },
     });
   }
 
   async update(id: number, data: any) {
-    const { roleIds, password, ...rest } = data;
+    const { roleIds, postIds, password, ...rest } = data;
     const updateData: any = { ...rest };
 
     if (password) {
@@ -77,6 +85,10 @@ export class UserService {
 
     if (roleIds !== undefined) {
       await this.assignRoles(id, roleIds);
+    }
+
+    if (postIds !== undefined) {
+      await this.assignPosts(id, postIds);
     }
 
     return user;
@@ -94,6 +106,15 @@ export class UserService {
     if (roleIds.length > 0) {
       const mappings = roleIds.map((roleId) => ({ userId, roleId }));
       await this.prisma.userRole.createMany({ data: mappings });
+    }
+    return { success: true };
+  }
+
+  async assignPosts(userId: number, postIds: number[]) {
+    await this.prisma.userPost.deleteMany({ where: { userId } });
+    if (postIds.length > 0) {
+      const mappings = postIds.map((postId) => ({ userId, postId }));
+      await this.prisma.userPost.createMany({ data: mappings });
     }
     return { success: true };
   }

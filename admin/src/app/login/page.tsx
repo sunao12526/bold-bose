@@ -4,13 +4,28 @@ export const dynamic = "force-dynamic";
 
 import React from 'react';
 import { useLogin } from '@refinedev/core';
-import { Form, Input, Button, Card, Typography, Space } from 'antd';
-import { UserOutlined, LockOutlined, SafetyOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Card, Typography, Space, Divider, message } from 'antd';
+import { UserOutlined, LockOutlined, SafetyOutlined, GithubOutlined } from '@ant-design/icons';
+import { axiosInstance } from '../../lib/axios';
 
 const { Title, Text } = Typography;
 
 export default function Login() {
   const { mutate: login, isPending } = useLogin();
+
+  const handleGithubLogin = async () => {
+    try {
+      const redirectUri = window.location.origin + '/social-callback';
+      const res = await axiosInstance.get(`/system/auth/social-login-url?type=GITHUB&redirectUri=${encodeURIComponent(redirectUri)}`);
+      window.location.href = res.data.url;
+    } catch (err: any) {
+      message.error(err.response?.data?.message || '获取社交登录链接失败');
+    }
+  };
+
+  const handleMockLogin = () => {
+    window.location.href = `/social-callback?code=mock_code`;
+  };
 
   const onFinish = (values: any) => {
     login({
@@ -102,6 +117,24 @@ export default function Login() {
             </Button>
           </Form.Item>
         </Form>
+
+        <Divider plain><Text type="secondary" style={{ fontSize: '12px' }}>其他登录方式</Text></Divider>
+
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
+          <Button 
+            shape="circle" 
+            icon={<GithubOutlined />} 
+            onClick={handleGithubLogin} 
+            title="GitHub 登录" 
+          />
+          <Button 
+            onClick={handleMockLogin}
+            size="small"
+            type="dashed"
+          >
+            模拟 GitHub 登录
+          </Button>
+        </div>
       </Card>
     </div>
   );

@@ -10,14 +10,16 @@ exports.SmsModule = void 0;
 const common_1 = require("@nestjs/common");
 const sms_service_1 = require("./sms.service");
 const sms_controller_1 = require("./sms.controller");
+const sms_code_service_1 = require("./sms-code.service");
+const sms_code_controller_1 = require("./sms-code.controller");
 let SmsModule = class SmsModule {
 };
 exports.SmsModule = SmsModule;
 exports.SmsModule = SmsModule = __decorate([
     (0, common_1.Module)({
-        controllers: [sms_controller_1.SmsChannelController, sms_controller_1.SmsTemplateController, sms_controller_1.SmsLogController],
-        providers: [sms_service_1.SmsService],
-        exports: [sms_service_1.SmsService],
+        controllers: [sms_controller_1.SmsChannelController, sms_controller_1.SmsTemplateController, sms_controller_1.SmsLogController, sms_code_controller_1.SmsCodeController],
+        providers: [sms_service_1.SmsService, sms_code_service_1.SmsCodeService],
+        exports: [sms_service_1.SmsService, sms_code_service_1.SmsCodeService],
     })
 ], SmsModule);
 //# sourceMappingURL=sms.module.js.map

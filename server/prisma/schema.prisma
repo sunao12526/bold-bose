@@ -40,6 +40,7 @@ model User {
   dept        Dept?        @relation("UserDept", fields: [deptId], references: [id], onDelete: SetNull)
   deptLeader  Dept[]       @relation("DeptLeader")
   socialUsers SocialUser[]
+  posts       UserPost[]
 
   @@map("system_users")
 }
@@ -240,6 +241,7 @@ model Post {
   remark    String?      @db.VarChar(500)
   status    CommonStatus @default(ENABLE)
   createdAt DateTime     @default(now()) @map("created_at")
+  users     UserPost[]
 
   @@map("system_posts")
 }
@@ -916,5 +918,43 @@ model LoginLog {
   loginTime DateTime @default(now()) @map("login_time")
 
   @@map("system_login_log")
+}
+
+model UserPost {
+  userId Int  @map("user_id")
+  postId Int  @map("post_id")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@map("system_user_post")
+}
+
+model SmsCode {
+  id         Int       @id @default(autoincrement())
+  mobile     String    @db.VarChar(20)
+  code       String    @db.VarChar(10)
+  scene      Int       // 1: login, 2: register, 3: update mobile, etc.
+  todayIndex Int       @default(1) @map("today_index")
+  used       Boolean   @default(false)
+  usedIp     String?   @map("used_ip") @db.VarChar(50)
+  usedTime   DateTime? @map("used_time")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  expiredAt  DateTime  @map("expired_at")
+
+  @@map("system_sms_codes")
+}
+
+model SocialClient {
+  id           Int          @id @default(autoincrement())
+  type         String       @unique @db.VarChar(50) // GITHUB, WECHAT, etc.
+  clientId     String       @map("client_id") @db.VarChar(100)
+  clientSecret String       @map("client_secret") @db.VarChar(100)
+  redirectUri  String       @map("redirect_uri") @db.VarChar(200)
+  status       CommonStatus @default(ENABLE)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  @@map("system_social_clients")
 }
 

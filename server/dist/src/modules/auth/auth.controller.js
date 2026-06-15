@@ -38,6 +38,23 @@ let AuthController = class AuthController {
     async getPermissionInfo(req) {
         return this.authService.getUserPermissionInfo(req.user.id);
     }
+    async getSocialLoginUrl(type, redirectUri) {
+        return this.authService.getSocialLoginUrl(type, redirectUri);
+    }
+    async socialLogin(type, code, redirectUri, req) {
+        const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+        const userAgent = req.headers['user-agent'] || '';
+        return this.authService.socialLogin(type, code, redirectUri, ip, userAgent);
+    }
+    async socialBind(req, type, code, redirectUri) {
+        return this.authService.socialBind(req.user.id, type, code, redirectUri);
+    }
+    async socialUnbind(req, type) {
+        return this.authService.socialUnbind(req.user.id, type);
+    }
+    async getSocialBindStatus(req) {
+        return this.authService.getSocialBindStatus(req.user.id);
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -65,6 +82,54 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getPermissionInfo", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('social-login-url'),
+    __param(0, (0, common_1.Query)('type')),
+    __param(1, (0, common_1.Query)('redirectUri')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "getSocialLoginUrl", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('social-login'),
+    __param(0, (0, common_1.Body)('type')),
+    __param(1, (0, common_1.Body)('code')),
+    __param(2, (0, common_1.Body)('redirectUri')),
+    __param(3, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "socialLogin", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('social-bind'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)('type')),
+    __param(2, (0, common_1.Body)('code')),
+    __param(3, (0, common_1.Body)('redirectUri')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "socialBind", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('social-unbind'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)('type')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "socialUnbind", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('social-bind-status'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "getSocialBindStatus", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('system/auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

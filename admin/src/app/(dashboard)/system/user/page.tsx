@@ -29,6 +29,12 @@ export default function UserList() {
     optionValue: 'id',
   });
 
+  const { selectProps: postSelectProps } = useSelect({
+    resource: 'system/posts',
+    optionLabel: 'name',
+    optionValue: 'id',
+  });
+
   const handleCreate = () => {
     setFormMode('create');
     form.resetFields();
@@ -41,6 +47,7 @@ export default function UserList() {
       ...record,
       deptId: record.deptId || null,
       roleIds: record.roles?.map((ur: any) => ur.role.id) || [],
+      postIds: record.posts?.map((up: any) => up.post.id) || [],
     });
     setIsModalOpen(true);
   };
@@ -80,6 +87,17 @@ export default function UserList() {
               <>
                 {roles?.map((ur) => (
                   <Tag color="blue" key={ur.role.id}>{ur.role.name}</Tag>
+                ))}
+              </>
+            )}
+          />
+          <Table.Column 
+            dataIndex="posts" 
+            title="岗位" 
+            render={(posts: any[]) => (
+              <>
+                {posts?.map((up) => (
+                  <Tag color="purple" key={up.post.id}>{up.post.name}</Tag>
                 ))}
               </>
             )}
@@ -164,6 +182,10 @@ export default function UserList() {
 
           <Form.Item name="roleIds" label="角色">
             <Select mode="multiple" placeholder="请选择角色" {...roleSelectProps} />
+          </Form.Item>
+
+          <Form.Item name="postIds" label="岗位">
+            <Select mode="multiple" placeholder="请选择岗位" {...postSelectProps} />
           </Form.Item>
 
           <Form.Item name="status" label="状态" initialValue="ENABLE">

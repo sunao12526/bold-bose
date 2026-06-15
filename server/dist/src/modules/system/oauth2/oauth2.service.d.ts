@@ -62,4 +62,10 @@ export declare class OAuth2Service {
         redirectUris: string;
         scopes: string;
     }>;
+    private codes;
+    generateCode(userId: number, clientId: string, scopes: string[]): Promise<string>;
+    verifyCode(code: string, clientId: string): Promise<{
+        userId: number;
+        scopes: string[];
+    }>;
 }

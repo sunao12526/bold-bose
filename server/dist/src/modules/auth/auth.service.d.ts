@@ -22,4 +22,27 @@ export declare class AuthService {
         roles: string[];
         permissions: string[];
     }>;
+    getSocialLoginUrl(type: string, redirectUri?: string): Promise<{
+        url: string;
+    }>;
+    socialLogin(type: string, code: string, redirectUri?: string, ip?: string, userAgent?: string): Promise<{
+        accessToken: string;
+        userId: number;
+    }>;
+    socialBind(userId: number, type: string, code: string, redirectUri?: string): Promise<{
+        success: boolean;
+        message: string;
+    } | {
+        success: boolean;
+        message?: undefined;
+    }>;
+    socialUnbind(userId: number, type: string): Promise<{
+        success: boolean;
+    }>;
+    getSocialBindStatus(userId: number): Promise<{
+        type: string;
+        bound: boolean;
+        nickname: string | null;
+        avatar: string | null;
+    }[]>;
 }

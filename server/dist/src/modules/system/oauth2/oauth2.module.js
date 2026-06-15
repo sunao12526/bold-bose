@@ -8,14 +8,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OAuth2Module = void 0;
 const common_1 = require("@nestjs/common");
+const jwt_1 = require("@nestjs/jwt");
 const oauth2_service_1 = require("./oauth2.service");
 const oauth2_client_controller_1 = require("./oauth2-client.controller");
+const oauth2_controller_1 = require("./oauth2.controller");
 let OAuth2Module = class OAuth2Module {
 };
 exports.OAuth2Module = OAuth2Module;
 exports.OAuth2Module = OAuth2Module = __decorate([
     (0, common_1.Module)({
-        controllers: [oauth2_client_controller_1.OAuth2ClientController],
+        imports: [
+            jwt_1.JwtModule.register({
+                secret: process.env.JWT_SECRET || 'yudao-nestjs-secret-key-2026',
+                signOptions: { expiresIn: '1d' },
+            }),
+        ],
+        controllers: [oauth2_client_controller_1.OAuth2ClientController, oauth2_controller_1.OAuth2Controller],
         providers: [oauth2_service_1.OAuth2Service],
         exports: [oauth2_service_1.OAuth2Service],
     })

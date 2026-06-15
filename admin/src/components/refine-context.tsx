@@ -203,6 +203,15 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               },
             },
             {
+              name: 'system/sms/code',
+              list: '/system/sms/code',
+              meta: {
+                label: '验证码日志',
+                icon: <SafetyCertificateOutlined />,
+                parent: 'system/sms',
+              },
+            },
+            {
               name: 'system/mail',
               meta: {
                 label: '邮件管理',

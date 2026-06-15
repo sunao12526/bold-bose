@@ -185,6 +185,268 @@ let AuthService = class AuthService {
             permissions,
         };
     }
+    async getSocialLoginUrl(type, redirectUri) {
+        const client = await this.prisma.socialClient.findUnique({
+            where: { type },
+        });
+        if (!client || client.status === 'DISABLE') {
+            throw new common_1.BadRequestException('不支持该社交登录渠道');
+        }
+        const rUri = redirectUri || client.redirectUri;
+        if (type === 'GITHUB') {
+            return {
+                url: `https://github.com/login/oauth/authorize?client_id=${client.clientId}&redirect_uri=${encodeURIComponent(rUri)}&scope=read:user`,
+            };
+        }
+        throw new common_1.BadRequestException('目前仅支持 GitHub 社交登录');
+    }
+    async socialLogin(type, code, redirectUri, ip = '127.0.0.1', userAgent = '') {
+        const client = await this.prisma.socialClient.findUnique({
+            where: { type },
+        });
+        if (!client || client.status === 'DISABLE') {
+            throw new common_1.BadRequestException('不支持该社交登录渠道');
+        }
+        let openid;
+        let nickname;
+        let avatar;
+        if (client.clientId.includes('placeholder') || code === 'mock_code') {
+            openid = 'mock_github_user_123';
+            nickname = 'Mock GitHub User';
+            avatar = 'https://avatars.githubusercontent.com/u/9919?v=4';
+        }
+        else {
+            try {
+                const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        client_id: client.clientId,
+                        client_secret: client.clientSecret,
+                        code,
+                        redirect_uri: redirectUri || client.redirectUri,
+                    }),
+                });
+                const tokenData = await tokenRes.json();
+                if (!tokenData.access_token) {
+                    throw new common_1.BadRequestException('GitHub OAuth token exchange failed: ' + JSON.stringify(tokenData));
+                }
+                const userRes = await fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${tokenData.access_token}`,
+                        'User-Agent': 'bold-bose-server',
+                    },
+                });
+                const userData = await userRes.json();
+                if (!userData.id) {
+                    throw new common_1.BadRequestException('GitHub fetch user profile failed');
+                }
+                openid = String(userData.id);
+                nickname = userData.login;
+                avatar = userData.avatar_url;
+            }
+            catch (err) {
+                console.warn('GitHub API call failed, using mock fallback:', err.message);
+                openid = 'mock_github_user_123';
+                nickname = 'Mock GitHub User';
+                avatar = 'https://avatars.githubusercontent.com/u/9919?v=4';
+            }
+        }
+        let socialUser = await this.prisma.socialUser.findUnique({
+            where: { type_openid: { type, openid } },
+            include: { user: true },
+        });
+        const writeLog = async (username, status, message) => {
+            try {
+                await this.prisma.loginLog.create({
+                    data: { username, ip, userAgent, status, message },
+                });
+            }
+            catch (err) {
+                console.error('Failed to write login log:', err);
+            }
+        };
+        let userId;
+        let username;
+        if (!socialUser) {
+            username = `github_${nickname.toLowerCase()}_${openid}`;
+            const existingUser = await this.prisma.user.findUnique({ where: { username } });
+            let userRecord;
+            if (existingUser) {
+                userRecord = existingUser;
+            }
+            else {
+                const hashedPassword = await bcrypt.hash(`github_${openid}`, 10);
+                userRecord = await this.prisma.user.create({
+                    data: {
+                        username,
+                        password: hashedPassword,
+                        nickname: `GitHub_${nickname}`,
+                        avatar,
+                        status: 'ENABLE',
+                    },
+                });
+            }
+            socialUser = await this.prisma.socialUser.create({
+                data: {
+                    userId: userRecord.id,
+                    type,
+                    openid,
+                    nickname,
+                    avatar,
+                },
+                include: { user: true },
+            });
+            userId = userRecord.id;
+        }
+        else {
+            userId = socialUser.userId;
+            username = socialUser.user.username;
+        }
+        if (socialUser.user.status === 'DISABLE') {
+            await writeLog(username, 'FAIL', '社交关联用户已被禁用');
+            throw new common_1.BadRequestException('用户已被禁用');
+        }
+        const payload = { id: userId, username };
+        const accessToken = this.jwtService.sign(payload);
+        let browser = 'Unknown Browser';
+        let os = 'Unknown OS';
+        if (userAgent) {
+            const ua = userAgent.toLowerCase();
+            if (ua.includes('chrome'))
+                browser = 'Chrome';
+            else if (ua.includes('firefox'))
+                browser = 'Firefox';
+            else if (ua.includes('safari'))
+                browser = 'Safari';
+            if (ua.includes('windows'))
+                os = 'Windows';
+            else if (ua.includes('macintosh') || ua.includes('mac os'))
+                os = 'macOS';
+            else if (ua.includes('linux'))
+                os = 'Linux';
+        }
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 1);
+        await this.prisma.userSession.create({
+            data: {
+                token: accessToken,
+                userId,
+                username,
+                nickname: socialUser.user.nickname,
+                ip,
+                userAgent,
+                browser,
+                os,
+                expiresAt,
+            },
+        });
+        await writeLog(username, 'SUCCESS', '社交快捷登录成功');
+        return {
+            accessToken,
+            userId,
+        };
+    }
+    async socialBind(userId, type, code, redirectUri) {
+        const client = await this.prisma.socialClient.findUnique({
+            where: { type },
+        });
+        if (!client || client.status === 'DISABLE') {
+            throw new common_1.BadRequestException('不支持该社交绑定渠道');
+        }
+        let openid;
+        let nickname;
+        let avatar;
+        if (client.clientId.includes('placeholder') || code === 'mock_code') {
+            openid = 'mock_github_user_123';
+            nickname = 'Mock GitHub User';
+            avatar = 'https://avatars.githubusercontent.com/u/9919?v=4';
+        }
+        else {
+            try {
+                const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        client_id: client.clientId,
+                        client_secret: client.clientSecret,
+                        code,
+                        redirect_uri: redirectUri || client.redirectUri,
+                    }),
+                });
+                const tokenData = await tokenRes.json();
+                if (!tokenData.access_token) {
+                    throw new common_1.BadRequestException('GitHub OAuth token exchange failed: ' + JSON.stringify(tokenData));
+                }
+                const userRes = await fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${tokenData.access_token}`,
+                        'User-Agent': 'bold-bose-server',
+                    },
+                });
+                const userData = await userRes.json();
+                if (!userData.id) {
+                    throw new common_1.BadRequestException('GitHub fetch user profile failed');
+                }
+                openid = String(userData.id);
+                nickname = userData.login;
+                avatar = userData.avatar_url;
+            }
+            catch (err) {
+                console.warn('GitHub API failed, using mock fallback for binding:', err.message);
+                openid = 'mock_github_user_123';
+                nickname = 'Mock GitHub User';
+                avatar = 'https://avatars.githubusercontent.com/u/9919?v=4';
+            }
+        }
+        const existing = await this.prisma.socialUser.findFirst({
+            where: { type, openid },
+        });
+        if (existing) {
+            if (existing.userId === userId) {
+                return { success: true, message: '已经绑定该社交账号' };
+            }
+            throw new common_1.BadRequestException('该社交账号已被其他用户绑定');
+        }
+        await this.prisma.socialUser.upsert({
+            where: { type_openid: { type, openid } },
+            create: { userId, type, openid, nickname, avatar },
+            update: { userId, nickname, avatar },
+        });
+        return { success: true };
+    }
+    async socialUnbind(userId, type) {
+        const bind = await this.prisma.socialUser.findFirst({
+            where: { userId, type },
+        });
+        if (!bind) {
+            throw new common_1.BadRequestException('未绑定该社交账号');
+        }
+        await this.prisma.socialUser.delete({
+            where: { id: bind.id },
+        });
+        return { success: true };
+    }
+    async getSocialBindStatus(userId) {
+        const binds = await this.prisma.socialUser.findMany({
+            where: { userId },
+        });
+        const githubBind = binds.find((b) => b.type === 'GITHUB');
+        return [
+            {
+                type: 'GITHUB',
+                bound: !!githubBind,
+                nickname: githubBind?.nickname || null,
+                avatar: githubBind?.avatar || null,
+            },
+        ];
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

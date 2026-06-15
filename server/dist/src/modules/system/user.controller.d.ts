@@ -45,10 +45,27 @@ export declare class UserController {
             id: number;
             name: string;
         } | null;
+        posts: ({
+            post: {
+                id: number;
+                code: string;
+                name: string;
+                sort: number;
+                status: import("@prisma/client").$Enums.CommonStatus;
+                remark: string | null;
+                createdAt: Date;
+            };
+        } & {
+            userId: number;
+            postId: number;
+        })[];
     }[]>;
     findOne(id: number): Promise<({
         roles: {
             roleId: number;
+        }[];
+        posts: {
+            postId: number;
         }[];
     } & {
         id: number;

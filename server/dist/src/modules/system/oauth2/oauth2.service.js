@@ -71,6 +71,24 @@ let OAuth2Service = class OAuth2Service {
         await this.findOneClient(id);
         return this.prisma.oAuth2Client.delete({ where: { id } });
     }
+    codes = new Map();
+    async generateCode(userId, clientId, scopes) {
+        const code = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        this.codes.set(code, { userId, clientId, scopes });
+        setTimeout(() => this.codes.delete(code), 10 * 60 * 1000);
+        return code;
+    }
+    async verifyCode(code, clientId) {
+        const payload = this.codes.get(code);
+        if (!payload) {
+            throw new Error('授权码无效或已过期');
+        }
+        if (payload.clientId !== clientId) {
+            throw new Error('授权码不匹配客户端');
+        }
+        this.codes.delete(code);
+        return { userId: payload.userId, scopes: payload.scopes };
+    }
 };
 exports.OAuth2Service = OAuth2Service;
 exports.OAuth2Service = OAuth2Service = __decorate([
