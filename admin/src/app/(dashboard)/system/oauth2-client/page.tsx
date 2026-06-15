@@ -15,8 +15,7 @@ export default function OAuth2ClientList() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-
+  
   const { selectProps: statusSelectProps } = useSelect({
     resource: 'system/dict-data',
     optionLabel: 'label',
@@ -56,11 +55,9 @@ export default function OAuth2ClientList() {
     setIsModalOpen(true);
   };
 
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'system/oauth2-client',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
       tableQueryResult.refetch();
     },

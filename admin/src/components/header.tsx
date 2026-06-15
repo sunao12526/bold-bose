@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useGetIdentity, useLogout } from '@refinedev/core';
-import { Layout, Badge, Popover, List, Button, Avatar, Space, Typography, Empty, message, Dropdown, Menu } from 'antd';
+import { Layout, Badge, Popover, List, Button, Avatar, Space, Typography, Empty, message, Dropdown } from 'antd';
 import { BellOutlined, UserOutlined, LogoutOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { axiosInstance } from '../lib/axios';
 
@@ -67,31 +67,39 @@ export const CustomHeader: React.FC = () => {
   };
 
   // Profile menu options
-  const profileMenu = (
-    <Menu>
-      <Menu.Item key="username" disabled>
-        <Text strong>{user?.nickname || '管理员'}</Text>
-        <br />
-        <Text type="secondary" style={{ fontSize: 12 }}>@{user?.username}</Text>
-      </Menu.Item>
-      <Menu.Item 
-        key="profile" 
-        icon={<UserOutlined />} 
-        onClick={() => window.location.href = '/system/profile'}
-      >
-        个人中心
-      </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item 
-        key="logout" 
-        icon={<LogoutOutlined />} 
-        danger 
-        onClick={() => logout()}
-      >
-        退出登录
-      </Menu.Item>
-    </Menu>
-  );
+  const profileMenuItems = [
+    {
+      key: 'username',
+      disabled: true,
+      label: (
+        <>
+          <Text strong>{user?.nickname || '管理员'}</Text>
+          <br />
+          <Text type="secondary" style={{ fontSize: 12 }}>@{user?.username}</Text>
+        </>
+      ),
+    },
+    {
+      key: 'profile',
+      icon: <UserOutlined />,
+      label: '个人中心',
+      onClick: () => {
+        window.location.href = '/system/profile';
+      },
+    },
+    {
+      type: 'divider' as const,
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      danger: true,
+      label: '退出登录',
+      onClick: () => {
+        logout();
+      },
+    },
+  ];
 
   // Notification panel content
   const notificationContent = (
@@ -205,7 +213,7 @@ export const CustomHeader: React.FC = () => {
         </Popover>
 
         {/* User profile dropdown */}
-        <Dropdown overlay={profileMenu} trigger={['click']}>
+        <Dropdown menu={{ items: profileMenuItems }} trigger={['click']}>
           <Space style={{ cursor: 'pointer' }}>
             <Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#1890ff' }} />
             <Text strong>{user?.nickname || '管理员'}</Text>

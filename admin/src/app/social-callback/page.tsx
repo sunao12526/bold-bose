@@ -59,7 +59,7 @@ function CallbackHandler() {
   }, [searchParams, router]);
 
   return (
-    <Card bordered={false} style={{ width: 400, textAlign: 'center', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+    <Card variant="borderless" style={{ width: 400, textAlign: 'center', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
       <Spin size="large" />
       <div style={{ marginTop: 24, fontSize: 16 }}>{status}</div>
     </Card>

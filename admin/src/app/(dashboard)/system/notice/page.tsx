@@ -15,8 +15,7 @@ export default function NoticeList() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-
+  
   // Load Dictionary Option Select Props
   const { selectProps: statusSelectProps } = useSelect({
     resource: 'system/dict-data',
@@ -38,11 +37,9 @@ export default function NoticeList() {
     setIsModalOpen(true);
   };
 
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'system/notice',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
       tableQueryResult.refetch();
     },

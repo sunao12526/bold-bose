@@ -19,8 +19,7 @@ export default function NotifyTemplateList() {
   // 2. Add/Edit Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-
+  
   // 3. Test Modal States
   const [isTestModalOpen, setIsTestModalOpen] = useState(false);
   const [testTemplate, setTestTemplate] = useState<any>(null);
@@ -36,11 +35,9 @@ export default function NotifyTemplateList() {
   });
 
   // 5. Refine Form hook for Create/Edit
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'system/notify-template',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
       tableQueryResult.refetch();
     },
@@ -258,7 +255,6 @@ export default function NotifyTemplateList() {
         onCancel={() => setIsTestModalOpen(false)}
         onOk={() => testForm.submit()}
         confirmLoading={sendingTest}
-        destroyOnClose
       >
         <Alert
           message="参数说明"

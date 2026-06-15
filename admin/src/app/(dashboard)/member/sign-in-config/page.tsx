@@ -107,7 +107,6 @@ export default function SignInConfigList() {
         onCancel={() => setIsModalOpen(false)}
         onOk={() => form.submit()}
         confirmLoading={submitting}
-        destroyOnClose
       >
         <Form form={form} layout="vertical" onFinish={handleSave}>
           <Form.Item

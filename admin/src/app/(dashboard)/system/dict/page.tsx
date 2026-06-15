@@ -19,7 +19,6 @@ export default function DictManagement() {
 
   const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
   const [typeFormMode, setTypeFormMode] = useState<'create' | 'edit'>('create');
-  const [typeForm] = Form.useForm();
 
   const handleCreateType = () => {
     setTypeFormMode('create');
@@ -33,10 +32,9 @@ export default function DictManagement() {
     setIsTypeModalOpen(true);
   };
 
-  const { onFinish: onTypeFinish, formLoading: typeFormLoading } = useForm({
+  const { form: typeForm, onFinish: onTypeFinish, formLoading: typeFormLoading } = useForm<any, any, any>({
     resource: 'system/dict-type',
     action: typeFormMode,
-    id: typeForm.getFieldValue('id'),
     onMutationSuccess: () => {
       setIsTypeModalOpen(false);
       typeQueryResult.refetch();
@@ -72,7 +70,6 @@ export default function DictManagement() {
 
   const [isDataModalOpen, setIsDataModalOpen] = useState(false);
   const [dataFormMode, setDataFormMode] = useState<'create' | 'edit'>('create');
-  const [dataForm] = Form.useForm();
 
   const handleCreateData = () => {
     if (!selectedType) return;
@@ -88,10 +85,9 @@ export default function DictManagement() {
     setIsDataModalOpen(true);
   };
 
-  const { onFinish: onDataFinish, formLoading: dataFormLoading } = useForm({
+  const { form: dataForm, onFinish: onDataFinish, formLoading: dataFormLoading } = useForm<any, any, any>({
     resource: 'system/dict-data',
     action: dataFormMode,
-    id: dataForm.getFieldValue('id'),
     onMutationSuccess: () => {
       setIsDataModalOpen(false);
       dataQueryResult.refetch();

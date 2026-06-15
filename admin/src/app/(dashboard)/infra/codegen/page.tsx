@@ -191,9 +191,9 @@ export default function CodegenList() {
       <List
         headerProps={{
           extra: (
-            <Button 
-              type="primary" 
-              icon={<ImportOutlined />} 
+            <Button
+              type="primary"
+              icon={<ImportOutlined />}
               onClick={handleOpenImport}
             >
               导入数据表
@@ -206,34 +206,34 @@ export default function CodegenList() {
           <Table.Column dataIndex="tableName" title="表名称" />
           <Table.Column dataIndex="tableComment" title="表描述" ellipsis />
           <Table.Column dataIndex="className" title="实体类" />
-          <Table.Column 
-            dataIndex="moduleName" 
-            title="模块名" 
+          <Table.Column
+            dataIndex="moduleName"
+            title="模块名"
             render={(name) => <Tag color="blue">{name}</Tag>}
           />
           <Table.Column dataIndex="businessName" title="业务名" />
           <Table.Column dataIndex="author" title="作者" />
-          <Table.Column 
-            dataIndex="createdAt" 
-            title="导入时间" 
+          <Table.Column
+            dataIndex="createdAt"
+            title="导入时间"
             render={(date: string) => new Date(date).toLocaleString()}
           />
           <Table.Column
             title="操作"
             render={(_, record: any) => (
               <Space>
-                <Button 
-                  icon={<EditOutlined />} 
-                  size="small" 
+                <Button
+                  icon={<EditOutlined />}
+                  size="small"
                   onClick={() => handleOpenEdit(record.id)}
                 >
                   配置
                 </Button>
-                <Button 
+                <Button
                   type="primary"
                   ghost
-                  icon={<CodeOutlined />} 
-                  size="small" 
+                  icon={<CodeOutlined />}
+                  size="small"
                   onClick={() => handleOpenPreview(record.id)}
                 >
                   生成
@@ -254,9 +254,9 @@ export default function CodegenList() {
         confirmLoading={importLoading}
         width={700}
       >
-        <Table 
-          dataSource={dbTables} 
-          rowKey="tableName" 
+        <Table
+          dataSource={dbTables}
+          rowKey="tableName"
           pagination={false}
           loading={importLoading}
           rowSelection={{
@@ -275,7 +275,6 @@ export default function CodegenList() {
         open={isEditDrawerOpen}
         onClose={() => setIsEditDrawerOpen(false)}
         width={1100}
-        destroyOnClose
         footer={
           <div style={{ textAlign: 'right' }}>
             <Button onClick={() => setIsEditDrawerOpen(false)} style={{ marginRight: 8 }}>
@@ -324,15 +323,15 @@ export default function CodegenList() {
             </Tabs.TabPane>
 
             <Tabs.TabPane tab="字段属性配置" key="fields">
-              <Table 
-                dataSource={editingTable?.columns || []} 
-                rowKey="id" 
+              <Table
+                dataSource={editingTable?.columns || []}
+                rowKey="id"
                 pagination={false}
                 scroll={{ y: 500 }}
               >
-                <Table.Column 
-                  dataIndex="columnName" 
-                  title="字段名" 
+                <Table.Column
+                  dataIndex="columnName"
+                  title="字段名"
                   width={150}
                   render={(name, record: any) => (
                     <div>
@@ -341,12 +340,12 @@ export default function CodegenList() {
                     </div>
                   )}
                 />
-                <Table.Column 
-                  title="字段描述" 
+                <Table.Column
+                  title="字段描述"
                   width={180}
                   render={(_, record: any) => (
-                    <Form.Item 
-                      name={['col_' + record.id, 'columnComment']} 
+                    <Form.Item
+                      name={['col_' + record.id, 'columnComment']}
                       initialValue={record.columnComment}
                       style={{ margin: 0 }}
                     >
@@ -354,8 +353,8 @@ export default function CodegenList() {
                     </Form.Item>
                   )}
                 />
-                <Table.Column 
-                  title="TS/Prisma类型" 
+                <Table.Column
+                  title="TS/Prisma类型"
                   width={140}
                   render={(_, record: any) => (
                     <span style={{ fontSize: '12px' }}>
@@ -363,12 +362,12 @@ export default function CodegenList() {
                     </span>
                   )}
                 />
-                <Table.Column 
-                  title="CRUD" 
+                <Table.Column
+                  title="CRUD"
                   width={80}
                   render={(_, record: any) => (
-                    <Form.Item 
-                      name={['col_' + record.id, 'crud']} 
+                    <Form.Item
+                      name={['col_' + record.id, 'crud']}
                       valuePropName="checked"
                       initialValue={record.crud}
                       style={{ margin: 0 }}
@@ -377,12 +376,12 @@ export default function CodegenList() {
                     </Form.Item>
                   )}
                 />
-                <Table.Column 
-                  title="列表显示" 
+                <Table.Column
+                  title="列表显示"
                   width={90}
                   render={(_, record: any) => (
-                    <Form.Item 
-                      name={['col_' + record.id, 'listOperation']} 
+                    <Form.Item
+                      name={['col_' + record.id, 'listOperation']}
                       valuePropName="checked"
                       initialValue={record.listOperation}
                       style={{ margin: 0 }}
@@ -391,12 +390,12 @@ export default function CodegenList() {
                     </Form.Item>
                   )}
                 />
-                <Table.Column 
-                  title="表单展示" 
+                <Table.Column
+                  title="表单展示"
                   width={90}
                   render={(_, record: any) => (
-                    <Form.Item 
-                      name={['col_' + record.id, 'formOperation']} 
+                    <Form.Item
+                      name={['col_' + record.id, 'formOperation']}
                       valuePropName="checked"
                       initialValue={record.formOperation}
                       style={{ margin: 0 }}
@@ -405,12 +404,12 @@ export default function CodegenList() {
                     </Form.Item>
                   )}
                 />
-                <Table.Column 
-                  title="展示组件" 
+                <Table.Column
+                  title="展示组件"
                   width={150}
                   render={(_, record: any) => (
-                    <Form.Item 
-                      name={['col_' + record.id, 'htmlType']} 
+                    <Form.Item
+                      name={['col_' + record.id, 'htmlType']}
                       initialValue={record.htmlType}
                       style={{ margin: 0 }}
                     >
@@ -425,12 +424,12 @@ export default function CodegenList() {
                     </Form.Item>
                   )}
                 />
-                <Table.Column 
-                  title="绑定数据字典" 
+                <Table.Column
+                  title="绑定数据字典"
                   width={180}
                   render={(_, record: any) => (
-                    <Form.Item 
-                      name={['col_' + record.id, 'dictType']} 
+                    <Form.Item
+                      name={['col_' + record.id, 'dictType']}
                       initialValue={record.dictType || ''}
                       style={{ margin: 0 }}
                     >
@@ -455,10 +454,10 @@ export default function CodegenList() {
           <Button key="cancel" onClick={() => setIsPreviewModalOpen(false)}>
             取消
           </Button>,
-          <Button 
-            key="generate" 
-            type="primary" 
-            icon={<CodeOutlined />} 
+          <Button
+            key="generate"
+            type="primary"
+            icon={<CodeOutlined />}
             onClick={handleWriteCode}
             loading={writingLoading}
           >
@@ -466,7 +465,6 @@ export default function CodegenList() {
           </Button>
         ]}
         width={950}
-        destroyOnClose
       >
         {previewLoading ? (
           <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>正在生成代码中...</div>
@@ -477,12 +475,12 @@ export default function CodegenList() {
                 <div style={{ marginBottom: '8px' }}>
                   <Tag color="geekblue">文件写入路径: <code>{file.path}</code></Tag>
                 </div>
-                <pre style={{ 
-                  backgroundColor: '#1e1e1e', 
-                  color: '#d4d4d4', 
-                  padding: '16px', 
-                  borderRadius: '6px', 
-                  overflow: 'auto', 
+                <pre style={{
+                  backgroundColor: '#1e1e1e',
+                  color: '#d4d4d4',
+                  padding: '16px',
+                  borderRadius: '6px',
+                  overflow: 'auto',
                   maxHeight: '500px',
                   fontFamily: 'monospace',
                   fontSize: '13px',

@@ -16,8 +16,7 @@ export default function MailTemplateList() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-
+  
   // Test states
   const [isTestModalOpen, setIsTestModalOpen] = useState(false);
   const [testTemplateId, setTestTemplateId] = useState<number | null>(null);
@@ -53,11 +52,9 @@ export default function MailTemplateList() {
     setIsModalOpen(true);
   };
 
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'system/mail/template',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
       tableQueryResult.refetch();
     },

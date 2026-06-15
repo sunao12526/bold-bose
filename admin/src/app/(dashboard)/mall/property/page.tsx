@@ -28,8 +28,7 @@ export default function PropertyList() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-
+  
   const handleCreate = () => {
     setFormMode('create');
     form.resetFields();
@@ -49,10 +48,9 @@ export default function PropertyList() {
     setIsModalOpen(true);
   };
 
-  const { onFinish, formLoading } = useForm<PropertyRecord>({
+  const { form, onFinish, formLoading } = useForm<PropertyRecord>({
     resource: 'mall/property',
     action: formMode,
-    id: form.getFieldValue('id'),
     onMutationSuccess: () => {
       setIsModalOpen(false);
     },

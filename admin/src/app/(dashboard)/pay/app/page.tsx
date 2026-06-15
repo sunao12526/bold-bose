@@ -17,8 +17,7 @@ export default function PayAppList() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-
+  
   // Channel Drawer states
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<any>(null);
@@ -42,11 +41,9 @@ export default function PayAppList() {
     setIsModalOpen(true);
   };
 
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'pay/app',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
     },
   });

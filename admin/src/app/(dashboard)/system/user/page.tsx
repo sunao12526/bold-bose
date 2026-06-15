@@ -15,8 +15,7 @@ export default function UserList() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-  
+    
   const { selectProps: roleSelectProps } = useSelect({
     resource: 'system/role',
     optionLabel: 'name',
@@ -52,11 +51,9 @@ export default function UserList() {
     setIsModalOpen(true);
   };
 
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'system/user',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
       tableQueryResult.refetch();
     },

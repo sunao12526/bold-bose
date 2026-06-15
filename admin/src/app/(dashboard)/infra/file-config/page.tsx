@@ -18,8 +18,7 @@ export default function FileConfigList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [selectedStorage, setSelectedStorage] = useState<'LOCAL' | 'S3'>('LOCAL');
-  const [form] = Form.useForm();
-
+  
   const handleCreate = () => {
     setFormMode('create');
     setSelectedStorage('LOCAL');
@@ -42,11 +41,9 @@ export default function FileConfigList() {
     setIsModalOpen(true);
   };
 
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'infra/file-config',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
       tableQueryResult.refetch();
     },

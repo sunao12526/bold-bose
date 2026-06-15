@@ -12,7 +12,7 @@ export default function DashboardPage() {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Card bordered={false} style={{ marginBottom: '24px', borderRadius: '8px' }}>
+      <Card variant="borderless" style={{ marginBottom: '24px', borderRadius: '8px' }}>
         <Title level={2}>欢迎回来，{user?.nickname || '管理员'}！</Title>
         <Paragraph>
           这是基于 NestJS (Backend) + Next.js (Refine + Ant Design) 的快速开发管理后台。
@@ -21,7 +21,7 @@ export default function DashboardPage() {
       
       <Row gutter={16}>
         <Col span={8}>
-          <Card bordered={false}>
+          <Card variant="borderless">
             <Statistic
               title="用户总数"
               value={1}
@@ -30,7 +30,7 @@ export default function DashboardPage() {
           </Card>
         </Col>
         <Col span={8}>
-          <Card bordered={false}>
+          <Card variant="borderless">
             <Statistic
               title="角色总数"
               value={2}
@@ -39,7 +39,7 @@ export default function DashboardPage() {
           </Card>
         </Col>
         <Col span={8}>
-          <Card bordered={false}>
+          <Card variant="borderless">
             <Statistic
               title="菜单总数"
               value={7}

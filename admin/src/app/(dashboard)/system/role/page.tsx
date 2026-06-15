@@ -17,8 +17,7 @@ export default function RoleList() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-
+  
   const [isPermModalOpen, setIsPermModalOpen] = useState(false);
   const [currentRoleId, setCurrentRoleId] = useState<number | null>(null);
   const [menuTreeData, setMenuTreeData] = useState<any[]>([]);
@@ -36,11 +35,9 @@ export default function RoleList() {
     setIsModalOpen(true);
   };
 
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'system/role',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
     },
   });

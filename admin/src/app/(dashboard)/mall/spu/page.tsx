@@ -43,8 +43,7 @@ export default function SpuList() {
   // 2. Modals & Forms
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-
+  
   // 3. Select list data providers
   const { query: propertiesQuery } = useList({
     resource: 'mall/property',
@@ -68,11 +67,9 @@ export default function SpuList() {
   const [skuList, setSkuList] = useState<SkuData[]>([]);
 
   // 5. Refine form hooks
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'mall/spu',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
     },
   });

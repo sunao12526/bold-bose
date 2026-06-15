@@ -16,8 +16,7 @@ export default function SmsTemplateList() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-
+  
   // Test send states
   const [isTestModalOpen, setIsTestModalOpen] = useState(false);
   const [testTemplateId, setTestTemplateId] = useState<number | null>(null);
@@ -53,11 +52,9 @@ export default function SmsTemplateList() {
     setIsModalOpen(true);
   };
 
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'system/sms/template',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
       tableQueryResult.refetch();
     },

@@ -279,7 +279,7 @@ export default function CouponPage() {
       {/* Analytics Cards */}
       <Row gutter={16} style={{ marginBottom: '24px' }}>
         <Col span={6}>
-          <Card bordered={false} hoverable>
+          <Card variant="borderless" hoverable>
             <Statistic 
               title="优惠券模板总数" 
               value={totalTemplates} 
@@ -288,7 +288,7 @@ export default function CouponPage() {
           </Card>
         </Col>
         <Col span={6}>
-          <Card bordered={false} hoverable>
+          <Card variant="borderless" hoverable>
             <Statistic 
               title="已领用优惠券" 
               value={totalClaimed} 
@@ -297,7 +297,7 @@ export default function CouponPage() {
           </Card>
         </Col>
         <Col span={6}>
-          <Card bordered={false} hoverable>
+          <Card variant="borderless" hoverable>
             <Statistic 
               title="已使用优惠券" 
               value={totalUsed} 
@@ -306,7 +306,7 @@ export default function CouponPage() {
           </Card>
         </Col>
         <Col span={6}>
-          <Card bordered={false} hoverable>
+          <Card variant="borderless" hoverable>
             <Statistic 
               title="使用核销率" 
               value={useRate} 
@@ -318,7 +318,7 @@ export default function CouponPage() {
       </Row>
 
       {/* Tabs */}
-      <Card bordered={false} style={{ borderRadius: '8px' }}>
+      <Card variant="borderless" style={{ borderRadius: '8px' }}>
         <Tabs activeKey={activeTab} onChange={setActiveTab}>
           
           {/* TAB 1: 优惠券模板 */}
@@ -560,7 +560,6 @@ export default function CouponPage() {
         onCancel={() => setIsCreateModalOpen(false)}
         onOk={() => createForm.submit()}
         width={600}
-        destroyOnClose
       >
         <Form
           form={createForm}
@@ -745,7 +744,6 @@ export default function CouponPage() {
         open={isSendModalOpen}
         onCancel={() => setIsSendModalOpen(false)}
         onOk={() => sendForm.submit()}
-        destroyOnClose
       >
         <Form
           form={sendForm}

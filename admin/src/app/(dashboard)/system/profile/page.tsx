@@ -157,7 +157,7 @@ export default function UserProfile() {
       <Row gutter={24}>
         {/* Left Side: Avatar & Simple Details Card */}
         <Col xs={24} sm={24} md={8}>
-          <Card bordered={false} style={{ textAlign: 'center', height: '100%', borderRadius: '8px' }}>
+          <Card variant="borderless" style={{ textAlign: 'center', height: '100%', borderRadius: '8px' }}>
             <div style={{ margin: '16px 0' }}>
               <div style={{
                 width: 80,
@@ -218,7 +218,7 @@ export default function UserProfile() {
 
         {/* Right Side: Tab Forms */}
         <Col xs={24} sm={24} md={16}>
-          <Card bordered={false} style={{ borderRadius: '8px' }}>
+          <Card variant="borderless" style={{ borderRadius: '8px' }}>
             <Tabs defaultActiveKey="info">
               {/* Tab 1: Basic Info */}
               <Tabs.TabPane tab={<span><UserOutlined />基本资料</span>} key="info">

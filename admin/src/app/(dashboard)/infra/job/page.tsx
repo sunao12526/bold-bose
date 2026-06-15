@@ -18,8 +18,7 @@ export default function JobList() {
   // --- Modal States ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-  const [form] = Form.useForm();
-
+  
   // Job logs tracker
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [jobLogs, setJobLogs] = useState<any[]>([]);
@@ -39,11 +38,9 @@ export default function JobList() {
     setIsModalOpen(true);
   };
 
-  const { onFinish, formLoading } = useForm({
+  const { form, onFinish, formLoading } = useForm<any, any, any>({
     resource: 'infra/job',
-    action: formMode,
-    id: form.getFieldValue('id'),
-    onMutationSuccess: () => {
+    action: formMode,    onMutationSuccess: () => {
       setIsModalOpen(false);
       tableQueryResult.refetch();
     },

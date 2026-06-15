@@ -324,7 +324,6 @@ export default function MemberList() {
         onCancel={() => setPointsModalOpen(false)}
         onOk={() => pointsForm.submit()}
         confirmLoading={submitting}
-        destroyOnClose
       >
         <Form form={pointsForm} layout="vertical" onFinish={handleAdjustPoints}>
           <Form.Item
@@ -344,7 +343,6 @@ export default function MemberList() {
         onCancel={() => setBalanceModalOpen(false)}
         onOk={() => balanceForm.submit()}
         confirmLoading={submitting}
-        destroyOnClose
       >
         <Form form={balanceForm} layout="vertical" onFinish={handleAdjustBalance}>
           <Form.Item
@@ -364,7 +362,6 @@ export default function MemberList() {
         onCancel={() => setExpModalOpen(false)}
         onOk={() => expForm.submit()}
         confirmLoading={submitting}
-        destroyOnClose
       >
         <Form form={expForm} layout="vertical" onFinish={handleAdjustExp}>
           <Form.Item
@@ -384,7 +381,6 @@ export default function MemberList() {
         onCancel={() => setTagsModalOpen(false)}
         onOk={() => tagsForm.submit()}
         confirmLoading={submitting}
-        destroyOnClose
       >
         <Form form={tagsForm} layout="vertical" onFinish={handleAssignTags}>
           <Form.Item

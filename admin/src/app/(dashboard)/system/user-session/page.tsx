@@ -47,7 +47,7 @@ export default function UserSessionList() {
   return (
     <div style={{ padding: '24px' }}>
       {/* Search Filter Card */}
-      <Card bordered={false} style={{ marginBottom: '16px', borderRadius: '8px' }}>
+      <Card variant="borderless" style={{ marginBottom: '16px', borderRadius: '8px' }}>
         <Form {...searchFormProps} form={searchForm} layout="inline">
           <Form.Item name="username" label="用户账号">
             <Input placeholder="请输入用户账号" allowClear style={{ width: 200 }} />
