@@ -958,3 +958,106 @@ model SocialClient {
   @@map("system_social_clients")
 }
 
+// ==================== CMS 内容管理 ====================
+
+model CmsCategory {
+  id        Int          @id @default(autoincrement())
+  name      String       @db.VarChar(50)
+  code      String       @unique @db.VarChar(50)
+  sort      Int          @default(0)
+  status    CommonStatus @default(ENABLE)
+  remark    String?      @db.VarChar(500)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  articles  CmsArticle[]
+
+  @@map("cms_category")
+}
+
+model CmsArticle {
+  id          Int          @id @default(autoincrement())
+  categoryId  Int          @map("category_id")
+  title       String       @db.VarChar(200)
+  content     String?      @db.Text
+  summary     String?      @db.VarChar(500)
+  coverUrl    String?      @map("cover_url") @db.VarChar(500)
+  author      String       @db.VarChar(50)
+  viewCount   Int          @default(0) @map("view_count")
+  likeCount   Int          @default(0) @map("like_count")
+  sortOrder   Int          @default(0) @map("sort_order")
+  status      CmsArticleStatus @default(DRAFT)
+  isTop       Boolean      @default(false) @map("is_top")
+  isRecommend Boolean      @default(false) @map("is_recommend")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  category    CmsCategory  @relation(fields: [categoryId], references: [id])
+  tags        CmsArticleTag[]
+  comments    CmsComment[]
+
+  @@map("cms_article")
+}
+
+enum CmsArticleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model CmsTag {
+  id        Int          @id @default(autoincrement())
+  name      String       @unique @db.VarChar(50)
+  status    CommonStatus @default(ENABLE)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  articles  CmsArticleTag[]
+
+  @@map("cms_tag")
+}
+
+model CmsArticleTag {
+  articleId Int     @map("article_id")
+  tagId     Int     @map("tag_id")
+  article   CmsArticle @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag       CmsTag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+  @@map("cms_article_tag")
+}
+
+model CmsComment {
+  id        Int          @id @default(autoincrement())
+  articleId Int          @map("article_id")
+  userId    Int?         @map("user_id")
+  nickname  String       @db.VarChar(50)
+  content   String       @db.VarChar(1000)
+  status    CmsCommentStatus @default(PENDING)
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  article   CmsArticle   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@map("cms_comment")
+}
+
+enum CmsCommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model CmsBanner {
+  id        Int          @id @default(autoincrement())
+  title     String       @db.VarChar(100)
+  picUrl    String       @map("pic_url") @db.VarChar(500)
+  url       String?      @db.VarChar(500)
+  sort      Int          @default(0)
+  status    CommonStatus @default(ENABLE)
+  remark    String?      @db.VarChar(500)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  @@map("cms_banner")
+}
+

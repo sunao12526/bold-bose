@@ -12,18 +12,18 @@ export declare class LoginLogService {
         id: number;
         status: string;
         username: string;
-        message: string | null;
         ip: string;
         userAgent: string;
         loginTime: Date;
+        message: string | null;
     }>;
     findAll(query?: any): Promise<{
         id: number;
         status: string;
         username: string;
-        message: string | null;
         ip: string;
         userAgent: string;
         loginTime: Date;
+        message: string | null;
     }[]>;
 }

@@ -6,9 +6,9 @@ export declare class LoginLogController {
         id: number;
         status: string;
         username: string;
-        message: string | null;
         ip: string;
         userAgent: string;
         loginTime: Date;
+        message: string | null;
     }[]>;
 }

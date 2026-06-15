@@ -44,7 +44,8 @@ import {
   PhoneOutlined,
   MessageOutlined,
   SafetyCertificateOutlined,
-  LoginOutlined
+  LoginOutlined,
+  PictureOutlined
 } from '@ant-design/icons';
 
 import '@refinedev/antd/dist/reset.css';
@@ -478,6 +479,60 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
                 label: '退款订单',
                 icon: <RollbackOutlined />,
                 parent: 'pay',
+              },
+            },
+
+            // Parent: CMS
+            {
+              name: 'cms',
+              meta: {
+                label: '内容管理',
+                icon: <FileTextOutlined />,
+              },
+            },
+            {
+              name: 'cms/category',
+              list: '/cms/category',
+              meta: {
+                label: '文章分类',
+                icon: <AppstoreOutlined />,
+                parent: 'cms',
+              },
+            },
+            {
+              name: 'cms/article',
+              list: '/cms/article',
+              meta: {
+                label: '文章管理',
+                icon: <FileTextOutlined />,
+                parent: 'cms',
+              },
+            },
+            {
+              name: 'cms/tag',
+              list: '/cms/tag',
+              meta: {
+                label: '标签管理',
+                icon: <TagsOutlined />,
+                parent: 'cms',
+              },
+            },
+            {
+              name: 'cms/comment',
+              list: '/cms/comment',
+              meta: {
+                label: '评论管理',
+                icon: <MessageOutlined />,
+                parent: 'cms',
+              },
+            },
+            {
+              name: 'cms/banner',
+              list: '/cms/banner',
+              meta: {
+                label: '轮播图管理',
+                icon: <PictureOutlined />,
+                parent: 'cms',
               },
             },
           ]}

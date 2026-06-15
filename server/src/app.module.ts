@@ -7,20 +7,20 @@ import { SystemModule } from './modules/system/system.module';
 import { InfraModule } from './modules/infra/infra.module';
 import { MallModule } from './modules/mall/mall.module';
 import { MemberModule } from './modules/member/member.module';
-import { PayModule } from './modules/pay/pay.module';
+import { CmsModule } from './modules/cms/cms.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { LogInterceptor } from './shared/interceptors/log.interceptor';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
-    PrismaModule,
-    AuthModule,
-    SystemModule,
-    InfraModule,
+    ScheduleModule.forRoot(), 
+    PrismaModule, 
+    AuthModule, 
+    SystemModule, 
+    InfraModule, 
     MallModule,
     MemberModule,
-    PayModule,
+    CmsModule,
   ],
   providers: [
     {

@@ -16,7 +16,7 @@ const system_module_1 = require("./modules/system/system.module");
 const infra_module_1 = require("./modules/infra/infra.module");
 const mall_module_1 = require("./modules/mall/mall.module");
 const member_module_1 = require("./modules/member/member.module");
-const pay_module_1 = require("./modules/pay/pay.module");
+const cms_module_1 = require("./modules/cms/cms.module");
 const jwt_auth_guard_1 = require("./shared/guards/jwt-auth.guard");
 const log_interceptor_1 = require("./shared/interceptors/log.interceptor");
 let AppModule = class AppModule {
@@ -32,7 +32,7 @@ exports.AppModule = AppModule = __decorate([
             infra_module_1.InfraModule,
             mall_module_1.MallModule,
             member_module_1.MemberModule,
-            pay_module_1.PayModule,
+            cms_module_1.CmsModule,
         ],
         providers: [
             {
