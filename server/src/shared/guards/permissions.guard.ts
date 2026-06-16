@@ -1,13 +1,13 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PERMISSIONS_KEY } from '../decorators/require-permissions.decorator';
-import { PrismaService } from '../prisma/prisma.service';
+import { UserCacheService } from '../user-cache.service';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private prisma: PrismaService,
+    private userCache: UserCacheService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -25,35 +25,12 @@ export class PermissionsGuard implements CanActivate {
       return false;
     }
 
-    // 1. Fetch user roles
-    const userRoles = await this.prisma.userRole.findMany({
-      where: { userId: user.id },
-      include: { role: true },
-    });
+    const auth = await this.userCache.getUserAuth(user.id);
 
-    const roleCodes = userRoles.map((ur) => ur.role.code);
-
-    // Super administrator bypasses all permissions
-    if (roleCodes.includes('super_admin')) {
+    if (auth.isSuperAdmin) {
       return true;
     }
 
-    // 2. Fetch all permissions (menus) for the user's roles
-    const roleIds = userRoles.map((ur) => ur.roleId);
-    if (roleIds.length === 0) {
-      return false;
-    }
-
-    const roleMenus = await this.prisma.roleMenu.findMany({
-      where: { roleId: { in: roleIds } },
-      include: { menu: true },
-    });
-
-    const userPermissions = roleMenus
-      .map((rm) => rm.menu.permission)
-      .filter((permission): permission is string => !!permission);
-
-    // 3. Check if all required permissions are met
-    return requiredPermissions.every((perm) => userPermissions.includes(perm));
+    return requiredPermissions.every((perm) => auth.permissions.includes(perm));
   }
 }

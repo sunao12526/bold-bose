@@ -27,8 +27,8 @@ let RoleController = class RoleController {
     async create(data) {
         return this.roleService.create(data);
     }
-    async findAll() {
-        return this.roleService.findAll();
+    async findAll(query) {
+        return this.roleService.findAll(query);
     }
     async findOne(id) {
         return this.roleService.findOne(id);
@@ -56,8 +56,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, require_permissions_decorator_1.RequirePermissions)('system:role:query'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], RoleController.prototype, "findAll", null);
 __decorate([

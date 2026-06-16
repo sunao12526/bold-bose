@@ -1,9 +1,9 @@
 import { CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { PrismaService } from '../prisma/prisma.service';
+import { UserCacheService } from '../user-cache.service';
 export declare class PermissionsGuard implements CanActivate {
     private reflector;
-    private prisma;
-    constructor(reflector: Reflector, prisma: PrismaService);
+    private userCache;
+    constructor(reflector: Reflector, userCache: UserCacheService);
     canActivate(context: ExecutionContext): Promise<boolean>;
 }

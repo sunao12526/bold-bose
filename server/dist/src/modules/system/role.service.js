@@ -12,16 +12,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../shared/prisma/prisma.service");
+const user_cache_service_1 = require("../../shared/user-cache.service");
+const pagination_1 = require("../../shared/pagination");
 let RoleService = class RoleService {
     prisma;
-    constructor(prisma) {
+    userCache;
+    constructor(prisma, userCache) {
         this.prisma = prisma;
+        this.userCache = userCache;
     }
     async create(data) {
         return this.prisma.role.create({ data });
     }
-    async findAll() {
-        return this.prisma.role.findMany({
+    async findAll(query) {
+        const where = {};
+        if (query?.name) {
+            where.name = { contains: query.name };
+        }
+        if (query?.code) {
+            where.code = { contains: query.code };
+        }
+        if (query?.status) {
+            where.status = query.status;
+        }
+        return (0, pagination_1.paginateQuery)(this.prisma, 'role', query || {}, {
+            where,
             orderBy: { sort: 'asc' },
         });
     }
@@ -32,12 +47,15 @@ let RoleService = class RoleService {
         });
     }
     async update(id, data) {
-        return this.prisma.role.update({
-            where: { id },
-            data,
-        });
+        const result = await this.prisma.role.update({ where: { id }, data });
+        this.userCache.invalidateAll();
+        return result;
     }
     async remove(id) {
+        const userCount = await this.prisma.userRole.count({ where: { roleId: id } });
+        if (userCount > 0) {
+            throw new Error('该角色下还有用户，无法删除');
+        }
         return this.prisma.role.delete({ where: { id } });
     }
     async assignMenus(roleId, menuIds) {
@@ -46,12 +64,14 @@ let RoleService = class RoleService {
             const mappings = menuIds.map((menuId) => ({ roleId, menuId }));
             await this.prisma.roleMenu.createMany({ data: mappings });
         }
+        this.userCache.invalidateAll();
         return { success: true };
     }
 };
 exports.RoleService = RoleService;
 exports.RoleService = RoleService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        user_cache_service_1.UserCacheService])
 ], RoleService);
 //# sourceMappingURL=role.service.js.map

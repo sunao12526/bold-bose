@@ -45,11 +45,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../shared/prisma/prisma.service");
+const user_cache_service_1 = require("../../shared/user-cache.service");
+const pagination_1 = require("../../shared/pagination");
 const bcrypt = __importStar(require("bcrypt"));
 let UserService = class UserService {
     prisma;
-    constructor(prisma) {
+    userCache;
+    constructor(prisma, userCache) {
         this.prisma = prisma;
+        this.userCache = userCache;
     }
     async create(data) {
         const existing = await this.prisma.user.findUnique({
@@ -74,8 +78,25 @@ let UserService = class UserService {
         }
         return user;
     }
-    async findAll() {
-        return this.prisma.user.findMany({
+    async findAll(query) {
+        const where = {};
+        if (query?.username) {
+            where.username = { contains: query.username };
+        }
+        if (query?.nickname) {
+            where.nickname = { contains: query.nickname };
+        }
+        if (query?.mobile) {
+            where.mobile = { contains: query.mobile };
+        }
+        if (query?.status) {
+            where.status = query.status;
+        }
+        if (query?.deptId) {
+            where.deptId = Number(query.deptId);
+        }
+        return (0, pagination_1.paginateQuery)(this.prisma, 'user', query || {}, {
+            where,
             select: {
                 id: true,
                 username: true,
@@ -129,7 +150,9 @@ let UserService = class UserService {
         if (id === 1) {
             throw new common_1.BadRequestException('系统内置超级管理员，无法删除');
         }
-        return this.prisma.user.delete({ where: { id } });
+        const result = await this.prisma.user.delete({ where: { id } });
+        this.userCache.invalidateUser(id);
+        return result;
     }
     async assignRoles(userId, roleIds) {
         await this.prisma.userRole.deleteMany({ where: { userId } });
@@ -137,6 +160,7 @@ let UserService = class UserService {
             const mappings = roleIds.map((roleId) => ({ userId, roleId }));
             await this.prisma.userRole.createMany({ data: mappings });
         }
+        this.userCache.invalidateUser(userId);
         return { success: true };
     }
     async assignPosts(userId, postIds) {
@@ -218,6 +242,7 @@ let UserService = class UserService {
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        user_cache_service_1.UserCacheService])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

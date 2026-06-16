@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -29,8 +30,8 @@ export class RoleController {
 
   @Get()
   @RequirePermissions('system:role:query')
-  async findAll() {
-    return this.roleService.findAll();
+  async findAll(@Query() query: any) {
+    return this.roleService.findAll(query);
   }
 
   @Get(':id')

@@ -46,13 +46,16 @@ exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const prisma_service_1 = require("../../shared/prisma/prisma.service");
+const user_cache_service_1 = require("../../shared/user-cache.service");
 const bcrypt = __importStar(require("bcrypt"));
 let AuthService = class AuthService {
     prisma;
     jwtService;
-    constructor(prisma, jwtService) {
+    userCache;
+    constructor(prisma, jwtService, userCache) {
         this.prisma = prisma;
         this.jwtService = jwtService;
+        this.userCache = userCache;
     }
     parseUserAgent(userAgentStr) {
         let browser = 'Unknown Browser';
@@ -140,9 +143,15 @@ let AuthService = class AuthService {
         };
     }
     async logout(token) {
+        const session = await this.prisma.userSession.findFirst({
+            where: { token },
+        });
         await this.prisma.userSession.deleteMany({
             where: { token },
         });
+        if (session) {
+            this.userCache.invalidateUser(session.userId);
+        }
     }
     async getUserPermissionInfo(userId) {
         const user = await this.prisma.user.findUnique({
@@ -454,6 +463,7 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        user_cache_service_1.UserCacheService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

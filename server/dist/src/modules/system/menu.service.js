@@ -12,10 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MenuService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../shared/prisma/prisma.service");
+const user_cache_service_1 = require("../../shared/user-cache.service");
 let MenuService = class MenuService {
     prisma;
-    constructor(prisma) {
+    userCache;
+    constructor(prisma, userCache) {
         this.prisma = prisma;
+        this.userCache = userCache;
     }
     async create(data) {
         return this.prisma.menu.create({ data });
@@ -29,10 +32,12 @@ let MenuService = class MenuService {
         return this.prisma.menu.findUnique({ where: { id } });
     }
     async update(id, data) {
-        return this.prisma.menu.update({
+        const result = await this.prisma.menu.update({
             where: { id },
             data,
         });
+        this.userCache.invalidateAll();
+        return result;
     }
     async remove(id) {
         const children = await this.prisma.menu.findFirst({
@@ -41,12 +46,15 @@ let MenuService = class MenuService {
         if (children) {
             throw new common_1.BadRequestException('该菜单包含子菜单，无法删除');
         }
-        return this.prisma.menu.delete({ where: { id } });
+        const result = await this.prisma.menu.delete({ where: { id } });
+        this.userCache.invalidateAll();
+        return result;
     }
 };
 exports.MenuService = MenuService;
 exports.MenuService = MenuService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        user_cache_service_1.UserCacheService])
 ], MenuService);
 //# sourceMappingURL=menu.service.js.map

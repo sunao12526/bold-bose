@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../shared/prisma/prisma.service';
+import { UserCacheService } from '../../shared/user-cache.service';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 
@@ -13,6 +14,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private userCache: UserCacheService,
   ) {}
 
   private parseUserAgent(userAgentStr: string) {
@@ -108,9 +110,15 @@ export class AuthService {
   }
 
   async logout(token: string) {
+    const session = await this.prisma.userSession.findFirst({
+      where: { token },
+    });
     await this.prisma.userSession.deleteMany({
       where: { token },
     });
+    if (session) {
+      this.userCache.invalidateUser(session.userId);
+    }
   }
 
   async getUserPermissionInfo(userId: number) {

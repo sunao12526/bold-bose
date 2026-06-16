@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -29,8 +30,8 @@ export class UserController {
 
   @Get()
   @RequirePermissions('system:user:query')
-  async findAll() {
-    return this.userService.findAll();
+  async findAll(@Query() query: any) {
+    return this.userService.findAll(query);
   }
 
   @Get(':id')

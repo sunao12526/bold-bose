@@ -11,11 +11,13 @@ import { CmsModule } from './modules/cms/cms.module';
 import { MpModule } from './modules/mp/mp.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { LogInterceptor } from './shared/interceptors/log.interceptor';
+import { UserCacheModule } from './shared/user-cache.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(), 
     PrismaModule, 
+    UserCacheModule,
     AuthModule, 
     SystemModule, 
     InfraModule, 

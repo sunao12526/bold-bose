@@ -3,53 +3,53 @@ export declare class MpTagService {
     private prisma;
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
-        appId: string;
-        tagId: number;
+        id: number;
         name: string;
-        count: number;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
+        count: number;
+        appId: string;
         accountId: number;
+        tagId: number;
     }>;
     findAll(query?: any): Promise<{
-        appId: string;
-        tagId: number;
+        id: number;
         name: string;
-        count: number;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
+        count: number;
+        appId: string;
         accountId: number;
+        tagId: number;
     }[]>;
     findOne(id: number): Promise<{
-        appId: string;
-        tagId: number;
+        id: number;
         name: string;
-        count: number;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
+        count: number;
+        appId: string;
         accountId: number;
+        tagId: number;
     }>;
     update(id: number, data: any): Promise<{
-        appId: string;
-        tagId: number;
+        id: number;
         name: string;
-        count: number;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
+        count: number;
+        appId: string;
         accountId: number;
+        tagId: number;
     }>;
     remove(id: number): Promise<{
-        appId: string;
-        tagId: number;
+        id: number;
         name: string;
-        count: number;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
+        count: number;
+        appId: string;
         accountId: number;
+        tagId: number;
     }>;
 }

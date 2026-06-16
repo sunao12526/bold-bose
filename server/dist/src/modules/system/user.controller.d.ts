@@ -16,51 +16,7 @@ export declare class UserController {
         mobile: string | null;
         deptId: number | null;
     }>;
-    findAll(): Promise<{
-        id: number;
-        status: import("@prisma/client").$Enums.CommonStatus;
-        remark: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        roles: ({
-            role: {
-                id: number;
-                code: string;
-                name: string;
-                sort: number;
-                status: import("@prisma/client").$Enums.CommonStatus;
-                remark: string | null;
-                createdAt: Date;
-                updatedAt: Date;
-            };
-        } & {
-            roleId: number;
-            userId: number;
-        })[];
-        username: string;
-        nickname: string;
-        email: string | null;
-        mobile: string | null;
-        deptId: number | null;
-        dept: {
-            id: number;
-            name: string;
-        } | null;
-        posts: ({
-            post: {
-                id: number;
-                code: string;
-                name: string;
-                sort: number;
-                status: import("@prisma/client").$Enums.CommonStatus;
-                remark: string | null;
-                createdAt: Date;
-            };
-        } & {
-            userId: number;
-            postId: number;
-        })[];
-    }[]>;
+    findAll(query: any): Promise<import("../../shared/pagination").PaginatedResult<unknown>>;
     findOne(id: number): Promise<({
         roles: {
             roleId: number;

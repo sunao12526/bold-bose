@@ -20,6 +20,7 @@ const cms_module_1 = require("./modules/cms/cms.module");
 const mp_module_1 = require("./modules/mp/mp.module");
 const jwt_auth_guard_1 = require("./shared/guards/jwt-auth.guard");
 const log_interceptor_1 = require("./shared/interceptors/log.interceptor");
+const user_cache_module_1 = require("./shared/user-cache.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -28,6 +29,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             schedule_1.ScheduleModule.forRoot(),
             prisma_module_1.PrismaModule,
+            user_cache_module_1.UserCacheModule,
             auth_module_1.AuthModule,
             system_module_1.SystemModule,
             infra_module_1.InfraModule,

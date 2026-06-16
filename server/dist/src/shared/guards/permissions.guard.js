@@ -13,13 +13,13 @@ exports.PermissionsGuard = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
 const require_permissions_decorator_1 = require("../decorators/require-permissions.decorator");
-const prisma_service_1 = require("../prisma/prisma.service");
+const user_cache_service_1 = require("../user-cache.service");
 let PermissionsGuard = class PermissionsGuard {
     reflector;
-    prisma;
-    constructor(reflector, prisma) {
+    userCache;
+    constructor(reflector, userCache) {
         this.reflector = reflector;
-        this.prisma = prisma;
+        this.userCache = userCache;
     }
     async canActivate(context) {
         const requiredPermissions = this.reflector.getAllAndOverride(require_permissions_decorator_1.PERMISSIONS_KEY, [context.getHandler(), context.getClass()]);
@@ -31,32 +31,17 @@ let PermissionsGuard = class PermissionsGuard {
         if (!user || !user.id) {
             return false;
         }
-        const userRoles = await this.prisma.userRole.findMany({
-            where: { userId: user.id },
-            include: { role: true },
-        });
-        const roleCodes = userRoles.map((ur) => ur.role.code);
-        if (roleCodes.includes('super_admin')) {
+        const auth = await this.userCache.getUserAuth(user.id);
+        if (auth.isSuperAdmin) {
             return true;
         }
-        const roleIds = userRoles.map((ur) => ur.roleId);
-        if (roleIds.length === 0) {
-            return false;
-        }
-        const roleMenus = await this.prisma.roleMenu.findMany({
-            where: { roleId: { in: roleIds } },
-            include: { menu: true },
-        });
-        const userPermissions = roleMenus
-            .map((rm) => rm.menu.permission)
-            .filter((permission) => !!permission);
-        return requiredPermissions.every((perm) => userPermissions.includes(perm));
+        return requiredPermissions.every((perm) => auth.permissions.includes(perm));
     }
 };
 exports.PermissionsGuard = PermissionsGuard;
 exports.PermissionsGuard = PermissionsGuard = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [core_1.Reflector,
-        prisma_service_1.PrismaService])
+        user_cache_service_1.UserCacheService])
 ], PermissionsGuard);
 //# sourceMappingURL=permissions.guard.js.map

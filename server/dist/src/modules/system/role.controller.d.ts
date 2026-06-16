@@ -12,16 +12,7 @@ export declare class RoleController {
         createdAt: Date;
         updatedAt: Date;
     }>;
-    findAll(): Promise<{
-        id: number;
-        code: string;
-        name: string;
-        sort: number;
-        status: import("@prisma/client").$Enums.CommonStatus;
-        remark: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-    }[]>;
+    findAll(query: any): Promise<import("../../shared/pagination").PaginatedResult<unknown>>;
     findOne(id: number): Promise<({
         menus: {
             menuId: number;

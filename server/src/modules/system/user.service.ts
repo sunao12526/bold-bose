@@ -1,10 +1,15 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
+import { UserCacheService } from '../../shared/user-cache.service';
+import { paginateQuery } from '../../shared/pagination';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private userCache: UserCacheService,
+  ) {}
 
   async create(data: any) {
     const existing = await this.prisma.user.findUnique({
@@ -35,8 +40,26 @@ export class UserService {
     return user;
   }
 
-  async findAll() {
-    return this.prisma.user.findMany({
+  async findAll(query?: any) {
+    const where: any = {};
+    if (query?.username) {
+      where.username = { contains: query.username };
+    }
+    if (query?.nickname) {
+      where.nickname = { contains: query.nickname };
+    }
+    if (query?.mobile) {
+      where.mobile = { contains: query.mobile };
+    }
+    if (query?.status) {
+      where.status = query.status;
+    }
+    if (query?.deptId) {
+      where.deptId = Number(query.deptId);
+    }
+
+    return paginateQuery(this.prisma, 'user', query || {}, {
+      where,
       select: {
         id: true,
         username: true,
@@ -98,7 +121,9 @@ export class UserService {
     if (id === 1) {
       throw new BadRequestException('系统内置超级管理员，无法删除');
     }
-    return this.prisma.user.delete({ where: { id } });
+    const result = await this.prisma.user.delete({ where: { id } });
+    this.userCache.invalidateUser(id);
+    return result;
   }
 
   async assignRoles(userId: number, roleIds: number[]) {
@@ -107,6 +132,7 @@ export class UserService {
       const mappings = roleIds.map((roleId) => ({ userId, roleId }));
       await this.prisma.userRole.createMany({ data: mappings });
     }
+    this.userCache.invalidateUser(userId);
     return { success: true };
   }
 

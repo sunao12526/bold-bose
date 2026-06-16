@@ -501,6 +501,42 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
                 parent: 'cms',
               },
             },
+            {
+              name: 'cms/article',
+              list: '/cms/article',
+              meta: {
+                label: '文章管理',
+                icon: <FileTextOutlined />,
+                parent: 'cms',
+              },
+            },
+            {
+              name: 'cms/tag',
+              list: '/cms/tag',
+              meta: {
+                label: '文章标签',
+                icon: <TagsOutlined />,
+                parent: 'cms',
+              },
+            },
+            {
+              name: 'cms/comment',
+              list: '/cms/comment',
+              meta: {
+                label: '评论管理',
+                icon: <MessageOutlined />,
+                parent: 'cms',
+              },
+            },
+            {
+              name: 'cms/banner',
+              list: '/cms/banner',
+              meta: {
+                label: '轮播图管理',
+                icon: <PictureOutlined />,
+                parent: 'cms',
+              },
+            },
 
             // Parent: MP
             {
