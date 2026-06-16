@@ -27,6 +27,7 @@ const sms_module_1 = require("./sms/sms.module");
 const mail_module_1 = require("./mail/mail.module");
 const oauth2_module_1 = require("./oauth2/oauth2.module");
 const login_log_module_1 = require("./login-log/login-log.module");
+const file_module_1 = require("../infra/file/file.module");
 const notify_service_1 = require("./notify/notify.service");
 const notify_template_controller_1 = require("./notify/notify-template.controller");
 const notify_message_controller_1 = require("./notify/notify-message.controller");
@@ -46,6 +47,7 @@ exports.SystemModule = SystemModule = __decorate([
             mail_module_1.MailModule,
             oauth2_module_1.OAuth2Module,
             login_log_module_1.LoginLogModule,
+            file_module_1.FileModule,
         ],
         controllers: [
             profile_controller_1.ProfileController,

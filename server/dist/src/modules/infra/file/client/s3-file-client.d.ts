@@ -10,6 +10,7 @@ export declare class S3FileClient implements FileClient {
         secretKey: string;
         domain: string;
     });
+    private ensureBucket;
     upload(file: Buffer, filePath: string, mimeType: string): Promise<string>;
     delete(filePath: string): Promise<void>;
 }

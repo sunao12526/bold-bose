@@ -50,9 +50,9 @@ export declare class OrderService {
             createdAt: Date;
             updatedAt: Date;
             nickname: string;
+            avatar: string | null;
             mobile: string;
             experience: number;
-            avatar: string | null;
             points: number;
             balance: number;
             levelId: number | null;

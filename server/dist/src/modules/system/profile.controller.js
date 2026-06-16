@@ -14,13 +14,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const user_service_1 = require("./user.service");
 const jwt_auth_guard_1 = require("../../shared/guards/jwt-auth.guard");
 const log_decorator_1 = require("../../shared/decorators/log.decorator");
+const file_service_1 = require("../infra/file/file.service");
 let ProfileController = class ProfileController {
     userService;
-    constructor(userService) {
+    fileService;
+    constructor(userService, fileService) {
         this.userService = userService;
+        this.fileService = fileService;
     }
     async getProfile(req) {
         return this.userService.getProfile(req.user.id);
@@ -30,6 +34,11 @@ let ProfileController = class ProfileController {
     }
     async updatePassword(req, data) {
         return this.userService.updatePassword(req.user.id, data);
+    }
+    async uploadAvatar(file, req) {
+        const fileRecord = await this.fileService.upload(file);
+        await this.userService.updateProfile(req.user.id, { nickname: req.user.nickname, avatar: fileRecord.url });
+        return { url: fileRecord.url };
     }
 };
 exports.ProfileController = ProfileController;
@@ -58,9 +67,20 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "updatePassword", null);
+__decorate([
+    (0, common_1.Post)('upload-avatar'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    (0, log_decorator_1.Log)({ module: '个人中心', type: 'UPDATE', description: '上传头像' }),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "uploadAvatar", null);
 exports.ProfileController = ProfileController = __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Controller)('system/user/profile'),
-    __metadata("design:paramtypes", [user_service_1.UserService])
+    __metadata("design:paramtypes", [user_service_1.UserService,
+        file_service_1.FileService])
 ], ProfileController);
 //# sourceMappingURL=profile.controller.js.map

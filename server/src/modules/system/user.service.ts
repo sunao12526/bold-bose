@@ -126,6 +126,7 @@ export class UserService {
         id: true,
         username: true,
         nickname: true,
+        avatar: true,
         email: true,
         mobile: true,
         remark: true,
@@ -154,7 +155,7 @@ export class UserService {
 
   async updateProfile(
     userId: number,
-    data: { nickname: string; email?: string; mobile?: string },
+    data: { nickname: string; email?: string; mobile?: string; avatar?: string },
   ) {
     return this.prisma.user.update({
       where: { id: userId },
@@ -162,14 +163,16 @@ export class UserService {
         nickname: data.nickname,
         email: data.email,
         mobile: data.mobile,
+        avatar: data.avatar,
       },
       select: {
         id: true,
         username: true,
         nickname: true,
+        avatar: true,
         email: true,
         mobile: true,
-      },
+      }
     });
   }
 

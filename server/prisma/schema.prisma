@@ -28,6 +28,7 @@ model User {
   username  String       @unique @db.VarChar(50)
   password  String       @db.VarChar(100)
   nickname  String       @db.VarChar(50)
+  avatar    String?      @db.VarChar(512)
   email     String?      @db.VarChar(50)
   mobile    String?      @db.VarChar(20)
   status    CommonStatus @default(ENABLE)

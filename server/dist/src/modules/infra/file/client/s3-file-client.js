@@ -19,7 +19,17 @@ class S3FileClient {
             forcePathStyle: true,
         });
     }
+    async ensureBucket() {
+        try {
+            await this.client.send(new client_s3_1.HeadBucketCommand({ Bucket: this.bucket }));
+        }
+        catch {
+            await this.client.send(new client_s3_1.CreateBucketCommand({ Bucket: this.bucket }));
+            await (0, client_s3_1.waitUntilBucketExists)({ client: this.client, maxWaitTime: 30 }, { Bucket: this.bucket });
+        }
+    }
     async upload(file, filePath, mimeType) {
+        await this.ensureBucket();
         const command = new client_s3_1.PutObjectCommand({
             Bucket: this.bucket,
             Key: filePath,

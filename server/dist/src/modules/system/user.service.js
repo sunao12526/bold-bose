@@ -154,6 +154,7 @@ let UserService = class UserService {
                 id: true,
                 username: true,
                 nickname: true,
+                avatar: true,
                 email: true,
                 mobile: true,
                 remark: true,
@@ -184,14 +185,16 @@ let UserService = class UserService {
                 nickname: data.nickname,
                 email: data.email,
                 mobile: data.mobile,
+                avatar: data.avatar,
             },
             select: {
                 id: true,
                 username: true,
                 nickname: true,
+                avatar: true,
                 email: true,
                 mobile: true,
-            },
+            }
         });
     }
     async updatePassword(userId, data) {

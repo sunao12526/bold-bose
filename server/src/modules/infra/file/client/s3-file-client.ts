@@ -3,6 +3,9 @@ import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
+  CreateBucketCommand,
+  HeadBucketCommand,
+  waitUntilBucketExists,
 } from '@aws-sdk/client-s3';
 
 export class S3FileClient implements FileClient {
@@ -30,18 +33,26 @@ export class S3FileClient implements FileClient {
     });
   }
 
-  async upload(
-    file: Buffer,
-    filePath: string,
-    mimeType: string,
-  ): Promise<string> {
+  private async ensureBucket(): Promise<void> {
+    try {
+      await this.client.send(new HeadBucketCommand({ Bucket: this.bucket }));
+    } catch {
+      await this.client.send(new CreateBucketCommand({ Bucket: this.bucket }));
+      await waitUntilBucketExists(
+        { client: this.client, maxWaitTime: 30 },
+        { Bucket: this.bucket },
+      );
+    }
+  }
+
+  async upload(file: Buffer, filePath: string, mimeType: string): Promise<string> {
+    await this.ensureBucket();
     const command = new PutObjectCommand({
       Bucket: this.bucket,
       Key: filePath,
       Body: file,
       ContentType: mimeType,
     });
-
     await this.client.send(command);
     return `${this.domain}/${filePath}`;
   }
@@ -51,7 +62,6 @@ export class S3FileClient implements FileClient {
       Bucket: this.bucket,
       Key: filePath,
     });
-
     await this.client.send(command);
   }
 }

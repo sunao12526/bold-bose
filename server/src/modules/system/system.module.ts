@@ -18,6 +18,7 @@ import { SmsModule } from './sms/sms.module';
 import { MailModule } from './mail/mail.module';
 import { OAuth2Module } from './oauth2/oauth2.module';
 import { LoginLogModule } from './login-log/login-log.module';
+import { FileModule } from '../infra/file/file.module';
 import { NotifyService } from './notify/notify.service';
 import { NotifyTemplateController } from './notify/notify-template.controller';
 import { NotifyMessageController } from './notify/notify-message.controller';
@@ -34,6 +35,7 @@ import { ProfileController } from './profile.controller';
     MailModule,
     OAuth2Module,
     LoginLogModule,
+    FileModule,
   ],
   controllers: [
     ProfileController,

@@ -48,9 +48,9 @@ export declare class OrderController {
             createdAt: Date;
             updatedAt: Date;
             nickname: string;
+            avatar: string | null;
             mobile: string;
             experience: number;
-            avatar: string | null;
             points: number;
             balance: number;
             levelId: number | null;

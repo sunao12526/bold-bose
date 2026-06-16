@@ -3,31 +3,30 @@
 export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from 'react';
-import { Card, Tabs, Form, Input, Button, Row, Col, Space, Typography, Tag, Progress, App } from 'antd';
-import { UserOutlined, LockOutlined, SafetyCertificateOutlined, MailOutlined, PhoneOutlined, KeyOutlined, GithubOutlined, LinkOutlined } from '@ant-design/icons';
+import { Card, Tabs, Form, Input, Button, Row, Col, Space, Typography, Tag, Progress, Upload, message } from 'antd';
+import { UserOutlined, LockOutlined, SafetyCertificateOutlined, MailOutlined, PhoneOutlined, KeyOutlined, GithubOutlined, LinkOutlined, CameraOutlined } from '@ant-design/icons';
 import { useLogout } from '@refinedev/core';
 import { axiosInstance } from '../../../../lib/axios';
 
 const { Title, Text, Paragraph } = Typography;
 
 export default function UserProfile() {
-  const { message } = App.useApp();
   const { mutate: logout } = useLogout();
-  
+
   const [profile, setProfile] = useState<any>(null);
   const [roles, setRoles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [updatingPassword, setUpdatingPassword] = useState(false);
-  
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [newPasswordVal, setNewPasswordVal] = useState('');
-  
+
   const [socialBinds, setSocialBinds] = useState<any[]>([]);
   const [socialLoading, setSocialLoading] = useState(false);
 
-  // 1. Fetch Profile
   const fetchProfile = async () => {
     try {
       setLoading(true);
@@ -65,7 +64,24 @@ export default function UserProfile() {
     fetchSocialBinds();
   }, []);
 
-  // 2. Update Profile Handler
+  const handleAvatarUpload = async (file: File) => {
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await axiosInstance.post('/system/user/profile/upload-avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setProfile((prev: any) => ({ ...prev, avatar: res.data.url }));
+      message.success('头像上传成功！');
+    } catch (err: any) {
+      message.error(err.response?.data?.message || '头像上传失败');
+    } finally {
+      setUploadingAvatar(false);
+    }
+    return false;
+  };
+
   const handleUpdateProfile = async (values: any) => {
     setUpdatingProfile(true);
     try {
@@ -80,7 +96,6 @@ export default function UserProfile() {
     }
   };
 
-  // 3. Update Password Handler
   const handleUpdatePassword = async (values: any) => {
     if (values.newPassword !== values.confirmPassword) {
       message.error('两次输入的密码不一致！');
@@ -93,7 +108,6 @@ export default function UserProfile() {
         newPassword: values.newPassword,
       });
       message.success('密码修改成功，请重新登录！');
-      // Forcibly logout
       logout();
     } catch (err: any) {
       console.error(err);
@@ -132,7 +146,6 @@ export default function UserProfile() {
     }
   };
 
-  // 4. Dynamic Password Strength Evaluation
   const evaluatePasswordStrength = (pwd: string) => {
     if (!pwd) return { percent: 0, status: 'exception' as any, text: '无', color: 'gray' };
     let score = 0;
@@ -156,29 +169,55 @@ export default function UserProfile() {
   return (
     <div style={{ padding: '24px' }}>
       <Row gutter={24}>
-        {/* Left Side: Avatar & Simple Details Card */}
         <Col xs={24} sm={24} md={8}>
           <Card variant="borderless" style={{ textAlign: 'center', height: '100%', borderRadius: '8px' }}>
             <div style={{ margin: '16px 0' }}>
-              <div style={{
-                width: 80,
-                height: 80,
-                borderRadius: '50%',
-                backgroundColor: '#1890ff',
-                color: '#fff',
-                fontSize: 32,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 16px auto',
-                boxShadow: '0 4px 12px rgba(24, 144, 255, 0.3)'
-              }}>
-                {profile?.nickname?.[0]?.toUpperCase() || <UserOutlined />}
-              </div>
+              <Upload
+                showUploadList={false}
+                beforeUpload={handleAvatarUpload}
+                accept="image/*"
+              >
+                <div style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  margin: '0 auto 16px auto',
+                  boxShadow: '0 4px 12px rgba(24, 144, 255, 0.3)',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  background: profile?.avatar ? 'transparent' : '#1890ff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  {profile?.avatar ? (
+                    <img src={profile.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <span style={{ color: '#fff', fontSize: 32 }}>
+                      {profile?.nickname?.[0]?.toUpperCase() || <UserOutlined />}
+                    </span>
+                  )}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 24,
+                    background: 'rgba(0,0,0,0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <CameraOutlined style={{ color: '#fff', fontSize: 12 }} />
+                  </div>
+                </div>
+              </Upload>
+              {uploadingAvatar && <div style={{ fontSize: 12, color: '#999' }}>上传中...</div>}
               <Title level={4} style={{ marginBottom: 4 }}>{profile?.nickname}</Title>
               <Paragraph type="secondary">@{profile?.username}</Paragraph>
             </div>
-            
+
             <div style={{ textAlign: 'left', marginTop: 32, borderTop: '1px solid #f0f0f0', paddingTop: 24 }}>
               <Paragraph>
                 <Space>
@@ -197,7 +236,7 @@ export default function UserProfile() {
                   )}
                 </div>
               </Paragraph>
-              
+
               <Paragraph style={{ marginTop: 16 }}>
                 <Space>
                   <SafetyCertificateOutlined style={{ color: '#8c8c8c' }} />
@@ -217,7 +256,6 @@ export default function UserProfile() {
           </Card>
         </Col>
 
-        {/* Right Side: Tab Forms */}
         <Col xs={24} sm={24} md={16}>
           <Card variant="borderless" style={{ borderRadius: '8px' }}>
             <Tabs
@@ -326,11 +364,11 @@ export default function UserProfile() {
                             <Text type="secondary" style={{ fontSize: 12 }}>密码强度:</Text>
                             <Text style={{ fontSize: 12, color: strength.color, fontWeight: 'bold' }}>{strength.text}</Text>
                           </div>
-                          <Progress 
-                            percent={strength.percent} 
-                            status={strength.status} 
-                            strokeColor={strength.color} 
-                            showInfo={false} 
+                          <Progress
+                            percent={strength.percent}
+                            status={strength.status}
+                            strokeColor={strength.color}
+                            showInfo={false}
                             size="small"
                           />
                         </div>
@@ -373,16 +411,16 @@ export default function UserProfile() {
                   children: (
                     <div style={{ marginTop: 16 }}>
                       {socialBinds.map((bind) => (
-                        <Card 
-                          key={bind.type} 
+                        <Card
+                          key={bind.type}
                           style={{ marginBottom: 16, borderRadius: '8px' }}
                           styles={{ body: { padding: '20px' } }}
                         >
                           <Row align="middle" justify="space-between">
                             <Col>
                               <Space size={16}>
-                                <div style={{ 
-                                  fontSize: 32, 
+                                <div style={{
+                                  fontSize: 32,
                                   color: bind.type === 'GITHUB' ? '#000' : '#1890ff',
                                   display: 'flex',
                                   alignItems: 'center'
