@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
@@ -19,8 +19,8 @@ export class CategoryController {
 
   @Get()
   @RequirePermissions('cms:category:query')
-  async findAll() {
-    return this.categoryService.findAll();
+  async findAll(@Query() query: any) {
+    return this.categoryService.findAll(query);
   }
 
   @Get(':id')

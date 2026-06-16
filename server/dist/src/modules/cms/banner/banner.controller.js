@@ -27,8 +27,8 @@ let BannerController = class BannerController {
     async create(data) {
         return this.bannerService.create(data);
     }
-    async findAll() {
-        return this.bannerService.findAll();
+    async findAll(query) {
+        return this.bannerService.findAll(query);
     }
     async findOne(id) {
         return this.bannerService.findOne(id);
@@ -53,8 +53,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, require_permissions_decorator_1.RequirePermissions)('cms:banner:query'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], BannerController.prototype, "findAll", null);
 __decorate([

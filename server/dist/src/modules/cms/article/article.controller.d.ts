@@ -17,62 +17,32 @@ export declare class ArticleController {
             tagId: number;
         })[];
         comments: {
-            id: number;
+            content: string;
             status: import("@prisma/client").$Enums.CmsCommentStatus;
             createdAt: Date;
-            nickname: string;
-            userId: number | null;
-            content: string;
+            id: number;
             articleId: number;
+            userId: number | null;
+            nickname: string;
         }[];
     } & {
-        id: number;
-        status: import("@prisma/client").$Enums.CmsArticleStatus;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
         content: string | null;
-        categoryId: number;
-        author: string;
         summary: string | null;
         coverUrl: string | null;
+        author: string;
         viewCount: number;
         likeCount: number;
         sortOrder: number;
+        status: import("@prisma/client").$Enums.CmsArticleStatus;
         isTop: boolean;
         isRecommend: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        categoryId: number;
     }>;
-    findAll(query: any): Promise<({
-        category: {
-            id: number;
-            name: string;
-        };
-        tags: ({
-            tag: {
-                id: number;
-                name: string;
-            };
-        } & {
-            articleId: number;
-            tagId: number;
-        })[];
-    } & {
-        id: number;
-        status: import("@prisma/client").$Enums.CmsArticleStatus;
-        createdAt: Date;
-        updatedAt: Date;
-        title: string;
-        content: string | null;
-        categoryId: number;
-        author: string;
-        summary: string | null;
-        coverUrl: string | null;
-        viewCount: number;
-        likeCount: number;
-        sortOrder: number;
-        isTop: boolean;
-        isRecommend: boolean;
-    })[]>;
+    findAll(query: any): Promise<import("../../../shared/pagination").PaginatedResult<unknown>>;
     findOne(id: number): Promise<{
         category: {
             id: number;
@@ -88,30 +58,30 @@ export declare class ArticleController {
             tagId: number;
         })[];
         comments: {
-            id: number;
+            content: string;
             status: import("@prisma/client").$Enums.CmsCommentStatus;
             createdAt: Date;
-            nickname: string;
-            userId: number | null;
-            content: string;
+            id: number;
             articleId: number;
+            userId: number | null;
+            nickname: string;
         }[];
     } & {
-        id: number;
-        status: import("@prisma/client").$Enums.CmsArticleStatus;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
         content: string | null;
-        categoryId: number;
-        author: string;
         summary: string | null;
         coverUrl: string | null;
+        author: string;
         viewCount: number;
         likeCount: number;
         sortOrder: number;
+        status: import("@prisma/client").$Enums.CmsArticleStatus;
         isTop: boolean;
         isRecommend: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        categoryId: number;
     }>;
     update(id: number, data: any): Promise<{
         category: {
@@ -128,63 +98,63 @@ export declare class ArticleController {
             tagId: number;
         })[];
         comments: {
-            id: number;
+            content: string;
             status: import("@prisma/client").$Enums.CmsCommentStatus;
             createdAt: Date;
-            nickname: string;
-            userId: number | null;
-            content: string;
+            id: number;
             articleId: number;
+            userId: number | null;
+            nickname: string;
         }[];
     } & {
-        id: number;
-        status: import("@prisma/client").$Enums.CmsArticleStatus;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
         content: string | null;
-        categoryId: number;
-        author: string;
         summary: string | null;
         coverUrl: string | null;
+        author: string;
         viewCount: number;
         likeCount: number;
         sortOrder: number;
+        status: import("@prisma/client").$Enums.CmsArticleStatus;
         isTop: boolean;
         isRecommend: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        categoryId: number;
     }>;
     remove(id: number): Promise<{
-        id: number;
-        status: import("@prisma/client").$Enums.CmsArticleStatus;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
         content: string | null;
-        categoryId: number;
-        author: string;
         summary: string | null;
         coverUrl: string | null;
+        author: string;
         viewCount: number;
         likeCount: number;
         sortOrder: number;
+        status: import("@prisma/client").$Enums.CmsArticleStatus;
         isTop: boolean;
         isRecommend: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        categoryId: number;
     }>;
     updateStatus(id: number, status: string): Promise<{
-        id: number;
-        status: import("@prisma/client").$Enums.CmsArticleStatus;
-        createdAt: Date;
-        updatedAt: Date;
         title: string;
         content: string | null;
-        categoryId: number;
-        author: string;
         summary: string | null;
         coverUrl: string | null;
+        author: string;
         viewCount: number;
         likeCount: number;
         sortOrder: number;
+        status: import("@prisma/client").$Enums.CmsArticleStatus;
         isTop: boolean;
         isRecommend: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        categoryId: number;
     }>;
 }

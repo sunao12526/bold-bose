@@ -2,54 +2,41 @@ import { CommentService } from './comment.service';
 export declare class CommentController {
     private commentService;
     constructor(commentService: CommentService);
-    findAll(query: any): Promise<({
-        article: {
-            id: number;
-            title: string;
-        };
-    } & {
-        id: number;
-        status: import("@prisma/client").$Enums.CmsCommentStatus;
-        createdAt: Date;
-        nickname: string;
-        userId: number | null;
-        content: string;
-        articleId: number;
-    })[]>;
+    findAll(query: any): Promise<import("../../../shared/pagination").PaginatedResult<unknown>>;
     findOne(id: number): Promise<{
-        id: number;
+        userId: number | null;
+        nickname: string;
+        content: string;
         status: import("@prisma/client").$Enums.CmsCommentStatus;
         createdAt: Date;
-        nickname: string;
-        userId: number | null;
-        content: string;
+        id: number;
         articleId: number;
     }>;
     approve(id: number): Promise<{
-        id: number;
+        userId: number | null;
+        nickname: string;
+        content: string;
         status: import("@prisma/client").$Enums.CmsCommentStatus;
         createdAt: Date;
-        nickname: string;
-        userId: number | null;
-        content: string;
+        id: number;
         articleId: number;
     }>;
     reject(id: number): Promise<{
-        id: number;
+        userId: number | null;
+        nickname: string;
+        content: string;
         status: import("@prisma/client").$Enums.CmsCommentStatus;
         createdAt: Date;
-        nickname: string;
-        userId: number | null;
-        content: string;
+        id: number;
         articleId: number;
     }>;
     remove(id: number): Promise<{
-        id: number;
+        userId: number | null;
+        nickname: string;
+        content: string;
         status: import("@prisma/client").$Enums.CmsCommentStatus;
         createdAt: Date;
-        nickname: string;
-        userId: number | null;
-        content: string;
+        id: number;
         articleId: number;
     }>;
 }

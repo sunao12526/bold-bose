@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
+const pagination_1 = require("../../../shared/pagination");
 let CommentService = class CommentService {
     prisma;
     constructor(prisma) {
@@ -36,7 +37,7 @@ let CommentService = class CommentService {
             where.articleId = Number(query.articleId);
         if (query?.status)
             where.status = query.status;
-        return this.prisma.cmsComment.findMany({
+        return (0, pagination_1.paginateQuery)(this.prisma, 'cmsComment', query || {}, {
             where,
             include: {
                 article: { select: { id: true, title: true } },

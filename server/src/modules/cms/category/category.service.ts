@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { paginateQuery } from '../../../shared/pagination';
 
 @Injectable()
 export class CategoryService {
@@ -9,8 +10,10 @@ export class CategoryService {
     return this.prisma.cmsCategory.create({ data });
   }
 
-  async findAll() {
-    return this.prisma.cmsCategory.findMany({ orderBy: { sort: 'asc' } });
+  async findAll(query?: any) {
+    return paginateQuery(this.prisma, 'cmsCategory', query || {}, {
+      orderBy: { sort: 'asc' },
+    });
   }
 
   async findOne(id: number) {

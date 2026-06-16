@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { paginateQuery } from '../../../shared/pagination';
 
 @Injectable()
 export class TagService {
@@ -9,8 +10,10 @@ export class TagService {
     return this.prisma.cmsTag.create({ data });
   }
 
-  async findAll() {
-    return this.prisma.cmsTag.findMany({ orderBy: { id: 'desc' } });
+  async findAll(query?: any) {
+    return paginateQuery(this.prisma, 'cmsTag', query || {}, {
+      orderBy: { id: 'desc' },
+    });
   }
 
   async findOne(id: number) {

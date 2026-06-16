@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TagService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
+const pagination_1 = require("../../../shared/pagination");
 let TagService = class TagService {
     prisma;
     constructor(prisma) {
@@ -20,8 +21,10 @@ let TagService = class TagService {
     async create(data) {
         return this.prisma.cmsTag.create({ data });
     }
-    async findAll() {
-        return this.prisma.cmsTag.findMany({ orderBy: { id: 'desc' } });
+    async findAll(query) {
+        return (0, pagination_1.paginateQuery)(this.prisma, 'cmsTag', query || {}, {
+            orderBy: { id: 'desc' },
+        });
     }
     async findOne(id) {
         const record = await this.prisma.cmsTag.findUnique({ where: { id } });

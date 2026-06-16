@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { paginateQuery } from '../../../shared/pagination';
 
 @Injectable()
 export class ArticleService {
@@ -21,16 +22,16 @@ export class ArticleService {
     if (query?.categoryId) where.categoryId = Number(query.categoryId);
     if (query?.status) where.status = query.status;
     if (query?.title) where.title = { contains: query.title };
-    return this.prisma.cmsArticle.findMany({
+    return paginateQuery(this.prisma, 'cmsArticle', query || {}, {
       where,
       include: {
         category: { select: { id: true, name: true } },
         tags: { include: { tag: { select: { id: true, name: true } } } },
       },
       orderBy: [
-        { isTop: 'desc' },
-        { sortOrder: 'asc' },
-        { createdAt: 'desc' },
+        { isTop: 'desc' as const },
+        { sortOrder: 'asc' as const },
+        { createdAt: 'desc' as const },
       ],
     });
   }

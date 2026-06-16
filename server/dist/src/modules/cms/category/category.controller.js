@@ -27,8 +27,8 @@ let CategoryController = class CategoryController {
     async create(data) {
         return this.categoryService.create(data);
     }
-    async findAll() {
-        return this.categoryService.findAll();
+    async findAll(query) {
+        return this.categoryService.findAll(query);
     }
     async findOne(id) {
         return this.categoryService.findOne(id);
@@ -53,8 +53,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, require_permissions_decorator_1.RequirePermissions)('cms:category:query'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], CategoryController.prototype, "findAll", null);
 __decorate([

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { BannerService } from './banner.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
@@ -19,8 +19,8 @@ export class BannerController {
 
   @Get()
   @RequirePermissions('cms:banner:query')
-  async findAll() {
-    return this.bannerService.findAll();
+  async findAll(@Query() query: any) {
+    return this.bannerService.findAll(query);
   }
 
   @Get(':id')

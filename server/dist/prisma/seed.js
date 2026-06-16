@@ -1716,6 +1716,112 @@ async function main() {
     });
     console.log('Clearing old Login logs...');
     await prisma.loginLog.deleteMany({});
+    console.log('Seeding CMS data...');
+    const catTech = await prisma.cmsCategory.create({ data: { name: '技术文章', code: 'tech', sort: 1, status: client_1.CommonStatus.ENABLE, remark: '技术相关文章' } });
+    const catNews = await prisma.cmsCategory.create({ data: { name: '新闻资讯', code: 'news', sort: 2, status: client_1.CommonStatus.ENABLE, remark: '新闻资讯类文章' } });
+    const catProduct = await prisma.cmsCategory.create({ data: { name: '产品动态', code: 'product', sort: 3, status: client_1.CommonStatus.ENABLE, remark: '产品更新和动态' } });
+    const catActivity = await prisma.cmsCategory.create({ data: { name: '活动公告', code: 'activity', sort: 4, status: client_1.CommonStatus.ENABLE, remark: '活动和公告' } });
+    const catTutorial = await prisma.cmsCategory.create({ data: { name: '使用教程', code: 'tutorial', sort: 5, status: client_1.CommonStatus.ENABLE, remark: '产品使用教程' } });
+    const tagNestjs = await prisma.cmsTag.create({ data: { name: 'NestJS', status: client_1.CommonStatus.ENABLE } });
+    const tagReact = await prisma.cmsTag.create({ data: { name: 'React', status: client_1.CommonStatus.ENABLE } });
+    const tagPrisma = await prisma.cmsTag.create({ data: { name: 'Prisma', status: client_1.CommonStatus.ENABLE } });
+    const tagTypeScript = await prisma.cmsTag.create({ data: { name: 'TypeScript', status: client_1.CommonStatus.ENABLE } });
+    const tagAntd = await prisma.cmsTag.create({ data: { name: 'Ant Design', status: client_1.CommonStatus.ENABLE } });
+    const tagDocker = await prisma.cmsTag.create({ data: { name: 'Docker', status: client_1.CommonStatus.ENABLE } });
+    const tagPostgres = await prisma.cmsTag.create({ data: { name: 'PostgreSQL', status: client_1.CommonStatus.ENABLE } });
+    const tagSecurity = await prisma.cmsTag.create({ data: { name: '安全', status: client_1.CommonStatus.ENABLE } });
+    const articleStatuses = ['PUBLISHED', 'PUBLISHED', 'PUBLISHED', 'DRAFT', 'ARCHIVED'];
+    const categories = [catTech, catNews, catProduct, catActivity, catTutorial];
+    const tagSets = [
+        [tagNestjs.id, tagTypeScript.id],
+        [tagReact.id, tagAntd.id],
+        [tagPrisma.id, tagPostgres.id],
+        [tagDocker.id],
+        [tagNestjs.id, tagReact.id, tagTypeScript.id],
+    ];
+    const articleTitles = [
+        'NestJS 入门指南：从零搭建后端项目',
+        'React 19 新特性全面解析',
+        'Prisma ORM 最佳实践与性能优化',
+        'TypeScript 5.x 高级类型体操技巧',
+        'Ant Design 6 迁移指南',
+        'Docker Compose 多服务编排实战',
+        'PostgreSQL 索引优化策略',
+        'JWT 认证与刷新令牌机制详解',
+        'RBAC 权限系统设计与实现',
+        'RESTful API 设计规范与最佳实践',
+        '系统架构设计：微服务 vs 单体',
+        '前端性能优化：懒加载与代码分割',
+        'Node.js 内存泄漏排查与预防',
+        'GraphQL vs REST API 选型分析',
+        '数据库事务与分布式锁实现',
+        'WebSocket 实时通信方案对比',
+        'Redis 缓存策略与缓存穿透处理',
+        'NestJS 拦截器与中间件深入理解',
+        '前后端分离项目部署最佳实践',
+        'CSS-in-JS 方案对比：styled-components vs emotion',
+        '单元测试与集成测试覆盖率提升',
+        'CI/CD 流水线搭建：GitHub Actions 实战',
+        'Elasticsearch 全文搜索引擎入门',
+        'WebSocket 聊天室项目实战',
+        'NestJS + Prisma 全栈项目模板',
+        'React 状态管理：Zustand vs Jotai',
+        'Vue 3 组合式 API 最佳实践',
+        'Git 工作流：GitFlow vs Trunk-Based',
+        '代码审查清单：提升团队代码质量',
+        '微前端架构方案选型与实践',
+    ];
+    const articleContents = articleTitles.map((title, i) => `<h2>${title}</h2><p>这是关于「${title}」的详细文章内容。</p><p>在本文中，我们将深入探讨这个话题的各个方面，包括核心概念、最佳实践和常见陷阱。</p><p>第 ${i + 1} 段：通过实际案例来说明这些概念的应用。</p><p>总结：掌握这些知识将帮助你在项目中做出更好的技术决策。</p>`);
+    for (let i = 0; i < 30; i++) {
+        const article = await prisma.cmsArticle.create({
+            data: {
+                categoryId: categories[i % categories.length].id,
+                title: articleTitles[i],
+                content: articleContents[i],
+                summary: `${articleTitles[i]}的摘要内容，简要介绍本文的主要观点。`,
+                coverUrl: `https://picsum.photos/800/400?random=${i + 1}`,
+                author: 'admin',
+                viewCount: Math.floor(Math.random() * 500),
+                likeCount: Math.floor(Math.random() * 100),
+                sortOrder: i,
+                status: articleStatuses[i % articleStatuses.length],
+                isTop: i < 3,
+                isRecommend: i < 5,
+            },
+        });
+        const tagSet = tagSets[i % tagSets.length];
+        for (const tagId of tagSet) {
+            await prisma.cmsArticleTag.create({ data: { articleId: article.id, tagId } });
+        }
+    }
+    const commentStatuses = ['APPROVED', 'APPROVED', 'PENDING', 'REJECTED'];
+    for (let i = 0; i < 20; i++) {
+        await prisma.cmsComment.create({
+            data: {
+                articleId: (i % 10) + 1,
+                nickname: `用户${i + 1}`,
+                content: `这是第 ${i + 1} 条评论内容，关于文章的讨论和反馈。${i % 3 === 0 ? '非常棒的文章！' : '感谢分享！'}`,
+                status: commentStatuses[i % commentStatuses.length],
+            },
+        });
+    }
+    const bannerTitles = [
+        '春季新品上市', '会员日特惠活动', '双十一预售开启', '年终大促',
+        '新品首发限量抢', '限时折扣专区', '满减活动进行中', '节日礼品推荐',
+    ];
+    for (let i = 0; i < 8; i++) {
+        await prisma.cmsBanner.create({
+            data: {
+                title: bannerTitles[i],
+                picUrl: `https://picsum.photos/1200/400?random=banner${i + 1}`,
+                url: `https://example.com/activity/${i + 1}`,
+                sort: i,
+                status: i < 6 ? client_1.CommonStatus.ENABLE : client_1.CommonStatus.DISABLE,
+                remark: `第 ${i + 1} 个轮播图`,
+            },
+        });
+    }
+    console.log('CMS data seeded: 5 categories, 8 tags, 30 articles, 20 comments, 8 banners.');
     console.log('Member users, Orders, and Refunds seeded successfully.');
     console.log('Database seeding successfully finished.');
 }

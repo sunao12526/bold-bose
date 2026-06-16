@@ -27,8 +27,8 @@ let TagController = class TagController {
     async create(data) {
         return this.tagService.create(data);
     }
-    async findAll() {
-        return this.tagService.findAll();
+    async findAll(query) {
+        return this.tagService.findAll(query);
     }
     async findOne(id) {
         return this.tagService.findOne(id);
@@ -53,8 +53,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, require_permissions_decorator_1.RequirePermissions)('cms:tag:query'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], TagController.prototype, "findAll", null);
 __decorate([

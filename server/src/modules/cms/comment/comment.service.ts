@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { paginateQuery } from '../../../shared/pagination';
 
 @Injectable()
 export class CommentService {
@@ -22,7 +23,7 @@ export class CommentService {
     const where: any = {};
     if (query?.articleId) where.articleId = Number(query.articleId);
     if (query?.status) where.status = query.status;
-    return this.prisma.cmsComment.findMany({
+    return paginateQuery(this.prisma, 'cmsComment', query || {}, {
       where,
       include: {
         article: { select: { id: true, title: true } },
