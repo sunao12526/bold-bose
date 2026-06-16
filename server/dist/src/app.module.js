@@ -17,6 +17,7 @@ const infra_module_1 = require("./modules/infra/infra.module");
 const mall_module_1 = require("./modules/mall/mall.module");
 const member_module_1 = require("./modules/member/member.module");
 const cms_module_1 = require("./modules/cms/cms.module");
+const mp_module_1 = require("./modules/mp/mp.module");
 const jwt_auth_guard_1 = require("./shared/guards/jwt-auth.guard");
 const log_interceptor_1 = require("./shared/interceptors/log.interceptor");
 let AppModule = class AppModule {
@@ -33,6 +34,7 @@ exports.AppModule = AppModule = __decorate([
             mall_module_1.MallModule,
             member_module_1.MemberModule,
             cms_module_1.CmsModule,
+            mp_module_1.MpModule,
         ],
         providers: [
             {

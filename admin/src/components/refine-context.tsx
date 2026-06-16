@@ -45,7 +45,9 @@ import {
   MessageOutlined,
   SafetyCertificateOutlined,
   LoginOutlined,
-  PictureOutlined
+  KeyOutlined,
+  PictureOutlined,
+  WechatOutlined,
 } from '@ant-design/icons';
 
 import '@refinedev/antd/dist/reset.css';
@@ -499,40 +501,76 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
                 parent: 'cms',
               },
             },
+
+            // Parent: MP
             {
-              name: 'cms/article',
-              list: '/cms/article',
+              name: 'mp',
               meta: {
-                label: '文章管理',
-                icon: <FileTextOutlined />,
-                parent: 'cms',
+                label: '公众号管理',
+                icon: <WechatOutlined />,
               },
             },
             {
-              name: 'cms/tag',
-              list: '/cms/tag',
+              name: 'mp/account',
+              list: '/mp/account',
+              meta: {
+                label: '公众号账号',
+                icon: <KeyOutlined />,
+                parent: 'mp',
+              },
+            },
+            {
+              name: 'mp/material',
+              list: '/mp/material',
+              meta: {
+                label: '素材管理',
+                icon: <FileOutlined />,
+                parent: 'mp',
+              },
+            },
+            {
+              name: 'mp/menu',
+              list: '/mp/menu',
+              meta: {
+                label: '菜单管理',
+                icon: <MenuOutlined />,
+                parent: 'mp',
+              },
+            },
+            {
+              name: 'mp/auto-reply',
+              list: '/mp/auto-reply',
+              meta: {
+                label: '自动回复',
+                icon: <MessageOutlined />,
+                parent: 'mp',
+              },
+            },
+            {
+              name: 'mp/user',
+              list: '/mp/user',
+              meta: {
+                label: '粉丝管理',
+                icon: <TeamOutlined />,
+                parent: 'mp',
+              },
+            },
+            {
+              name: 'mp/tag',
+              list: '/mp/tag',
               meta: {
                 label: '标签管理',
                 icon: <TagsOutlined />,
-                parent: 'cms',
+                parent: 'mp',
               },
             },
             {
-              name: 'cms/comment',
-              list: '/cms/comment',
+              name: 'mp/message',
+              list: '/mp/message',
               meta: {
-                label: '评论管理',
-                icon: <MessageOutlined />,
-                parent: 'cms',
-              },
-            },
-            {
-              name: 'cms/banner',
-              list: '/cms/banner',
-              meta: {
-                label: '轮播图管理',
-                icon: <PictureOutlined />,
-                parent: 'cms',
+                label: '消息记录',
+                icon: <HistoryOutlined />,
+                parent: 'mp',
               },
             },
           ]}

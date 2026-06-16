@@ -8,6 +8,7 @@ import { InfraModule } from './modules/infra/infra.module';
 import { MallModule } from './modules/mall/mall.module';
 import { MemberModule } from './modules/member/member.module';
 import { CmsModule } from './modules/cms/cms.module';
+import { MpModule } from './modules/mp/mp.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { LogInterceptor } from './shared/interceptors/log.interceptor';
 
@@ -21,6 +22,7 @@ import { LogInterceptor } from './shared/interceptors/log.interceptor';
     MallModule,
     MemberModule,
     CmsModule,
+    MpModule,
   ],
   providers: [
     {

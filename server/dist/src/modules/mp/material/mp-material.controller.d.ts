@@ -1,0 +1,80 @@
+import { MpMaterialService } from './mp-material.service';
+export declare class MpMaterialController {
+    private service;
+    constructor(service: MpMaterialService);
+    create(data: any): Promise<{
+        appId: string;
+        mediaId: string;
+        type: string;
+        permanent: boolean;
+        url: string;
+        name: string | null;
+        mpUrl: string | null;
+        title: string | null;
+        introduction: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        accountId: number;
+    }>;
+    findAll(query: any): Promise<{
+        appId: string;
+        mediaId: string;
+        type: string;
+        permanent: boolean;
+        url: string;
+        name: string | null;
+        mpUrl: string | null;
+        title: string | null;
+        introduction: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        accountId: number;
+    }[]>;
+    findOne(id: number): Promise<{
+        appId: string;
+        mediaId: string;
+        type: string;
+        permanent: boolean;
+        url: string;
+        name: string | null;
+        mpUrl: string | null;
+        title: string | null;
+        introduction: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        accountId: number;
+    }>;
+    update(id: number, data: any): Promise<{
+        appId: string;
+        mediaId: string;
+        type: string;
+        permanent: boolean;
+        url: string;
+        name: string | null;
+        mpUrl: string | null;
+        title: string | null;
+        introduction: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        accountId: number;
+    }>;
+    remove(id: number): Promise<{
+        appId: string;
+        mediaId: string;
+        type: string;
+        permanent: boolean;
+        url: string;
+        name: string | null;
+        mpUrl: string | null;
+        title: string | null;
+        introduction: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        id: number;
+        accountId: number;
+    }>;
+}

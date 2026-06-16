@@ -1062,3 +1062,160 @@ model CmsBanner {
   @@map("cms_banner")
 }
 
+// ==================== 微信公众号 MP ====================
+
+model MpAccount {
+  id        Int          @id @default(autoincrement())
+  name      String       @db.VarChar(100)
+  account   String       @db.VarChar(100)
+  appId     String       @unique @map("app_id") @db.VarChar(100)
+  appSecret String       @map("app_secret") @db.VarChar(200)
+  token     String       @db.VarChar(100)
+  aesKey    String?      @map("aes_key") @db.VarChar(200)
+  qrCodeUrl String?      @map("qr_code_url") @db.VarChar(500)
+  remark    String?      @db.VarChar(500)
+  status    CommonStatus @default(ENABLE)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  materials  MpMaterial[]
+  menus      MpMenu[]
+  autoReplies MpAutoReply[]
+  users      MpUser[]
+  tags       MpTag[]
+  messages   MpMessage[]
+
+  @@map("mp_account")
+}
+
+model MpMaterial {
+  id          Int      @id @default(autoincrement())
+  accountId   Int      @map("account_id")
+  appId       String   @map("app_id") @db.VarChar(100)
+  mediaId     String   @map("media_id") @db.VarChar(200)
+  type        String   @db.VarChar(20)
+  permanent   Boolean  @default(true)
+  url         String   @db.VarChar(500)
+  name        String?  @db.VarChar(200)
+  mpUrl       String?  @map("mp_url") @db.VarChar(500)
+  title       String?  @db.VarChar(200)
+  introduction String? @db.VarChar(500)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  account     MpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("mp_material")
+}
+
+model MpMenu {
+  id                  Int      @id @default(autoincrement())
+  accountId           Int      @map("account_id")
+  appId               String   @map("app_id") @db.VarChar(100)
+  name                String   @db.VarChar(50)
+  menuKey             String?  @map("menu_key") @db.VarChar(100)
+  parentId            Int?     @default(0) @map("parent_id")
+  type                String?  @db.VarChar(30)
+  url                 String?  @db.VarChar(500)
+  miniProgramAppId    String?  @map("mini_program_app_id") @db.VarChar(100)
+  miniProgramPagePath String?  @map("mini_program_page_path") @db.VarChar(200)
+  replyMessageType    String?  @map("reply_message_type") @db.VarChar(30)
+  replyContent        String?  @map("reply_content") @db.Text
+  replyMediaId        String?  @map("reply_media_id") @db.VarChar(200)
+  sort                Int      @default(0)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  account             MpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("mp_menu")
+}
+
+model MpAutoReply {
+  id                  Int      @id @default(autoincrement())
+  accountId           Int      @map("account_id")
+  appId               String   @map("app_id") @db.VarChar(100)
+  type                Int      // 1=KEYWORD, 2=MESSAGE (关注时回复)
+  requestKeyword      String?  @map("request_keyword") @db.VarChar(200)
+  requestMatch        Int?     @default(1) @map("request_match") // 1=全匹配, 2=半匹配
+  requestMessageType  String?  @map("request_message_type") @db.VarChar(30)
+  responseMessageType String   @map("response_message_type") @db.VarChar(30)
+  responseContent     String?  @map("response_content") @db.Text
+  responseMediaId     String?  @map("response_media_id") @db.VarChar(200)
+  responseMediaUrl    String?  @map("response_media_url") @db.VarChar(500)
+  responseArticles    Json?    @map("response_articles")
+  sort                Int      @default(0)
+  status              CommonStatus @default(ENABLE)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  account             MpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("mp_auto_reply")
+}
+
+model MpUser {
+  id              Int      @id @default(autoincrement())
+  accountId       Int      @map("account_id")
+  appId           String   @map("app_id") @db.VarChar(100)
+  openid          String   @db.VarChar(100)
+  unionid         String?  @db.VarChar(100)
+  subscribeStatus Int      @default(1) @map("subscribe_status")
+  subscribeTime   DateTime? @map("subscribe_time")
+  unsubscribeTime DateTime? @map("unsubscribe_time")
+  nickname        String?  @db.VarChar(100)
+  headImageUrl    String?  @map("head_image_url") @db.VarChar(500)
+  language        String?  @db.VarChar(20)
+  country         String?  @db.VarChar(50)
+  province        String?  @db.VarChar(50)
+  city            String?  @db.VarChar(50)
+  remark          String?  @db.VarChar(500)
+  tagIds          Json?    @map("tag_ids")
+  sex             Int?     @default(0)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  account         MpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@unique([accountId, openid])
+  @@map("mp_user")
+}
+
+model MpTag {
+  id        Int      @id @default(autoincrement())
+  accountId Int      @map("account_id")
+  appId     String   @map("app_id") @db.VarChar(100)
+  tagId     Int      @map("tag_id")
+  name      String   @db.VarChar(50)
+  count     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  account   MpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("mp_tag")
+}
+
+model MpMessage {
+  id        Int      @id @default(autoincrement())
+  msgId     BigInt?  @map("msg_id")
+  accountId Int      @map("account_id")
+  appId     String   @map("app_id") @db.VarChar(100)
+  userId    Int?     @map("user_id")
+  openid    String   @db.VarChar(100)
+  type      String   @db.VarChar(30)
+  sendFrom  Int      @default(1) @map("send_from")
+  content   String?  @db.Text
+  mediaId   String?  @map("media_id") @db.VarChar(200)
+  mediaUrl  String?  @map("media_url") @db.VarChar(500)
+  title     String?  @db.VarChar(200)
+  url       String?  @db.VarChar(500)
+  event     String?  @db.VarChar(30)
+  eventKey  String?  @map("event_key") @db.VarChar(200)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  account   MpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("mp_message")
+}
+
