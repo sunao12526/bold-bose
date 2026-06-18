@@ -1,4 +1,7 @@
 import { MailService } from './mail.service';
+import { MailAccountQueryDto } from '../dto/mail-account-query.dto';
+import { MailTemplateQueryDto } from '../dto/mail-template-query.dto';
+import { MailLogQueryDto } from '../dto/mail-log-query.dto';
 export declare class MailAccountController {
     private readonly service;
     constructor(service: MailService);
@@ -14,7 +17,7 @@ export declare class MailAccountController {
         port: number;
         ssl: boolean;
     }>;
-    findAll(query: any): Promise<{
+    findAll(query: MailAccountQueryDto): Promise<{
         id: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;
@@ -78,7 +81,7 @@ export declare class MailTemplateController {
         content: string;
         accountId: number;
     }>;
-    findAll(query: any): Promise<({
+    findAll(query: MailTemplateQueryDto): Promise<({
         account: {
             id: number;
             status: import("@prisma/client").$Enums.CommonStatus;
@@ -166,7 +169,7 @@ export declare class MailTemplateController {
 export declare class MailLogController {
     private readonly service;
     constructor(service: MailService);
-    findAll(query: any): Promise<({
+    findAll(query: MailLogQueryDto): Promise<({
         template: {
             account: {
                 id: number;

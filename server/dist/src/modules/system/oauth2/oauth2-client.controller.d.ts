@@ -1,4 +1,5 @@
 import { OAuth2Service } from './oauth2.service';
+import { OAuth2ClientQueryDto } from '../dto/oauth2-client-query.dto';
 export declare class OAuth2ClientController {
     private readonly service;
     constructor(service: OAuth2Service);
@@ -14,7 +15,7 @@ export declare class OAuth2ClientController {
         redirectUris: string;
         scopes: string;
     }>;
-    findAll(query: any): Promise<{
+    findAll(query: OAuth2ClientQueryDto): Promise<{
         id: number;
         name: string;
         status: import("@prisma/client").$Enums.CommonStatus;

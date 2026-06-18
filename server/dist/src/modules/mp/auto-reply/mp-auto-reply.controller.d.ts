@@ -1,4 +1,5 @@
 import { MpAutoReplyService } from './mp-auto-reply.service';
+import { AutoReplyQueryDto } from '../dto/auto-reply-query.dto';
 export declare class MpAutoReplyController {
     private service;
     constructor(service: MpAutoReplyService);
@@ -20,7 +21,7 @@ export declare class MpAutoReplyController {
         responseMediaUrl: string | null;
         responseArticles: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
-    findAll(query: any): Promise<{
+    findAll(query: AutoReplyQueryDto): Promise<{
         id: number;
         sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;

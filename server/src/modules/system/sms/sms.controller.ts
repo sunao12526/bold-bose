@@ -16,6 +16,10 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 
+import { SmsChannelQueryDto } from '../dto/sms-channel-query.dto';
+import { SmsTemplateQueryDto } from '../dto/sms-template-query.dto';
+import { SmsLogQueryDto } from '../dto/sms-log-query.dto';
+
 // ================= SMS Channels Controller =================
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -36,7 +40,7 @@ export class SmsChannelController {
 
   @Get()
   @RequirePermissions('system:sms:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: SmsChannelQueryDto) {
     return this.service.findAllChannels(query);
   }
 
@@ -89,7 +93,7 @@ export class SmsTemplateController {
 
   @Get()
   @RequirePermissions('system:sms:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: SmsTemplateQueryDto) {
     return this.service.findAllTemplates(query);
   }
 
@@ -143,7 +147,7 @@ export class SmsLogController {
 
   @Get()
   @RequirePermissions('system:sms:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: SmsLogQueryDto) {
     return this.service.findAllLogs(query);
   }
 }

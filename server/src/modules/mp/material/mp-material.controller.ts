@@ -5,6 +5,8 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 
+import { MaterialQueryDto } from '../dto/material-query.dto';
+
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mp/material')
 export class MpMaterialController {
@@ -17,7 +19,7 @@ export class MpMaterialController {
 
   @Get()
   @RequirePermissions('mp:material:query')
-  async findAll(@Query() query: any) { return this.service.findAll(query); }
+  async findAll(@Query() query: MaterialQueryDto) { return this.service.findAll(query); }
 
   @Get(':id')
   @RequirePermissions('mp:material:query')

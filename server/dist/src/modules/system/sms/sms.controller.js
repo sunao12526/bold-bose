@@ -19,6 +19,9 @@ const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const sms_channel_query_dto_1 = require("../dto/sms-channel-query.dto");
+const sms_template_query_dto_1 = require("../dto/sms-template-query.dto");
+const sms_log_query_dto_1 = require("../dto/sms-log-query.dto");
 let SmsChannelController = class SmsChannelController {
     service;
     constructor(service) {
@@ -59,7 +62,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [sms_channel_query_dto_1.SmsChannelQueryDto]),
     __metadata("design:returntype", Promise)
 ], SmsChannelController.prototype, "findAll", null);
 __decorate([
@@ -146,7 +149,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [sms_template_query_dto_1.SmsTemplateQueryDto]),
     __metadata("design:returntype", Promise)
 ], SmsTemplateController.prototype, "findAll", null);
 __decorate([
@@ -218,7 +221,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [sms_log_query_dto_1.SmsLogQueryDto]),
     __metadata("design:returntype", Promise)
 ], SmsLogController.prototype, "findAll", null);
 exports.SmsLogController = SmsLogController = __decorate([

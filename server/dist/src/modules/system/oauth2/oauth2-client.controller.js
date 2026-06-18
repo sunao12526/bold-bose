@@ -19,6 +19,7 @@ const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const oauth2_client_query_dto_1 = require("../dto/oauth2-client-query.dto");
 let OAuth2ClientController = class OAuth2ClientController {
     service;
     constructor(service) {
@@ -59,7 +60,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('system:oauth2:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [oauth2_client_query_dto_1.OAuth2ClientQueryDto]),
     __metadata("design:returntype", Promise)
 ], OAuth2ClientController.prototype, "findAll", null);
 __decorate([

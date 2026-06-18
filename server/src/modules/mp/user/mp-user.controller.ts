@@ -4,6 +4,8 @@ import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 
+import { UserQueryDto } from '../dto/user-query.dto';
+
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mp/user')
 export class MpUserController {
@@ -11,7 +13,7 @@ export class MpUserController {
 
   @Get()
   @RequirePermissions('mp:user:query')
-  async findAll(@Query() query: any) { return this.service.findAll(query); }
+  async findAll(@Query() query: UserQueryDto) { return this.service.findAll(query); }
 
   @Get(':id')
   @RequirePermissions('mp:user:query')

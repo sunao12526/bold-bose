@@ -16,6 +16,10 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 
+import { MailAccountQueryDto } from '../dto/mail-account-query.dto';
+import { MailTemplateQueryDto } from '../dto/mail-template-query.dto';
+import { MailLogQueryDto } from '../dto/mail-log-query.dto';
+
 // ================= Mail Accounts Controller =================
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -36,7 +40,7 @@ export class MailAccountController {
 
   @Get()
   @RequirePermissions('system:mail:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: MailAccountQueryDto) {
     return this.service.findAllAccounts(query);
   }
 
@@ -89,7 +93,7 @@ export class MailTemplateController {
 
   @Get()
   @RequirePermissions('system:mail:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: MailTemplateQueryDto) {
     return this.service.findAllTemplates(query);
   }
 
@@ -147,7 +151,7 @@ export class MailLogController {
 
   @Get()
   @RequirePermissions('system:mail:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: MailLogQueryDto) {
     return this.service.findAllLogs(query);
   }
 }

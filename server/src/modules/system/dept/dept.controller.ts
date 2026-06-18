@@ -16,6 +16,8 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 
+import { DeptQueryDto } from '../dto/dept-query.dto';
+
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('system/dept')
 export class DeptController {
@@ -30,7 +32,7 @@ export class DeptController {
 
   @Get()
   @RequirePermissions('system:dept:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: DeptQueryDto) {
     return this.service.findAll(query);
   }
 

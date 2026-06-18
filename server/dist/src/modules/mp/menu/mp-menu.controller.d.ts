@@ -1,4 +1,5 @@
 import { MpMenuService } from './mp-menu.service';
+import { MenuQueryDto } from '../dto/menu-query.dto';
 export declare class MpMenuController {
     private service;
     constructor(service: MpMenuService);
@@ -20,7 +21,7 @@ export declare class MpMenuController {
         replyContent: string | null;
         replyMediaId: string | null;
     }>;
-    findAll(query: any): Promise<{
+    findAll(query: MenuQueryDto): Promise<{
         id: number;
         name: string;
         sort: number;

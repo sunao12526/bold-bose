@@ -19,6 +19,7 @@ const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const menu_query_dto_1 = require("../dto/menu-query.dto");
 let MpMenuController = class MpMenuController {
     service;
     constructor(service) {
@@ -45,7 +46,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('mp:menu:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [menu_query_dto_1.MenuQueryDto]),
     __metadata("design:returntype", Promise)
 ], MpMenuController.prototype, "findAll", null);
 __decorate([

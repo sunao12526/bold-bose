@@ -5,6 +5,8 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 
+import { AutoReplyQueryDto } from '../dto/auto-reply-query.dto';
+
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mp/auto-reply')
 export class MpAutoReplyController {
@@ -17,7 +19,7 @@ export class MpAutoReplyController {
 
   @Get()
   @RequirePermissions('mp:auto-reply:query')
-  async findAll(@Query() query: any) { return this.service.findAll(query); }
+  async findAll(@Query() query: AutoReplyQueryDto) { return this.service.findAll(query); }
 
   @Get(':id')
   @RequirePermissions('mp:auto-reply:query')

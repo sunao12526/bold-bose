@@ -1,4 +1,5 @@
 import { MpTagService } from './mp-tag.service';
+import { TagQueryDto } from '../dto/tag-query.dto';
 export declare class MpTagController {
     private service;
     constructor(service: MpTagService);
@@ -12,7 +13,7 @@ export declare class MpTagController {
         accountId: number;
         tagId: number;
     }>;
-    findAll(query: any): Promise<{
+    findAll(query: TagQueryDto): Promise<{
         id: number;
         name: string;
         createdAt: Date;

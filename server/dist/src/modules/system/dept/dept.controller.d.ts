@@ -1,4 +1,5 @@
 import { DeptService } from './dept.service';
+import { DeptQueryDto } from '../dto/dept-query.dto';
 export declare class DeptController {
     private readonly service;
     constructor(service: DeptService);
@@ -14,7 +15,7 @@ export declare class DeptController {
         phone: string | null;
         leaderId: number | null;
     }>;
-    findAll(query: any): Promise<({
+    findAll(query: DeptQueryDto): Promise<({
         leader: {
             id: number;
             username: string;

@@ -5,6 +5,8 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 
+import { MenuQueryDto } from '../dto/menu-query.dto';
+
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mp/menu')
 export class MpMenuController {
@@ -17,7 +19,7 @@ export class MpMenuController {
 
   @Get()
   @RequirePermissions('mp:menu:query')
-  async findAll(@Query() query: any) { return this.service.findAll(query); }
+  async findAll(@Query() query: MenuQueryDto) { return this.service.findAll(query); }
 
   @Get(':id')
   @RequirePermissions('mp:menu:query')

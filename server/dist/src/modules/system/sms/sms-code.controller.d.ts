@@ -1,4 +1,5 @@
 import { SmsCodeService } from './sms-code.service';
+import { SmsCodeQueryDto } from '../dto/sms-code-query.dto';
 export declare class SmsCodeController {
     private readonly smsCodeService;
     constructor(smsCodeService: SmsCodeService);
@@ -9,7 +10,7 @@ export declare class SmsCodeController {
     verifyCode(mobile: string, code: string, scene: number, req: any): Promise<{
         success: boolean;
     }>;
-    findAll(query: any): Promise<{
+    findAll(query: SmsCodeQueryDto): Promise<{
         id: number;
         code: string;
         createdAt: Date;

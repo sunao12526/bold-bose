@@ -14,6 +14,8 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 
+import { SmsCodeQueryDto } from '../dto/sms-code-query.dto';
+
 @Controller('system/sms')
 export class SmsCodeController {
   constructor(private readonly smsCodeService: SmsCodeService) {}
@@ -46,7 +48,7 @@ export class SmsCodeController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Get('code')
   @RequirePermissions('system:sms:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: SmsCodeQueryDto) {
     return this.smsCodeService.findAllCodes(query);
   }
 }

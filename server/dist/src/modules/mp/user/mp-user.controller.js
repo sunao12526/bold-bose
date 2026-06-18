@@ -18,6 +18,7 @@ const mp_user_service_1 = require("./mp-user.service");
 const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
+const user_query_dto_1 = require("../dto/user-query.dto");
 let MpUserController = class MpUserController {
     service;
     constructor(service) {
@@ -32,7 +33,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('mp:user:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [user_query_dto_1.UserQueryDto]),
     __metadata("design:returntype", Promise)
 ], MpUserController.prototype, "findAll", null);
 __decorate([

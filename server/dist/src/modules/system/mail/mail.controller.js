@@ -19,6 +19,9 @@ const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const mail_account_query_dto_1 = require("../dto/mail-account-query.dto");
+const mail_template_query_dto_1 = require("../dto/mail-template-query.dto");
+const mail_log_query_dto_1 = require("../dto/mail-log-query.dto");
 let MailAccountController = class MailAccountController {
     service;
     constructor(service) {
@@ -59,7 +62,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('system:mail:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [mail_account_query_dto_1.MailAccountQueryDto]),
     __metadata("design:returntype", Promise)
 ], MailAccountController.prototype, "findAll", null);
 __decorate([
@@ -146,7 +149,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('system:mail:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [mail_template_query_dto_1.MailTemplateQueryDto]),
     __metadata("design:returntype", Promise)
 ], MailTemplateController.prototype, "findAll", null);
 __decorate([
@@ -218,7 +221,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('system:mail:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [mail_log_query_dto_1.MailLogQueryDto]),
     __metadata("design:returntype", Promise)
 ], MailLogController.prototype, "findAll", null);
 exports.MailLogController = MailLogController = __decorate([

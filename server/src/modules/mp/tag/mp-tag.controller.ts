@@ -5,6 +5,8 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 
+import { TagQueryDto } from '../dto/tag-query.dto';
+
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mp/tag')
 export class MpTagController {
@@ -17,7 +19,7 @@ export class MpTagController {
 
   @Get()
   @RequirePermissions('mp:tag:query')
-  async findAll(@Query() query: any) { return this.service.findAll(query); }
+  async findAll(@Query() query: TagQueryDto) { return this.service.findAll(query); }
 
   @Get(':id')
   @RequirePermissions('mp:tag:query')

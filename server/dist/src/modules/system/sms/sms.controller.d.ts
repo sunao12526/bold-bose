@@ -1,4 +1,7 @@
 import { SmsService } from './sms.service';
+import { SmsChannelQueryDto } from '../dto/sms-channel-query.dto';
+import { SmsTemplateQueryDto } from '../dto/sms-template-query.dto';
+import { SmsLogQueryDto } from '../dto/sms-log-query.dto';
 export declare class SmsChannelController {
     private readonly service;
     constructor(service: SmsService);
@@ -14,7 +17,7 @@ export declare class SmsChannelController {
         apiSecret: string;
         signature: string;
     }>;
-    findAll(query: any): Promise<{
+    findAll(query: SmsChannelQueryDto): Promise<{
         id: number;
         code: string;
         name: string;
@@ -77,7 +80,7 @@ export declare class SmsTemplateController {
         content: string;
         channelId: number;
     }>;
-    findAll(query: any): Promise<({
+    findAll(query: SmsTemplateQueryDto): Promise<({
         channel: {
             id: number;
             code: string;
@@ -160,7 +163,7 @@ export declare class SmsTemplateController {
 export declare class SmsLogController {
     private readonly service;
     constructor(service: SmsService);
-    findAll(query: any): Promise<({
+    findAll(query: SmsLogQueryDto): Promise<({
         template: {
             channel: {
                 id: number;

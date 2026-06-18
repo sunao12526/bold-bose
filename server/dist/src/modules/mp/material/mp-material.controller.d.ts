@@ -1,4 +1,5 @@
 import { MpMaterialService } from './mp-material.service';
+import { MaterialQueryDto } from '../dto/material-query.dto';
 export declare class MpMaterialController {
     private service;
     constructor(service: MpMaterialService);
@@ -17,7 +18,7 @@ export declare class MpMaterialController {
         mpUrl: string | null;
         introduction: string | null;
     }>;
-    findAll(query: any): Promise<{
+    findAll(query: MaterialQueryDto): Promise<{
         id: number;
         name: string | null;
         createdAt: Date;

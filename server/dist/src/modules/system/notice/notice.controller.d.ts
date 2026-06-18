@@ -1,4 +1,5 @@
 import { NoticeService } from './notice.service';
+import { NoticeQueryDto } from '../dto/notice-query.dto';
 export declare class NoticeController {
     private readonly service;
     constructor(service: NoticeService);
@@ -11,7 +12,7 @@ export declare class NoticeController {
         title: string;
         content: string;
     }>;
-    findAll(query: any): Promise<{
+    findAll(query: NoticeQueryDto): Promise<{
         id: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         createdAt: Date;

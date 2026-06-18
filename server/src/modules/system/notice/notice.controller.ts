@@ -16,6 +16,8 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 
+import { NoticeQueryDto } from '../dto/notice-query.dto';
+
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('system/notice')
 export class NoticeController {
@@ -30,7 +32,7 @@ export class NoticeController {
 
   @Get()
   @RequirePermissions('system:notice:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: NoticeQueryDto) {
     return this.service.findAll(query);
   }
 

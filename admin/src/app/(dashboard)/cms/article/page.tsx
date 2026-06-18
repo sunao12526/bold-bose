@@ -6,8 +6,17 @@ import React, { useState, useEffect } from 'react';
 import { List } from '@refinedev/antd';
 import { Table, Space, Button, Modal, Form, Input, InputNumber, Select, Tag, Popconfirm, message, Drawer, Tabs, Switch, DatePicker } from 'antd';
 import { useTable, useSelect } from '@refinedev/antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { 
+  PlusOutlined, 
+  EditOutlined, 
+  DeleteOutlined, 
+  EyeOutlined
+} from '@ant-design/icons';
 import { axiosInstance } from '../../../../lib/axios';
+import nextDynamic from 'next/dynamic';
+
+// Import BlockNote dynamically (client-side only)
+const BlockNoteEditor = nextDynamic(() => import('../../../../components/BlockNoteEditor'), { ssr: false });
 
 export default function CmsArticleList() {
   const { tableProps, tableQuery } = useTable({
@@ -220,7 +229,7 @@ export default function CmsArticleList() {
             <Input placeholder="请输入封面图URL" />
           </Form.Item>
           <Form.Item name="content" label="内容" rules={[{ required: true, message: '请输入内容' }]}>
-            <Input.TextArea rows={15} placeholder="请输入文章内容（支持 HTML）" />
+            <BlockNoteEditor key={editingId || 'new'} />
           </Form.Item>
           <Form.Item name="sortOrder" label="排序" initialValue={0}>
             <InputNumber min={0} style={{ width: '100%' }} />
@@ -241,33 +250,86 @@ export default function CmsArticleList() {
       </Drawer>
 
       <Modal
-        title={previewArticle?.title || '文章预览'}
+        title={null}
         open={!!previewArticle}
         onCancel={() => setPreviewArticle(null)}
         footer={null}
-        width={800}
+        width={850}
       >
         {previewArticle && (
-          <div>
-            <div style={{ marginBottom: 16 }}>
+          <div style={{ padding: '8px 16px' }}>
+            <div style={{ marginBottom: 16, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               <Tag color={statusMap[previewArticle.status]?.color}>{statusMap[previewArticle.status]?.text}</Tag>
-              <Tag>{previewArticle.category?.name}</Tag>
+              {previewArticle.category?.name && (
+                <Tag color="purple">{previewArticle.category.name}</Tag>
+              )}
               {previewArticle.isTop && <Tag color="red">置顶</Tag>}
-              {previewArticle.isRecommend && <Tag color="blue">推荐</Tag>}
+              {previewArticle.isRecommend && <Tag color="orange">推荐</Tag>}
             </div>
-            <div style={{ marginBottom: 16, color: '#666', fontSize: 13 }}>
-              作者: {previewArticle.author} | 浏览: {previewArticle.viewCount} | {new Date(previewArticle.createdAt).toLocaleString()}
+
+            <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#1f1f1f', marginBottom: 16, lineHeight: 1.3 }}>
+              {previewArticle.title}
+            </h1>
+
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px', 
+              paddingBottom: '20px', 
+              borderBottom: '1px solid #f0f0f0', 
+              marginBottom: 24,
+              color: '#8c8c8c', 
+              fontSize: '13px' 
+            }}>
+              <div style={{ 
+                width: 32, 
+                height: 32, 
+                borderRadius: '50%', 
+                backgroundColor: '#1890ff', 
+                color: '#fff', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                fontWeight: 'bold',
+                fontSize: 14
+              }}>
+                {previewArticle.author?.substring(0, 1).toUpperCase() || 'A'}
+              </div>
+              <div>
+                <div style={{ fontWeight: 500, color: '#434343' }}>{previewArticle.author || '管理员'}</div>
+                <div>
+                  发布于: {new Date(previewArticle.createdAt).toLocaleString()} &bull; 浏览: {previewArticle.viewCount || 0}
+                </div>
+              </div>
             </div>
+
+            {previewArticle.summary && (
+              <div style={{ 
+                padding: '12px 16px', 
+                backgroundColor: '#fafafa', 
+                borderLeft: '4px solid #d9d9d9', 
+                borderRadius: '0 4px 4px 0',
+                color: '#595959', 
+                fontSize: '14px',
+                lineHeight: 1.6,
+                marginBottom: 24
+              }}>
+                <strong>摘要：</strong>{previewArticle.summary}
+              </div>
+            )}
+
+            <div className="article-preview-content">
+              <div dangerouslySetInnerHTML={{ __html: previewArticle.content }} />
+            </div>
+
             {previewArticle.tags?.length > 0 && (
-              <div style={{ marginBottom: 16 }}>
+              <div style={{ borderTop: '1px solid #f0f0f0', marginTop: 32, paddingTop: 16, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={{ color: '#8c8c8c', fontSize: '13px', marginRight: 4 }}>标签:</span>
                 {previewArticle.tags.map((t: any) => (
-                  <Tag key={t.tag?.id}>{t.tag?.name}</Tag>
+                  <Tag key={t.tag?.id} color="blue">{t.tag?.name}</Tag>
                 ))}
               </div>
             )}
-            <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: 16 }}>
-              <div dangerouslySetInnerHTML={{ __html: previewArticle.content }} />
-            </div>
           </div>
         )}
       </Modal>

@@ -16,6 +16,8 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 
+import { OAuth2ClientQueryDto } from '../dto/oauth2-client-query.dto';
+
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('system/oauth2-client')
 export class OAuth2ClientController {
@@ -34,7 +36,7 @@ export class OAuth2ClientController {
 
   @Get()
   @RequirePermissions('system:oauth2:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: OAuth2ClientQueryDto) {
     return this.service.findAllClients(query);
   }
 

@@ -1,8 +1,9 @@
 import { MpUserService } from './mp-user.service';
+import { UserQueryDto } from '../dto/user-query.dto';
 export declare class MpUserController {
     private service;
     constructor(service: MpUserService);
-    findAll(query: any): Promise<{
+    findAll(query: UserQueryDto): Promise<{
         id: number;
         remark: string | null;
         createdAt: Date;

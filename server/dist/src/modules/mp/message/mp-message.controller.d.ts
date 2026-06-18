@@ -1,8 +1,9 @@
 import { MpMessageService } from './mp-message.service';
+import { MessageQueryDto } from '../dto/message-query.dto';
 export declare class MpMessageController {
     private service;
     constructor(service: MpMessageService);
-    findAll(query: any): Promise<{
+    findAll(query: MessageQueryDto): Promise<{
         id: number;
         createdAt: Date;
         type: string;

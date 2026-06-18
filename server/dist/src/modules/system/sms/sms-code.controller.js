@@ -20,6 +20,7 @@ const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const sms_code_query_dto_1 = require("../dto/sms-code-query.dto");
 let SmsCodeController = class SmsCodeController {
     smsCodeService;
     constructor(smsCodeService) {
@@ -67,7 +68,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('system:sms:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [sms_code_query_dto_1.SmsCodeQueryDto]),
     __metadata("design:returntype", Promise)
 ], SmsCodeController.prototype, "findAll", null);
 exports.SmsCodeController = SmsCodeController = __decorate([
