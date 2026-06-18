@@ -1,4 +1,5 @@
 import { UserService } from './user.service';
+import { UserQueryDto } from './dto/user-query.dto';
 export declare class UserController {
     private userService;
     constructor(userService: UserService);
@@ -16,7 +17,7 @@ export declare class UserController {
         mobile: string | null;
         deptId: number | null;
     }>;
-    findAll(query: any): Promise<import("../../shared/pagination").PaginatedResult<unknown>>;
+    findAll(query: UserQueryDto): Promise<import("../../shared/pagination").PaginatedResult<unknown>>;
     findOne(id: number): Promise<({
         roles: {
             roleId: number;

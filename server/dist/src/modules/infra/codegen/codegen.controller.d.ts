@@ -10,13 +10,13 @@ export declare class CodegenController {
         id: number;
         createdAt: Date;
         updatedAt: Date;
+        author: string;
         tableName: string;
         tableComment: string;
         className: string;
         moduleName: string;
         businessName: string;
         classComment: string;
-        author: string;
     }[]>;
     findOne(id: number): Promise<{
         columns: {
@@ -41,13 +41,13 @@ export declare class CodegenController {
         id: number;
         createdAt: Date;
         updatedAt: Date;
+        author: string;
         tableName: string;
         tableComment: string;
         className: string;
         moduleName: string;
         businessName: string;
         classComment: string;
-        author: string;
     }>;
     update(id: number, data: any): Promise<{
         columns: {
@@ -72,25 +72,25 @@ export declare class CodegenController {
         id: number;
         createdAt: Date;
         updatedAt: Date;
+        author: string;
         tableName: string;
         tableComment: string;
         className: string;
         moduleName: string;
         businessName: string;
         classComment: string;
-        author: string;
     }>;
     remove(id: number): Promise<{
         id: number;
         createdAt: Date;
         updatedAt: Date;
+        author: string;
         tableName: string;
         tableComment: string;
         className: string;
         moduleName: string;
         businessName: string;
         classComment: string;
-        author: string;
     }>;
     preview(id: number): Promise<any[]>;
     writeCode(id: number): Promise<{

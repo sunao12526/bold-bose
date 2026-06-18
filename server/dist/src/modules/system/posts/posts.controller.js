@@ -19,6 +19,7 @@ const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const posts_query_dto_1 = require("../dto/posts-query.dto");
 let PostsController = class PostsController {
     service;
     constructor(service) {
@@ -59,7 +60,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('system:posts:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [posts_query_dto_1.PostsQueryDto]),
     __metadata("design:returntype", Promise)
 ], PostsController.prototype, "findAll", null);
 __decorate([

@@ -3,48 +3,48 @@ export declare class BannerService {
     private prisma;
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
-        title: string;
-        picUrl: string;
-        url: string | null;
+        id: number;
         sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
+        title: string;
+        picUrl: string;
+        url: string | null;
     }>;
     findAll(query?: any): Promise<import("../../../shared/pagination").PaginatedResult<unknown>>;
     findOne(id: number): Promise<{
-        title: string;
-        picUrl: string;
-        url: string | null;
+        id: number;
         sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
+        title: string;
+        picUrl: string;
+        url: string | null;
     }>;
     update(id: number, data: any): Promise<{
-        title: string;
-        picUrl: string;
-        url: string | null;
+        id: number;
         sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
+        title: string;
+        picUrl: string;
+        url: string | null;
     }>;
     remove(id: number): Promise<{
-        title: string;
-        picUrl: string;
-        url: string | null;
+        id: number;
         sort: number;
         status: import("@prisma/client").$Enums.CommonStatus;
         remark: string | null;
         createdAt: Date;
         updatedAt: Date;
-        id: number;
+        title: string;
+        picUrl: string;
+        url: string | null;
     }>;
 }

@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
+import { BannerQueryDto } from '../dto/banner-query.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('cms/banner')
@@ -19,7 +20,7 @@ export class BannerController {
 
   @Get()
   @RequirePermissions('cms:banner:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: BannerQueryDto) {
     return this.bannerService.findAll(query);
   }
 

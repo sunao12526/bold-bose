@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
+import { PostsQueryDto } from '../dto/posts-query.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('system/posts')
@@ -34,7 +35,7 @@ export class PostsController {
 
   @Get()
   @RequirePermissions('system:posts:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: PostsQueryDto) {
     return this.service.findAll(query);
   }
 

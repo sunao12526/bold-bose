@@ -19,6 +19,7 @@ const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const category_query_dto_1 = require("../dto/category-query.dto");
 let CategoryController = class CategoryController {
     categoryService;
     constructor(categoryService) {
@@ -55,7 +56,7 @@ __decorate([
     (0, require_permissions_decorator_1.RequirePermissions)('cms:category:query'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [category_query_dto_1.CategoryQueryDto]),
     __metadata("design:returntype", Promise)
 ], CategoryController.prototype, "findAll", null);
 __decorate([

@@ -10,13 +10,13 @@ export declare class CodegenService {
         id: number;
         createdAt: Date;
         updatedAt: Date;
+        author: string;
         tableName: string;
         tableComment: string;
         className: string;
         moduleName: string;
         businessName: string;
         classComment: string;
-        author: string;
     }[]>;
     findOneTable(id: number): Promise<{
         columns: {
@@ -41,13 +41,13 @@ export declare class CodegenService {
         id: number;
         createdAt: Date;
         updatedAt: Date;
+        author: string;
         tableName: string;
         tableComment: string;
         className: string;
         moduleName: string;
         businessName: string;
         classComment: string;
-        author: string;
     }>;
     updateTableMetadata(id: number, data: any): Promise<{
         columns: {
@@ -72,25 +72,25 @@ export declare class CodegenService {
         id: number;
         createdAt: Date;
         updatedAt: Date;
+        author: string;
         tableName: string;
         tableComment: string;
         className: string;
         moduleName: string;
         businessName: string;
         classComment: string;
-        author: string;
     }>;
     removeTable(id: number): Promise<{
         id: number;
         createdAt: Date;
         updatedAt: Date;
+        author: string;
         tableName: string;
         tableComment: string;
         className: string;
         moduleName: string;
         businessName: string;
         classComment: string;
-        author: string;
     }>;
     generateCodePreview(tableId: number): Promise<any[]>;
     writeCodeToDisk(tableId: number): Promise<{

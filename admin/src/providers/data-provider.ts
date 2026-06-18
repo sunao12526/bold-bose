@@ -3,6 +3,7 @@ import { axiosInstance } from '../lib/axios';
 
 export const dataProvider: DataProvider = {
   getList: async ({ resource, filters, pagination }) => {
+    console.log('FRONTEND GETLIST:', resource, pagination);
     const params: Record<string, any> = {};
     if (filters) {
       for (const filter of filters) {
@@ -13,7 +14,7 @@ export const dataProvider: DataProvider = {
     }
     if (pagination) {
       const p = pagination as any;
-      params.page = p.current || p.pageIndex || 1;
+      params.page = p.current || p.currentPage || p.pageIndex || 1;
       params.pageSize = p.pageSize || 20;
     }
     const response = await axiosInstance.get(`/${resource}`, { params });

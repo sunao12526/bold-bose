@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
+import { ArticleQueryDto } from '../dto/article-query.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('cms/article')
@@ -19,7 +20,7 @@ export class ArticleController {
 
   @Get()
   @RequirePermissions('cms:article:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: ArticleQueryDto) {
     return this.articleService.findAll(query);
   }
 

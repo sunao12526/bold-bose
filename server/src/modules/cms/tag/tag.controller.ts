@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
+import { TagQueryDto } from '../dto/tag-query.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('cms/tag')
@@ -19,7 +20,7 @@ export class TagController {
 
   @Get()
   @RequirePermissions('cms:tag:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: TagQueryDto) {
     return this.tagService.findAll(query);
   }
 

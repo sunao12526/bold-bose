@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../shared/decorators/log.decorator';
+import { RoleQueryDto } from './dto/role-query.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('system/role')
@@ -30,7 +31,7 @@ export class RoleController {
 
   @Get()
   @RequirePermissions('system:role:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: RoleQueryDto) {
     return this.roleService.findAll(query);
   }
 

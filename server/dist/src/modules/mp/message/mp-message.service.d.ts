@@ -11,8 +11,8 @@ export declare class MpMessageService {
         content: string | null;
         appId: string;
         accountId: number;
-        openid: string;
         url: string | null;
+        openid: string;
         mediaId: string | null;
         msgId: bigint | null;
         sendFrom: number;
@@ -29,8 +29,8 @@ export declare class MpMessageService {
         content: string | null;
         appId: string;
         accountId: number;
-        openid: string;
         url: string | null;
+        openid: string;
         mediaId: string | null;
         msgId: bigint | null;
         sendFrom: number;

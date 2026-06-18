@@ -1,4 +1,5 @@
 import { PostsService } from './posts.service';
+import { PostsQueryDto } from '../dto/posts-query.dto';
 export declare class PostsController {
     private readonly service;
     constructor(service: PostsService);
@@ -11,7 +12,7 @@ export declare class PostsController {
         remark: string | null;
         createdAt: Date;
     }>;
-    findAll(query: any): Promise<{
+    findAll(query: PostsQueryDto): Promise<{
         id: number;
         code: string;
         name: string;

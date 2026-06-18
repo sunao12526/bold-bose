@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
+import { CommentQueryDto } from '../dto/comment-query.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('cms/comment')
@@ -12,7 +13,7 @@ export class CommentController {
 
   @Get()
   @RequirePermissions('cms:comment:query')
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: CommentQueryDto) {
     return this.commentService.findAll(query);
   }
 

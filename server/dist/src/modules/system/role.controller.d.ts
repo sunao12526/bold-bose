@@ -1,4 +1,5 @@
 import { RoleService } from './role.service';
+import { RoleQueryDto } from './dto/role-query.dto';
 export declare class RoleController {
     private roleService;
     constructor(roleService: RoleService);
@@ -12,7 +13,7 @@ export declare class RoleController {
         createdAt: Date;
         updatedAt: Date;
     }>;
-    findAll(query: any): Promise<import("../../shared/pagination").PaginatedResult<unknown>>;
+    findAll(query: RoleQueryDto): Promise<import("../../shared/pagination").PaginatedResult<unknown>>;
     findOne(id: number): Promise<({
         menus: {
             menuId: number;
