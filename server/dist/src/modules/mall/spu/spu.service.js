@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SpuService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
+const pagination_1 = require("../../../shared/pagination");
 let SpuService = class SpuService {
     prisma;
     constructor(prisma) {
@@ -58,8 +59,22 @@ let SpuService = class SpuService {
             });
         });
     }
-    async findAll() {
-        return this.prisma.mallSpu.findMany({
+    async findAll(query) {
+        const where = {};
+        if (query.name) {
+            where.name = { contains: query.name };
+        }
+        if (query.categoryId) {
+            where.categoryId = query.categoryId;
+        }
+        if (query.brandId) {
+            where.brandId = query.brandId;
+        }
+        if (query.status) {
+            where.status = query.status;
+        }
+        return (0, pagination_1.paginateQuery)(this.prisma, 'mallSpu', query, {
+            where,
             include: {
                 skus: true,
                 category: { select: { id: true, name: true } },

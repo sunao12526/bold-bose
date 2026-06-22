@@ -4,6 +4,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { RefundQueryDto } from './dto/refund-query.dto';
+import { paginateQuery } from '../../../shared/pagination';
 import { MallRefundStatus, MallOrderStatus } from '@prisma/client';
 import { PayRefundService } from '../../pay/pay-refund.service';
 
@@ -14,8 +16,14 @@ export class RefundService {
     private payRefundService: PayRefundService,
   ) {}
 
-  async findAll() {
-    return this.prisma.mallOrderRefund.findMany({
+  async findAll(query: RefundQueryDto) {
+    const where: any = {};
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    return paginateQuery(this.prisma, 'mallOrderRefund', query, {
+      where,
       include: {
         order: {
           include: {

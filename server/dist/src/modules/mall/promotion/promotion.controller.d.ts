@@ -1,27 +1,10 @@
 import { PromotionService } from './promotion.service';
 import { CommonStatus } from '@prisma/client';
+import { CouponQueryDto } from './dto/coupon-query.dto';
 export declare class PromotionController {
     private promotionService;
     constructor(promotionService: PromotionService);
-    findAll(): Promise<{
-        id: number;
-        name: string;
-        status: import("@prisma/client").$Enums.CommonStatus;
-        createdAt: Date;
-        updatedAt: Date;
-        type: import("@prisma/client").$Enums.MallCouponType;
-        value: number;
-        minPrice: number;
-        totalCount: number;
-        takeCount: number;
-        useCount: number;
-        scopeType: import("@prisma/client").$Enums.MallCouponScopeType;
-        scopeValue: import("@prisma/client/runtime/library").JsonValue | null;
-        validityType: import("@prisma/client").$Enums.MallCouponValidityType;
-        validStartTime: Date | null;
-        validEndTime: Date | null;
-        validDays: number | null;
-    }[]>;
+    findAll(query: CouponQueryDto): Promise<import("../../../shared/pagination").PaginatedResult<unknown>>;
     findAllUserCoupons(): Promise<({
         member: {
             id: number;

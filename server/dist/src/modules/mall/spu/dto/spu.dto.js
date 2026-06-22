@@ -9,10 +9,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateSpuDto = exports.CreateSpuDto = exports.SkuDto = exports.SkuPropertyDto = void 0;
+exports.SpuQueryDto = exports.UpdateSpuDto = exports.CreateSpuDto = exports.SkuDto = exports.SkuPropertyDto = void 0;
 const class_validator_1 = require("class-validator");
 const class_transformer_1 = require("class-transformer");
 const client_1 = require("@prisma/client");
+const pagination_dto_1 = require("../../../../shared/dto/pagination.dto");
 class SkuPropertyDto {
     propertyId;
     propertyName;
@@ -155,4 +156,33 @@ __decorate([
 class UpdateSpuDto extends CreateSpuDto {
 }
 exports.UpdateSpuDto = UpdateSpuDto;
+class SpuQueryDto extends pagination_dto_1.PaginationQueryDto {
+    name;
+    categoryId;
+    brandId;
+    status;
+}
+exports.SpuQueryDto = SpuQueryDto;
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SpuQueryDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], SpuQueryDto.prototype, "categoryId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_transformer_1.Type)(() => Number),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], SpuQueryDto.prototype, "brandId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEnum)(client_1.CommonStatus),
+    __metadata("design:type", String)
+], SpuQueryDto.prototype, "status", void 0);
 //# sourceMappingURL=spu.dto.js.map

@@ -19,6 +19,7 @@ const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const brand_query_dto_1 = require("./dto/brand-query.dto");
 let BrandController = class BrandController {
     brandService;
     constructor(brandService) {
@@ -27,8 +28,8 @@ let BrandController = class BrandController {
     async create(data) {
         return this.brandService.create(data);
     }
-    async findAll() {
-        return this.brandService.findAll();
+    async findAll(query) {
+        return this.brandService.findAll(query);
     }
     async findOne(id) {
         return this.brandService.findOne(id);
@@ -53,8 +54,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, require_permissions_decorator_1.RequirePermissions)('mall:brand:query'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [brand_query_dto_1.BrandQueryDto]),
     __metadata("design:returntype", Promise)
 ], BrandController.prototype, "findAll", null);
 __decorate([

@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
+import { BrandQueryDto } from './dto/brand-query.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mall/brand')
@@ -29,8 +31,8 @@ export class BrandController {
 
   @Get()
   @RequirePermissions('mall:brand:query')
-  async findAll() {
-    return this.brandService.findAll();
+  async findAll(@Query() query: BrandQueryDto) {
+    return this.brandService.findAll(query);
   }
 
   @Get(':id')

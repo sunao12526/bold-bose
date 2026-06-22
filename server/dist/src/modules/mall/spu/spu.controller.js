@@ -28,8 +28,8 @@ let SpuController = class SpuController {
     async create(data) {
         return this.spuService.create(data);
     }
-    async findAll() {
-        return this.spuService.findAll();
+    async findAll(query) {
+        return this.spuService.findAll(query);
     }
     async findOne(id) {
         return this.spuService.findOne(id);
@@ -54,8 +54,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, require_permissions_decorator_1.RequirePermissions)('mall:spu:query'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [spu_dto_1.SpuQueryDto]),
     __metadata("design:returntype", Promise)
 ], SpuController.prototype, "findAll", null);
 __decorate([

@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 import { CommonStatus } from '@prisma/client';
+import { CouponQueryDto } from './dto/coupon-query.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mall/coupon')
@@ -23,8 +25,8 @@ export class PromotionController {
 
   @Get()
   @RequirePermissions('mall:coupon:query')
-  async findAll() {
-    return this.promotionService.findAll();
+  async findAll(@Query() query: CouponQueryDto) {
+    return this.promotionService.findAll(query);
   }
 
   @Get('user-list')

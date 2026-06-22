@@ -16,6 +16,7 @@ import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
 import { MallOrderStatus } from '@prisma/client';
+import { OrderQueryDto } from './dto/order-query.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mall/order')
@@ -24,8 +25,8 @@ export class OrderController {
 
   @Get()
   @RequirePermissions('mall:order:query')
-  async findAll(@Query('status') status?: MallOrderStatus) {
-    return this.orderService.findAll(status);
+  async findAll(@Query() query: OrderQueryDto) {
+    return this.orderService.findAll(query);
   }
 
   @Get(':id')

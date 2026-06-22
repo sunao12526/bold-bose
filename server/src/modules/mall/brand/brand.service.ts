@@ -4,6 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { BrandQueryDto } from './dto/brand-query.dto';
+import { paginateQuery } from '../../../shared/pagination';
 
 @Injectable()
 export class BrandService {
@@ -13,8 +15,17 @@ export class BrandService {
     return this.prisma.mallBrand.create({ data });
   }
 
-  async findAll() {
-    return this.prisma.mallBrand.findMany({
+  async findAll(query: BrandQueryDto) {
+    const where: any = {};
+    if (query.name) {
+      where.name = { contains: query.name };
+    }
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    return paginateQuery(this.prisma, 'mallBrand', query, {
+      where,
       orderBy: { sort: 'asc' },
     });
   }

@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, IsOptional, IsInt, IsArray, IsEnum, ValidateNested, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CommonStatus } from '@prisma/client';
+import { PaginationQueryDto } from '../../../../shared/dto/pagination.dto';
 
 export class SkuPropertyDto {
   @IsInt()
@@ -99,3 +100,23 @@ export class CreateSpuDto {
 }
 
 export class UpdateSpuDto extends CreateSpuDto {}
+
+export class SpuQueryDto extends PaginationQueryDto {
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  categoryId?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  brandId?: number;
+
+  @IsOptional()
+  @IsEnum(CommonStatus)
+  status?: CommonStatus;
+}

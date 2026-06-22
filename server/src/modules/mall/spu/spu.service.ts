@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
-import { CreateSpuDto, UpdateSpuDto } from './dto/spu.dto';
+import { CreateSpuDto, UpdateSpuDto, SpuQueryDto } from './dto/spu.dto';
+import { paginateQuery } from '../../../shared/pagination';
 
 @Injectable()
 export class SpuService {
@@ -52,8 +53,23 @@ export class SpuService {
     });
   }
 
-  async findAll() {
-    return this.prisma.mallSpu.findMany({
+  async findAll(query: SpuQueryDto) {
+    const where: any = {};
+    if (query.name) {
+      where.name = { contains: query.name };
+    }
+    if (query.categoryId) {
+      where.categoryId = query.categoryId;
+    }
+    if (query.brandId) {
+      where.brandId = query.brandId;
+    }
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    return paginateQuery(this.prisma, 'mallSpu', query, {
+      where,
       include: {
         skus: true,
         category: { select: { id: true, name: true } },

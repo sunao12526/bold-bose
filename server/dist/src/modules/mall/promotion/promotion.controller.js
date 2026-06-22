@@ -20,13 +20,14 @@ const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
 const client_1 = require("@prisma/client");
+const coupon_query_dto_1 = require("./dto/coupon-query.dto");
 let PromotionController = class PromotionController {
     promotionService;
     constructor(promotionService) {
         this.promotionService = promotionService;
     }
-    async findAll() {
-        return this.promotionService.findAll();
+    async findAll(query) {
+        return this.promotionService.findAll(query);
     }
     async findAllUserCoupons() {
         return this.promotionService.findAllUserCoupons();
@@ -51,8 +52,9 @@ exports.PromotionController = PromotionController;
 __decorate([
     (0, common_1.Get)(),
     (0, require_permissions_decorator_1.RequirePermissions)('mall:coupon:query'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [coupon_query_dto_1.CouponQueryDto]),
     __metadata("design:returntype", Promise)
 ], PromotionController.prototype, "findAll", null);
 __decorate([

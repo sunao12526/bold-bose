@@ -20,14 +20,14 @@ const public_decorator_1 = require("../../../shared/decorators/public.decorator"
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
-const client_1 = require("@prisma/client");
+const order_query_dto_1 = require("./dto/order-query.dto");
 let OrderController = class OrderController {
     orderService;
     constructor(orderService) {
         this.orderService = orderService;
     }
-    async findAll(status) {
-        return this.orderService.findAll(status);
+    async findAll(query) {
+        return this.orderService.findAll(query);
     }
     async findOne(id) {
         return this.orderService.findOne(id);
@@ -53,9 +53,9 @@ exports.OrderController = OrderController;
 __decorate([
     (0, common_1.Get)(),
     (0, require_permissions_decorator_1.RequirePermissions)('mall:order:query'),
-    __param(0, (0, common_1.Query)('status')),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [order_query_dto_1.OrderQueryDto]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "findAll", null);
 __decorate([

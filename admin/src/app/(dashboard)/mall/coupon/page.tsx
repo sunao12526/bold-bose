@@ -76,7 +76,7 @@ export default function CouponPage() {
           axiosInstance.get('/member/user')
         ]);
         setCategories(catRes.data || []);
-        setSpus(spuRes.data || []);
+        setSpus(spuRes.data?.items || spuRes.data || []);
         setMembers(memRes.data || []);
       } catch (err) {
         console.error('Failed to load baseline dictionaries', err);
@@ -89,7 +89,7 @@ export default function CouponPage() {
     setLoadingTemplates(true);
     try {
       const res = await axiosInstance.get('/mall/coupon');
-      setTemplates(res.data || []);
+      setTemplates(res.data?.items || res.data || []);
     } catch (e) {
       message.error('加载优惠券模板失败');
     } finally {

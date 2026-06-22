@@ -1,4 +1,5 @@
 import { CommonStatus } from '@prisma/client';
+import { PaginationQueryDto } from '../../../../shared/dto/pagination.dto';
 export declare class SkuPropertyDto {
     propertyId: number;
     propertyName: string;
@@ -26,4 +27,10 @@ export declare class CreateSpuDto {
     skus: SkuDto[];
 }
 export declare class UpdateSpuDto extends CreateSpuDto {
+}
+export declare class SpuQueryDto extends PaginationQueryDto {
+    name?: string;
+    categoryId?: number;
+    brandId?: number;
+    status?: CommonStatus;
 }

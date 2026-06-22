@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -14,7 +15,7 @@ import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
-import { CreateSpuDto, UpdateSpuDto } from './dto/spu.dto';
+import { CreateSpuDto, UpdateSpuDto, SpuQueryDto } from './dto/spu.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mall/spu')
@@ -30,8 +31,8 @@ export class SpuController {
 
   @Get()
   @RequirePermissions('mall:spu:query')
-  async findAll() {
-    return this.spuService.findAll();
+  async findAll(@Query() query: SpuQueryDto) {
+    return this.spuService.findAll(query);
   }
 
   @Get(':id')

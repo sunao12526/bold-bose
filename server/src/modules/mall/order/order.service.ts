@@ -8,6 +8,8 @@ import { MallOrderStatus } from '@prisma/client';
 import { PayOrderService } from '../../pay/pay-order.service';
 
 import { ConfigService } from '@nestjs/config';
+import { OrderQueryDto } from './dto/order-query.dto';
+import { paginateQuery } from '../../../shared/pagination';
 
 @Injectable()
 export class OrderService {
@@ -17,9 +19,17 @@ export class OrderService {
     private configService: ConfigService,
   ) {}
 
-  async findAll(status?: MallOrderStatus) {
-    return this.prisma.mallOrder.findMany({
-      where: status ? { status } : {},
+  async findAll(query: OrderQueryDto) {
+    const where: any = {};
+    if (query.no) {
+      where.no = { contains: query.no };
+    }
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    return paginateQuery(this.prisma, 'mallOrder', query, {
+      where,
       include: {
         member: { select: { id: true, nickname: true, mobile: true } },
         items: true,

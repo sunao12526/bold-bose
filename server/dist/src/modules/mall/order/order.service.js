@@ -15,6 +15,7 @@ const prisma_service_1 = require("../../../shared/prisma/prisma.service");
 const client_1 = require("@prisma/client");
 const pay_order_service_1 = require("../../pay/pay-order.service");
 const config_1 = require("@nestjs/config");
+const pagination_1 = require("../../../shared/pagination");
 let OrderService = class OrderService {
     prisma;
     payOrderService;
@@ -24,9 +25,16 @@ let OrderService = class OrderService {
         this.payOrderService = payOrderService;
         this.configService = configService;
     }
-    async findAll(status) {
-        return this.prisma.mallOrder.findMany({
-            where: status ? { status } : {},
+    async findAll(query) {
+        const where = {};
+        if (query.no) {
+            where.no = { contains: query.no };
+        }
+        if (query.status) {
+            where.status = query.status;
+        }
+        return (0, pagination_1.paginateQuery)(this.prisma, 'mallOrder', query, {
+            where,
             include: {
                 member: { select: { id: true, nickname: true, mobile: true } },
                 items: true,

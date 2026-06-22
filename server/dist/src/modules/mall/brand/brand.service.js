@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BrandService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
+const pagination_1 = require("../../../shared/pagination");
 let BrandService = class BrandService {
     prisma;
     constructor(prisma) {
@@ -20,8 +21,16 @@ let BrandService = class BrandService {
     async create(data) {
         return this.prisma.mallBrand.create({ data });
     }
-    async findAll() {
-        return this.prisma.mallBrand.findMany({
+    async findAll(query) {
+        const where = {};
+        if (query.name) {
+            where.name = { contains: query.name };
+        }
+        if (query.status) {
+            where.status = query.status;
+        }
+        return (0, pagination_1.paginateQuery)(this.prisma, 'mallBrand', query, {
+            where,
             orderBy: { sort: 'asc' },
         });
     }

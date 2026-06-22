@@ -5,6 +5,7 @@ import {
   Post,
   Body,
   Param,
+  Query,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { Public } from '../../../shared/decorators/public.decorator';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
+import { RefundQueryDto } from './dto/refund-query.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mall/refund')
@@ -39,8 +41,8 @@ export class RefundController {
 
   @Get()
   @RequirePermissions('mall:refund:query')
-  async findAll() {
-    return this.refundService.findAll();
+  async findAll(@Query() query: RefundQueryDto) {
+    return this.refundService.findAll(query);
   }
 
   @Get(':id')

@@ -4,6 +4,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { CouponQueryDto } from './dto/coupon-query.dto';
+import { paginateQuery } from '../../../shared/pagination';
 import {
   CommonStatus,
   MallCouponValidityType,
@@ -24,8 +26,17 @@ export class PromotionService {
     });
   }
 
-  async findAll() {
-    return this.prisma.mallCoupon.findMany({
+  async findAll(query: CouponQueryDto) {
+    const where: any = {};
+    if (query.name) {
+      where.name = { contains: query.name };
+    }
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    return paginateQuery(this.prisma, 'mallCoupon', query, {
+      where,
       orderBy: { id: 'desc' },
     });
   }

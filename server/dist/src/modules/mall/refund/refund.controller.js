@@ -20,6 +20,7 @@ const public_decorator_1 = require("../../../shared/decorators/public.decorator"
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const refund_query_dto_1 = require("./dto/refund-query.dto");
 let RefundController = class RefundController {
     refundService;
     constructor(refundService) {
@@ -29,8 +30,8 @@ let RefundController = class RefundController {
         await this.refundService.refundNotify(merchantRefundId, refundId, status, refundTime);
         return 'success';
     }
-    async findAll() {
-        return this.refundService.findAll();
+    async findAll(query) {
+        return this.refundService.findAll(query);
     }
     async findOne(id) {
         return this.refundService.findOne(id);
@@ -57,8 +58,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, require_permissions_decorator_1.RequirePermissions)('mall:refund:query'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [refund_query_dto_1.RefundQueryDto]),
     __metadata("design:returntype", Promise)
 ], RefundController.prototype, "findAll", null);
 __decorate([

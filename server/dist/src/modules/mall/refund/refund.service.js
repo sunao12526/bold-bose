@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RefundService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
+const pagination_1 = require("../../../shared/pagination");
 const client_1 = require("@prisma/client");
 const pay_refund_service_1 = require("../../pay/pay-refund.service");
 let RefundService = class RefundService {
@@ -21,8 +22,13 @@ let RefundService = class RefundService {
         this.prisma = prisma;
         this.payRefundService = payRefundService;
     }
-    async findAll() {
-        return this.prisma.mallOrderRefund.findMany({
+    async findAll(query) {
+        const where = {};
+        if (query.status) {
+            where.status = query.status;
+        }
+        return (0, pagination_1.paginateQuery)(this.prisma, 'mallOrderRefund', query, {
+            where,
             include: {
                 order: {
                     include: {
