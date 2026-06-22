@@ -1,27 +1,34 @@
-import { Injectable, Global, Logger } from '@nestjs/common';
+import { Injectable, Global, Logger, Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { PrismaService } from './prisma/prisma.service';
 
 interface CachedUserAuth {
   roleCodes: string[];
   permissions: string[];
   isSuperAdmin: boolean;
-  expiresAt: number;
 }
 
 @Global()
 @Injectable()
 export class UserCacheService {
   private readonly logger = new Logger(UserCacheService.name);
-  private cache = new Map<number, CachedUserAuth>();
-  private readonly TTL = 5 * 60 * 1000;
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   async getUserAuth(userId: number): Promise<CachedUserAuth> {
-    this.cleanup();
-    const cached = this.cache.get(userId);
-    if (cached && Date.now() < cached.expiresAt) {
-      return cached;
+    const cacheKey = `user_auth:${userId}`;
+
+    try {
+      const cached = await this.cacheManager.get<CachedUserAuth>(cacheKey);
+      if (cached) {
+        return cached;
+      }
+    } catch (err) {
+      this.logger.error(`Failed to get cache for user ${userId}:`, err);
     }
 
     const userRoles = await this.prisma.userRole.findMany({
@@ -50,27 +57,36 @@ export class UserCacheService {
       roleCodes,
       permissions,
       isSuperAdmin,
-      expiresAt: Date.now() + this.TTL,
     };
 
-    this.cache.set(userId, auth);
+    try {
+      // TTL set to 5 minutes (300,000 milliseconds)
+      await this.cacheManager.set(cacheKey, auth, 300000);
+    } catch (err) {
+      this.logger.error(`Failed to set cache for user ${userId}:`, err);
+    }
+
     return auth;
   }
 
-  invalidateUser(userId: number): void {
-    this.cache.delete(userId);
+  async invalidateUser(userId: number): Promise<void> {
+    const cacheKey = `user_auth:${userId}`;
+    try {
+      await this.cacheManager.del(cacheKey);
+    } catch (err) {
+      this.logger.error(`Failed to invalidate cache for user ${userId}:`, err);
+    }
   }
 
-  invalidateAll(): void {
-    this.cache.clear();
-  }
-
-  private cleanup(): void {
-    const now = Date.now();
-    for (const [userId, entry] of this.cache) {
-      if (now > entry.expiresAt) {
-        this.cache.delete(userId);
+  async invalidateAll(): Promise<void> {
+    try {
+      if (typeof this.cacheManager.clear === 'function') {
+        await this.cacheManager.clear();
+      } else if (typeof (this.cacheManager as any).reset === 'function') {
+        await (this.cacheManager as any).reset();
       }
+    } catch (err) {
+      this.logger.error('Failed to clear cache:', err);
     }
   }
 }
