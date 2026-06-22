@@ -1,6 +1,7 @@
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 export declare class MailService {
     private readonly prisma;
+    private readonly logger;
     constructor(prisma: PrismaService);
     createAccount(data: any): Promise<{
         id: number;

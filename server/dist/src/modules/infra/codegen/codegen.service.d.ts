@@ -1,6 +1,7 @@
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 export declare class CodegenService {
     private prisma;
+    private readonly logger;
     constructor(prisma: PrismaService);
     getDbTables(): Promise<any[]>;
     importTables(tableNames: string[], author?: string): Promise<void>;

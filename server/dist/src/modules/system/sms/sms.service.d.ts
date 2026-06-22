@@ -1,6 +1,7 @@
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 export declare class SmsService {
     private readonly prisma;
+    private readonly logger;
     constructor(prisma: PrismaService);
     createChannel(data: any): Promise<{
         id: number;

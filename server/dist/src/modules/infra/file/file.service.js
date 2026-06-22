@@ -41,6 +41,7 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var FileService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FileService = void 0;
 const common_1 = require("@nestjs/common");
@@ -50,9 +51,10 @@ const local_file_client_1 = require("./client/local-file-client");
 const s3_file_client_1 = require("./client/s3-file-client");
 const crypto = __importStar(require("crypto"));
 const path = __importStar(require("path"));
-let FileService = class FileService {
+let FileService = FileService_1 = class FileService {
     prisma;
     fileConfigService;
+    logger = new common_1.Logger(FileService_1.name);
     constructor(prisma, fileConfigService) {
         this.prisma = prisma;
         this.fileConfigService = fileConfigService;
@@ -111,14 +113,14 @@ let FileService = class FileService {
                 await client.delete(file.path);
             }
             catch (err) {
-                console.error('Failed to delete file from storage provider:', err);
+                this.logger.error('Failed to delete file from storage provider:', err);
             }
         }
         return this.prisma.file.delete({ where: { id } });
     }
 };
 exports.FileService = FileService;
-exports.FileService = FileService = __decorate([
+exports.FileService = FileService = FileService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         file_config_service_1.FileConfigService])

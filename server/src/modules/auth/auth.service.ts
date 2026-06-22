@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../shared/prisma/prisma.service';
@@ -11,6 +12,8 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
@@ -52,7 +55,7 @@ export class AuthService {
           },
         });
       } catch (err) {
-        console.error('Failed to write login log:', err);
+        this.logger.error('Failed to write login log:', err);
       }
     };
 
@@ -246,9 +249,8 @@ export class AuthService {
         nickname = userData.login;
         avatar = userData.avatar_url;
       } catch (err: any) {
-        console.warn(
-          'GitHub API call failed, using mock fallback:',
-          err.message,
+        this.logger.warn(
+          `GitHub API call failed, using mock fallback: ${err.message}`,
         );
         openid = 'mock_github_user_123';
         nickname = 'Mock GitHub User';
@@ -272,7 +274,7 @@ export class AuthService {
           data: { username, ip, userAgent, status, message },
         });
       } catch (err) {
-        console.error('Failed to write login log:', err);
+        this.logger.error('Failed to write login log:', err);
       }
     };
 
@@ -413,9 +415,8 @@ export class AuthService {
         nickname = userData.login;
         avatar = userData.avatar_url;
       } catch (err: any) {
-        console.warn(
-          'GitHub API failed, using mock fallback for binding:',
-          err.message,
+        this.logger.warn(
+          `GitHub API failed, using mock fallback for binding: ${err.message}`,
         );
         openid = 'mock_github_user_123';
         nickname = 'Mock GitHub User';

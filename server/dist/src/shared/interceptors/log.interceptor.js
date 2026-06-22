@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var LogInterceptor_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LogInterceptor = void 0;
 const common_1 = require("@nestjs/common");
@@ -16,9 +17,10 @@ const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 const prisma_service_1 = require("../prisma/prisma.service");
 const log_decorator_1 = require("../decorators/log.decorator");
-let LogInterceptor = class LogInterceptor {
+let LogInterceptor = LogInterceptor_1 = class LogInterceptor {
     reflector;
     prisma;
+    logger = new common_1.Logger(LogInterceptor_1.name);
     constructor(reflector, prisma) {
         this.reflector = reflector;
         this.prisma = prisma;
@@ -68,12 +70,12 @@ let LogInterceptor = class LogInterceptor {
             });
         }
         catch (e) {
-            console.error('Failed to save operation log:', e);
+            this.logger.error('Failed to save operation log:', e);
         }
     }
 };
 exports.LogInterceptor = LogInterceptor;
-exports.LogInterceptor = LogInterceptor = __decorate([
+exports.LogInterceptor = LogInterceptor = LogInterceptor_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [core_1.Reflector,
         prisma_service_1.PrismaService])

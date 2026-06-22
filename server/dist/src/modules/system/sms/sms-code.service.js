@@ -8,14 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var SmsCodeService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SmsCodeService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
 const sms_service_1 = require("./sms.service");
-let SmsCodeService = class SmsCodeService {
+let SmsCodeService = SmsCodeService_1 = class SmsCodeService {
     prisma;
     smsService;
+    logger = new common_1.Logger(SmsCodeService_1.name);
     constructor(prisma, smsService) {
         this.prisma = prisma;
         this.smsService = smsService;
@@ -54,7 +56,7 @@ let SmsCodeService = class SmsCodeService {
             await this.smsService.sendSms('sms_login', mobile, { code });
         }
         catch (err) {
-            console.error('Failed to dispatch SMS simulation:', err.message);
+            this.logger.error('Failed to dispatch SMS simulation:', err.stack || err.message || err);
         }
         return { success: true, expiredAt };
     }
@@ -102,7 +104,7 @@ let SmsCodeService = class SmsCodeService {
     }
 };
 exports.SmsCodeService = SmsCodeService;
-exports.SmsCodeService = SmsCodeService = __decorate([
+exports.SmsCodeService = SmsCodeService = SmsCodeService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         sms_service_1.SmsService])

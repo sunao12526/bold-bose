@@ -41,6 +41,7 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var AuthService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
@@ -48,10 +49,11 @@ const jwt_1 = require("@nestjs/jwt");
 const prisma_service_1 = require("../../shared/prisma/prisma.service");
 const user_cache_service_1 = require("../../shared/user-cache.service");
 const bcrypt = __importStar(require("bcrypt"));
-let AuthService = class AuthService {
+let AuthService = AuthService_1 = class AuthService {
     prisma;
     jwtService;
     userCache;
+    logger = new common_1.Logger(AuthService_1.name);
     constructor(prisma, jwtService, userCache) {
         this.prisma = prisma;
         this.jwtService = jwtService;
@@ -99,7 +101,7 @@ let AuthService = class AuthService {
                 });
             }
             catch (err) {
-                console.error('Failed to write login log:', err);
+                this.logger.error('Failed to write login log:', err);
             }
         };
         const user = await this.prisma.user.findUnique({
@@ -258,7 +260,7 @@ let AuthService = class AuthService {
                 avatar = userData.avatar_url;
             }
             catch (err) {
-                console.warn('GitHub API call failed, using mock fallback:', err.message);
+                this.logger.warn(`GitHub API call failed, using mock fallback: ${err.message}`);
                 openid = 'mock_github_user_123';
                 nickname = 'Mock GitHub User';
                 avatar = 'https://avatars.githubusercontent.com/u/9919?v=4';
@@ -275,7 +277,7 @@ let AuthService = class AuthService {
                 });
             }
             catch (err) {
-                console.error('Failed to write login log:', err);
+                this.logger.error('Failed to write login log:', err);
             }
         };
         let userId;
@@ -394,7 +396,7 @@ let AuthService = class AuthService {
                 avatar = userData.avatar_url;
             }
             catch (err) {
-                console.warn('GitHub API failed, using mock fallback for binding:', err.message);
+                this.logger.warn(`GitHub API failed, using mock fallback for binding: ${err.message}`);
                 openid = 'mock_github_user_123';
                 nickname = 'Mock GitHub User';
                 avatar = 'https://avatars.githubusercontent.com/u/9919?v=4';
@@ -444,7 +446,7 @@ let AuthService = class AuthService {
     }
 };
 exports.AuthService = AuthService;
-exports.AuthService = AuthService = __decorate([
+exports.AuthService = AuthService = AuthService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         jwt_1.JwtService,

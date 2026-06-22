@@ -10,6 +10,8 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
 const schedule_1 = require("@nestjs/schedule");
+const nestjs_pino_1 = require("nestjs-pino");
+const http_exception_filter_1 = require("./shared/filters/http-exception.filter");
 const config_1 = require("@nestjs/config");
 const throttler_1 = require("@nestjs/throttler");
 const prisma_module_1 = require("./shared/prisma/prisma.module");
@@ -29,6 +31,14 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            nestjs_pino_1.LoggerModule.forRoot({
+                pinoHttp: {
+                    transport: process.env.NODE_ENV !== 'production'
+                        ? { target: 'pino-pretty', options: { colorize: true } }
+                        : undefined,
+                    level: process.env.NODE_ENV !== 'production' ? 'debug' : 'info',
+                },
+            }),
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
@@ -48,6 +58,10 @@ exports.AppModule = AppModule = __decorate([
             mp_module_1.MpModule,
         ],
         providers: [
+            {
+                provide: core_1.APP_FILTER,
+                useClass: http_exception_filter_1.HttpExceptionFilter,
+            },
             {
                 provide: core_1.APP_GUARD,
                 useClass: throttler_1.ThrottlerGuard,

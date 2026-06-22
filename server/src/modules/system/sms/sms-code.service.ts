@@ -1,9 +1,10 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { SmsService } from './sms.service';
 
 @Injectable()
 export class SmsCodeService {
+  private readonly logger = new Logger(SmsCodeService.name);
   constructor(
     private prisma: PrismaService,
     private smsService: SmsService,
@@ -56,7 +57,7 @@ export class SmsCodeService {
     try {
       await this.smsService.sendSms('sms_login', mobile, { code });
     } catch (err: any) {
-      console.error('Failed to dispatch SMS simulation:', err.message);
+      this.logger.error('Failed to dispatch SMS simulation:', err.stack || err.message || err);
     }
 
     return { success: true, expiredAt };

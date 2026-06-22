@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 
 @Injectable()
 export class SmsService {
+  private readonly logger = new Logger(SmsService.name);
   constructor(private readonly prisma: PrismaService) {}
 
   // ================= SMS Channels =================
@@ -196,7 +197,7 @@ export class SmsService {
       );
     });
 
-    console.log(
+    this.logger.log(
       `[SMS Simulation] Sending SMS to ${mobile} via channel ${template.channel.name}. Content: "${content}"`,
     );
 

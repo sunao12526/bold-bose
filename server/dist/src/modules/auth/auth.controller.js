@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var AuthController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
@@ -20,9 +21,10 @@ const public_decorator_1 = require("../../shared/decorators/public.decorator");
 const jwt_auth_guard_1 = require("../../shared/guards/jwt-auth.guard");
 const captcha_service_1 = require("./captcha.service");
 const throttler_1 = require("@nestjs/throttler");
-let AuthController = class AuthController {
+let AuthController = AuthController_1 = class AuthController {
     authService;
     captchaService;
+    logger = new common_1.Logger(AuthController_1.name);
     constructor(authService, captchaService) {
         this.authService = authService;
         this.captchaService = captchaService;
@@ -31,16 +33,12 @@ let AuthController = class AuthController {
         return this.captchaService.generate();
     }
     async login(loginDto, req) {
-        console.log('[Login] Received body:', {
-            username: loginDto.username,
-            captchaKey: loginDto.captchaKey,
-            captchaCode: loginDto.captchaCode,
-        });
+        this.logger.log(`[Login] Received body: username=${loginDto.username}, captchaKey=${loginDto.captchaKey}`);
         if (!loginDto.captchaKey || !loginDto.captchaCode) {
             throw new common_1.UnauthorizedException('请输入验证码');
         }
         const valid = this.captchaService.verify(loginDto.captchaKey, loginDto.captchaCode);
-        console.log('[Login] Captcha verify result:', valid);
+        this.logger.log(`[Login] Captcha verify result: ${valid}`);
         if (!valid) {
             throw new common_1.UnauthorizedException('验证码错误');
         }
@@ -158,7 +156,7 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "getSocialBindStatus", null);
-exports.AuthController = AuthController = __decorate([
+exports.AuthController = AuthController = AuthController_1 = __decorate([
     (0, common_1.Controller)('system/auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService,
         captcha_service_1.CaptchaService])

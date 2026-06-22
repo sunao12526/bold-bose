@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { FileConfigService } from './file-config.service';
 import { LocalFileClient } from './client/local-file-client';
@@ -8,6 +8,8 @@ import * as path from 'path';
 
 @Injectable()
 export class FileService {
+  private readonly logger = new Logger(FileService.name);
+
   constructor(
     private prisma: PrismaService,
     private fileConfigService: FileConfigService,
@@ -75,7 +77,7 @@ export class FileService {
       try {
         await client.delete(file.path);
       } catch (err) {
-        console.error('Failed to delete file from storage provider:', err);
+        this.logger.error('Failed to delete file from storage provider:', err);
       }
     }
 

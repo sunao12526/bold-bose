@@ -1,10 +1,12 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  private readonly logger = new Logger(JwtStrategy.name);
+
   constructor(private prisma: PrismaService) {
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
@@ -48,7 +50,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           where: { id: session.id },
           data: { lastActiveTime: now },
         })
-        .catch((e) => console.error('Failed to update active time:', e));
+        .catch((e) => this.logger.error('Failed to update active time:', e));
     }
 
     const user = await this.prisma.user.findUnique({

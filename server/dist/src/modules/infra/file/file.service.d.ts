@@ -3,6 +3,7 @@ import { FileConfigService } from './file-config.service';
 export declare class FileService {
     private prisma;
     private fileConfigService;
+    private readonly logger;
     constructor(prisma: PrismaService, fileConfigService: FileConfigService);
     upload(file: Express.Multer.File): Promise<any>;
     findAll(): Promise<({

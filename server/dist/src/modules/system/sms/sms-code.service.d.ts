@@ -3,6 +3,7 @@ import { SmsService } from './sms.service';
 export declare class SmsCodeService {
     private prisma;
     private smsService;
+    private readonly logger;
     constructor(prisma: PrismaService, smsService: SmsService);
     sendCode(mobile: string, scene: number, ip: string): Promise<{
         success: boolean;

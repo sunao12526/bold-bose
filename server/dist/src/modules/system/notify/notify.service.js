@@ -41,15 +41,17 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var NotifyService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotifyService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
 const config_service_1 = require("../config/config.service");
 const nodemailer = __importStar(require("nodemailer"));
-let NotifyService = class NotifyService {
+let NotifyService = NotifyService_1 = class NotifyService {
     prisma;
     configService;
+    logger = new common_1.Logger(NotifyService_1.name);
     constructor(prisma, configService) {
         this.prisma = prisma;
         this.configService = configService;
@@ -179,7 +181,7 @@ let NotifyService = class NotifyService {
             });
         }
         else if (template.type === 'SMS') {
-            console.log(`[SMS SEND SIMULATION] To: ${user.mobile || 'Unknown'}, Body: ${renderedContent}`);
+            this.logger.log(`[SMS SEND SIMULATION] To: ${user.mobile || 'Unknown'}, Body: ${renderedContent}`);
             if (!user.mobile) {
                 status = 500;
                 errorMessage = `用户 [${user.username}] 未绑定手机号`;
@@ -227,7 +229,7 @@ let NotifyService = class NotifyService {
             from = configFrom.value;
         }
         catch (err) {
-            console.warn('Unable to load SMTP configurations from SysConfig, falling back to process env defaults.');
+            this.logger.warn('Unable to load SMTP configurations from SysConfig, falling back to process env defaults.');
             host = process.env.SMTP_HOST || host;
             port = parseInt(process.env.SMTP_PORT || '', 10) || port;
             username = process.env.SMTP_USERNAME || username;
@@ -279,7 +281,7 @@ let NotifyService = class NotifyService {
     }
 };
 exports.NotifyService = NotifyService;
-exports.NotifyService = NotifyService = __decorate([
+exports.NotifyService = NotifyService = NotifyService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         config_service_1.ConfigService])

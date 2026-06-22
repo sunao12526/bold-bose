@@ -41,14 +41,16 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var CodegenService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CodegenService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-let CodegenService = class CodegenService {
+let CodegenService = CodegenService_1 = class CodegenService {
     prisma;
+    logger = new common_1.Logger(CodegenService_1.name);
     constructor(prisma) {
         this.prisma = prisma;
     }
@@ -310,7 +312,7 @@ let CodegenService = class CodegenService {
             parentRegistered = await this.registerInParentModule(baseDir, table.moduleName, table.businessName, table.className);
         }
         catch (err) {
-            console.error('Failed to auto register in parent module:', err);
+            this.logger.error('Failed to auto register in parent module:', err);
         }
         return {
             success: true,
@@ -659,7 +661,7 @@ ${formsItemsText}        </Form>
     }
 };
 exports.CodegenService = CodegenService;
-exports.CodegenService = CodegenService = __decorate([
+exports.CodegenService = CodegenService = CodegenService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], CodegenService);

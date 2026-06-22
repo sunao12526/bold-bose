@@ -7,6 +7,7 @@ import {
   UseGuards,
   Query,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -18,6 +19,8 @@ import { Throttle } from '@nestjs/throttler';
 
 @Controller('system/auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private authService: AuthService,
     private captchaService: CaptchaService,
@@ -33,11 +36,9 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Req() req: any) {
-    console.log('[Login] Received body:', {
-      username: loginDto.username,
-      captchaKey: loginDto.captchaKey,
-      captchaCode: loginDto.captchaCode,
-    });
+    this.logger.log(
+      `[Login] Received body: username=${loginDto.username}, captchaKey=${loginDto.captchaKey}`,
+    );
     if (!loginDto.captchaKey || !loginDto.captchaCode) {
       throw new UnauthorizedException('请输入验证码');
     }
@@ -45,7 +46,7 @@ export class AuthController {
       loginDto.captchaKey,
       loginDto.captchaCode,
     );
-    console.log('[Login] Captcha verify result:', valid);
+    this.logger.log(`[Login] Captcha verify result: ${valid}`);
     if (!valid) {
       throw new UnauthorizedException('验证码错误');
     }

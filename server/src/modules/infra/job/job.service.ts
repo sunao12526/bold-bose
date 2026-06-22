@@ -3,6 +3,7 @@ import {
   OnApplicationBootstrap,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
@@ -11,6 +12,7 @@ import { CronJob } from 'cron';
 
 @Injectable()
 export class JobService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(JobService.name);
   private runningJobs = new Set<string>();
 
   constructor(
@@ -27,7 +29,7 @@ export class JobService implements OnApplicationBootstrap {
     for (const job of jobs) {
       await this.registerJob(job);
     }
-    console.log(
+    this.logger.log(
       `[Scheduler] Loaded and registered ${jobs.length} active cron jobs.`,
     );
   }
@@ -47,9 +49,8 @@ export class JobService implements OnApplicationBootstrap {
       this.schedulerRegistry.addCronJob(jobName, job);
       job.start();
     } catch (e) {
-      console.error(
-        `[Scheduler] Failed to register job "${jobRecord.name}":`,
-        e.message,
+      this.logger.error(
+        `[Scheduler] Failed to register job "${jobRecord.name}": ${e.message}`,
       );
     }
   }
@@ -62,9 +63,8 @@ export class JobService implements OnApplicationBootstrap {
         job.stop();
         this.schedulerRegistry.deleteCronJob(jobName);
       } catch (e: any) {
-        console.error(
-          `[Scheduler] Error deleting job "${jobName}":`,
-          e.message,
+        this.logger.error(
+          `[Scheduler] Error deleting job "${jobName}": ${e.message}`,
         );
       }
     }
@@ -74,7 +74,7 @@ export class JobService implements OnApplicationBootstrap {
   async runJobWrapper(jobId: number, handlerName: string) {
     const lockKey = `${jobId}_${handlerName}`;
     if (this.runningJobs.has(lockKey)) {
-      console.warn(
+      this.logger.warn(
         `[Scheduler] Job ${handlerName} (ID: ${jobId}) is already running, skipping execution.`,
       );
       return;
@@ -96,7 +96,7 @@ export class JobService implements OnApplicationBootstrap {
     } catch (err: any) {
       status = 500;
       errorMessage = err.message || String(err);
-      console.error(`[Scheduler] Error executing job "${handlerName}":`, err);
+      this.logger.error(`[Scheduler] Error executing job "${handlerName}":`, err.stack || err);
     } finally {
       const duration = Date.now() - startTime;
       this.runningJobs.delete(lockKey);
@@ -113,7 +113,7 @@ export class JobService implements OnApplicationBootstrap {
           },
         });
       } catch (logErr) {
-        console.error('[Scheduler] Failed to write job log:', logErr);
+        this.logger.error('[Scheduler] Failed to write job log:', logErr.stack || logErr);
       }
     }
   }

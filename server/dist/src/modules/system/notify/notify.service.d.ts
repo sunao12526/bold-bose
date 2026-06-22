@@ -3,6 +3,7 @@ import { ConfigService } from '../config/config.service';
 export declare class NotifyService {
     private prisma;
     private configService;
+    private readonly logger;
     constructor(prisma: PrismaService, configService: ConfigService);
     createTemplate(data: any): Promise<{
         id: number;

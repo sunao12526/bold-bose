@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class MailService {
+  private readonly logger = new Logger(MailService.name);
   constructor(private readonly prisma: PrismaService) {}
 
   // ================= Mail Accounts =================
@@ -223,11 +224,11 @@ export class MailService {
         html: content,
       });
 
-      console.log(
+      this.logger.log(
         `[Mail Service] Email sent successfully to ${receiver} using template ${templateCode}`,
       );
     } catch (err: any) {
-      console.error(`[Mail Service] Failed to send email to ${receiver}:`, err);
+      this.logger.error(`[Mail Service] Failed to send email to ${receiver}:`, err.stack || err);
       status = 'FAIL';
       errorMessage = err.message || String(err);
     }

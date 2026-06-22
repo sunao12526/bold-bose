@@ -38,8 +38,10 @@ const app_module_1 = require("./app.module");
 const common_1 = require("@nestjs/common");
 const express = __importStar(require("express"));
 const path = __importStar(require("path"));
+const nestjs_pino_1 = require("nestjs-pino");
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, { bufferLogs: true });
+    app.useLogger(app.get(nestjs_pino_1.Logger));
     app.enableCors();
     app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
     app.setGlobalPrefix('admin-api');
@@ -49,7 +51,7 @@ async function bootstrap() {
     }));
     const port = process.env.PORT ?? 3000;
     await app.listen(port);
-    console.log(`Application is running on: http://localhost:${port}/admin-api`);
+    new common_1.Logger('Bootstrap').log(`Application is running on: http://localhost:${port}/admin-api`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

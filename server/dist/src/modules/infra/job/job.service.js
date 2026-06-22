@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var JobService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JobService = void 0;
 const common_1 = require("@nestjs/common");
@@ -15,10 +16,11 @@ const schedule_1 = require("@nestjs/schedule");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
 const job_handlers_1 = require("./job.handlers");
 const cron_1 = require("cron");
-let JobService = class JobService {
+let JobService = JobService_1 = class JobService {
     prisma;
     schedulerRegistry;
     jobHandlers;
+    logger = new common_1.Logger(JobService_1.name);
     runningJobs = new Set();
     constructor(prisma, schedulerRegistry, jobHandlers) {
         this.prisma = prisma;
@@ -32,7 +34,7 @@ let JobService = class JobService {
         for (const job of jobs) {
             await this.registerJob(job);
         }
-        console.log(`[Scheduler] Loaded and registered ${jobs.length} active cron jobs.`);
+        this.logger.log(`[Scheduler] Loaded and registered ${jobs.length} active cron jobs.`);
     }
     async registerJob(jobRecord) {
         const jobName = `JOB_${jobRecord.id}`;
@@ -45,7 +47,7 @@ let JobService = class JobService {
             job.start();
         }
         catch (e) {
-            console.error(`[Scheduler] Failed to register job "${jobRecord.name}":`, e.message);
+            this.logger.error(`[Scheduler] Failed to register job "${jobRecord.name}": ${e.message}`);
         }
     }
     unregisterJob(jobId) {
@@ -57,14 +59,14 @@ let JobService = class JobService {
                 this.schedulerRegistry.deleteCronJob(jobName);
             }
             catch (e) {
-                console.error(`[Scheduler] Error deleting job "${jobName}":`, e.message);
+                this.logger.error(`[Scheduler] Error deleting job "${jobName}": ${e.message}`);
             }
         }
     }
     async runJobWrapper(jobId, handlerName) {
         const lockKey = `${jobId}_${handlerName}`;
         if (this.runningJobs.has(lockKey)) {
-            console.warn(`[Scheduler] Job ${handlerName} (ID: ${jobId}) is already running, skipping execution.`);
+            this.logger.warn(`[Scheduler] Job ${handlerName} (ID: ${jobId}) is already running, skipping execution.`);
             return;
         }
         this.runningJobs.add(lockKey);
@@ -81,7 +83,7 @@ let JobService = class JobService {
         catch (err) {
             status = 500;
             errorMessage = err.message || String(err);
-            console.error(`[Scheduler] Error executing job "${handlerName}":`, err);
+            this.logger.error(`[Scheduler] Error executing job "${handlerName}":`, err.stack || err);
         }
         finally {
             const duration = Date.now() - startTime;
@@ -98,7 +100,7 @@ let JobService = class JobService {
                 });
             }
             catch (logErr) {
-                console.error('[Scheduler] Failed to write job log:', logErr);
+                this.logger.error('[Scheduler] Failed to write job log:', logErr.stack || logErr);
             }
         }
     }
@@ -166,7 +168,7 @@ let JobService = class JobService {
     }
 };
 exports.JobService = JobService;
-exports.JobService = JobService = __decorate([
+exports.JobService = JobService = JobService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         schedule_1.SchedulerRegistry,

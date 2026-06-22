@@ -3,6 +3,7 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
+  Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable, throwError } from 'rxjs';
@@ -12,6 +13,8 @@ import { LOG_METADATA_KEY, LogOptions } from '../decorators/log.decorator';
 
 @Injectable()
 export class LogInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(LogInterceptor.name);
+
   constructor(
     private reflector: Reflector,
     private prisma: PrismaService,
@@ -76,7 +79,7 @@ export class LogInterceptor implements NestInterceptor {
         },
       });
     } catch (e) {
-      console.error('Failed to save operation log:', e);
+      this.logger.error('Failed to save operation log:', e);
     }
   }
 }

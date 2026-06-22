@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import * as fs from 'fs';
@@ -9,6 +10,8 @@ import * as path from 'path';
 
 @Injectable()
 export class CodegenService {
+  private readonly logger = new Logger(CodegenService.name);
+
   constructor(private prisma: PrismaService) {}
 
   // 1. Get raw database tables
@@ -356,7 +359,7 @@ export class CodegenService {
         table.className,
       );
     } catch (err) {
-      console.error('Failed to auto register in parent module:', err);
+      this.logger.error('Failed to auto register in parent module:', err);
     }
 
     return {

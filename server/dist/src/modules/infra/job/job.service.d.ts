@@ -6,6 +6,7 @@ export declare class JobService implements OnApplicationBootstrap {
     private prisma;
     private schedulerRegistry;
     private jobHandlers;
+    private readonly logger;
     private runningJobs;
     constructor(prisma: PrismaService, schedulerRegistry: SchedulerRegistry, jobHandlers: JobHandlers);
     onApplicationBootstrap(): Promise<void>;

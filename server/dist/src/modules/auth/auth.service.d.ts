@@ -6,6 +6,7 @@ export declare class AuthService {
     private prisma;
     private jwtService;
     private userCache;
+    private readonly logger;
     constructor(prisma: PrismaService, jwtService: JwtService, userCache: UserCacheService);
     private parseUserAgent;
     login(loginDto: LoginDto, ip?: string, userAgent?: string): Promise<{

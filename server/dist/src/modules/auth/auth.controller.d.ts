@@ -4,6 +4,7 @@ import { CaptchaService } from './captcha.service';
 export declare class AuthController {
     private authService;
     private captchaService;
+    private readonly logger;
     constructor(authService: AuthService, captchaService: CaptchaService);
     getCaptcha(): import("./captcha.service").CaptchaResult;
     login(loginDto: LoginDto, req: any): Promise<{

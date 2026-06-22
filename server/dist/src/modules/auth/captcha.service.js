@@ -41,11 +41,13 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var CaptchaService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CaptchaService = void 0;
 const common_1 = require("@nestjs/common");
 const crypto = __importStar(require("crypto"));
-let CaptchaService = class CaptchaService {
+let CaptchaService = CaptchaService_1 = class CaptchaService {
+    logger = new common_1.Logger(CaptchaService_1.name);
     store = new Map();
     constructor() {
         setInterval(() => this.cleanup(), 60_000);
@@ -57,23 +59,23 @@ let CaptchaService = class CaptchaService {
             code: code.toLowerCase(),
             expiresAt: Date.now() + 5 * 60 * 1000,
         });
-        console.log(`[Captcha] Generated: key=${key}, code=${code.toLowerCase()}`);
+        this.logger.log(`Generated: key=${key}, code=${code.toLowerCase()}`);
         return { key, image: this.renderSvg(code) };
     }
     verify(key, input) {
-        console.log(`[Captcha] Verifying: key=${key}, input=${input}`);
+        this.logger.log(`Verifying: key=${key}, input=${input}`);
         const record = this.store.get(key);
         if (!record) {
-            console.log(`[Captcha] Verify failed: no record for key=${key}`);
+            this.logger.log(`Verify failed: no record for key=${key}`);
             return false;
         }
         this.store.delete(key);
         if (Date.now() > record.expiresAt) {
-            console.log(`[Captcha] Verify failed: expired`);
+            this.logger.log(`Verify failed: expired`);
             return false;
         }
         const result = record.code === input.toLowerCase();
-        console.log(`[Captcha] Verify: stored=${record.code}, input_lower=${input.toLowerCase()}, match=${result}`);
+        this.logger.log(`Verify: stored=${record.code}, input_lower=${input.toLowerCase()}, match=${result}`);
         return result;
     }
     randomCode(len) {
@@ -130,7 +132,7 @@ let CaptchaService = class CaptchaService {
     }
 };
 exports.CaptchaService = CaptchaService;
-exports.CaptchaService = CaptchaService = __decorate([
+exports.CaptchaService = CaptchaService = CaptchaService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
 ], CaptchaService);

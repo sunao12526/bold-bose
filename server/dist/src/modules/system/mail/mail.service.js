@@ -41,13 +41,15 @@ var __importStar = (this && this.__importStar) || (function () {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var MailService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MailService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
 const nodemailer = __importStar(require("nodemailer"));
-let MailService = class MailService {
+let MailService = MailService_1 = class MailService {
     prisma;
+    logger = new common_1.Logger(MailService_1.name);
     constructor(prisma) {
         this.prisma = prisma;
     }
@@ -235,10 +237,10 @@ let MailService = class MailService {
                 subject: title,
                 html: content,
             });
-            console.log(`[Mail Service] Email sent successfully to ${receiver} using template ${templateCode}`);
+            this.logger.log(`[Mail Service] Email sent successfully to ${receiver} using template ${templateCode}`);
         }
         catch (err) {
-            console.error(`[Mail Service] Failed to send email to ${receiver}:`, err);
+            this.logger.error(`[Mail Service] Failed to send email to ${receiver}:`, err.stack || err);
             status = 'FAIL';
             errorMessage = err.message || String(err);
         }
@@ -255,7 +257,7 @@ let MailService = class MailService {
     }
 };
 exports.MailService = MailService;
-exports.MailService = MailService = __decorate([
+exports.MailService = MailService = MailService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], MailService);

@@ -8,12 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var SmsService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SmsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
-let SmsService = class SmsService {
+let SmsService = SmsService_1 = class SmsService {
     prisma;
+    logger = new common_1.Logger(SmsService_1.name);
     constructor(prisma) {
         this.prisma = prisma;
     }
@@ -176,7 +178,7 @@ let SmsService = class SmsService {
         Object.keys(params).forEach((key) => {
             content = content.replace(new RegExp(`{${key}}`, 'g'), String(params[key]));
         });
-        console.log(`[SMS Simulation] Sending SMS to ${mobile} via channel ${template.channel.name}. Content: "${content}"`);
+        this.logger.log(`[SMS Simulation] Sending SMS to ${mobile} via channel ${template.channel.name}. Content: "${content}"`);
         return this.prisma.smsLog.create({
             data: {
                 templateId: template.id,
@@ -189,7 +191,7 @@ let SmsService = class SmsService {
     }
 };
 exports.SmsService = SmsService;
-exports.SmsService = SmsService = __decorate([
+exports.SmsService = SmsService = SmsService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], SmsService);

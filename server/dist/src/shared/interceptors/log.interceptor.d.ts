@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export declare class LogInterceptor implements NestInterceptor {
     private reflector;
     private prisma;
+    private readonly logger;
     constructor(reflector: Reflector, prisma: PrismaService);
     intercept(context: ExecutionContext, next: CallHandler): Observable<any>;
     private saveLog;

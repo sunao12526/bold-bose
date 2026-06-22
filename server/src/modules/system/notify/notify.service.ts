@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { ConfigService } from '../config/config.service';
@@ -9,6 +10,7 @@ import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class NotifyService {
+  private readonly logger = new Logger(NotifyService.name);
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
@@ -167,7 +169,7 @@ export class NotifyService {
       });
     } else if (template.type === 'SMS') {
       // SMS Notification (Simulated)
-      console.log(
+      this.logger.log(
         `[SMS SEND SIMULATION] To: ${user.mobile || 'Unknown'}, Body: ${renderedContent}`,
       );
       if (!user.mobile) {
@@ -226,7 +228,7 @@ export class NotifyService {
       const configFrom = await this.configService.findByKey('sys.mail.from');
       from = configFrom.value;
     } catch (err) {
-      console.warn(
+      this.logger.warn(
         'Unable to load SMTP configurations from SysConfig, falling back to process env defaults.',
       );
       host = process.env.SMTP_HOST || host;

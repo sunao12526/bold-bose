@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
 
 export interface CaptchaResult {
@@ -13,6 +13,7 @@ interface CaptchaRecord {
 
 @Injectable()
 export class CaptchaService {
+  private readonly logger = new Logger(CaptchaService.name);
   private store = new Map<string, CaptchaRecord>();
 
   constructor() {
@@ -26,24 +27,26 @@ export class CaptchaService {
       code: code.toLowerCase(),
       expiresAt: Date.now() + 5 * 60 * 1000,
     });
-    console.log(`[Captcha] Generated: key=${key}, code=${code.toLowerCase()}`);
+    this.logger.log(`Generated: key=${key}, code=${code.toLowerCase()}`);
     return { key, image: this.renderSvg(code) };
   }
 
   verify(key: string, input: string): boolean {
-    console.log(`[Captcha] Verifying: key=${key}, input=${input}`);
+    this.logger.log(`Verifying: key=${key}, input=${input}`);
     const record = this.store.get(key);
     if (!record) {
-      console.log(`[Captcha] Verify failed: no record for key=${key}`);
+      this.logger.log(`Verify failed: no record for key=${key}`);
       return false;
     }
     this.store.delete(key);
     if (Date.now() > record.expiresAt) {
-      console.log(`[Captcha] Verify failed: expired`);
+      this.logger.log(`Verify failed: expired`);
       return false;
     }
     const result = record.code === input.toLowerCase();
-    console.log(`[Captcha] Verify: stored=${record.code}, input_lower=${input.toLowerCase()}, match=${result}`);
+    this.logger.log(
+      `Verify: stored=${record.code}, input_lower=${input.toLowerCase()}, match=${result}`,
+    );
     return result;
   }
 

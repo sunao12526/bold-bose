@@ -3,6 +3,7 @@ export interface CaptchaResult {
     image: string;
 }
 export declare class CaptchaService {
+    private readonly logger;
     private store;
     constructor();
     generate(): CaptchaResult;
