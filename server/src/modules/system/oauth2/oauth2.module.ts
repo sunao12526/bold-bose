@@ -15,7 +15,7 @@ if (!jwtSecret) {
   imports: [
     JwtModule.register({
       secret: jwtSecret,
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN || '1d') as any },
     }),
   ],
   controllers: [OAuth2ClientController, OAuth2Controller],

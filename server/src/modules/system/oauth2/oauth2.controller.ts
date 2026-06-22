@@ -110,12 +110,14 @@ export class OAuth2Controller {
         // Issue token
         const payload = { id: user.id, username: user.username, scopes };
         const accessToken = this.jwtService.sign(payload);
-        const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+        const refreshToken = this.jwtService.sign(payload, { 
+          expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as any 
+        });
 
         return {
           access_token: accessToken,
           token_type: 'Bearer',
-          expires_in: 86400,
+          expires_in: parseInt(process.env.JWT_EXPIRES_IN_SECONDS || '86400', 10),
           refresh_token: refreshToken,
           scope: scopes.join(' '),
         };
@@ -130,7 +132,7 @@ export class OAuth2Controller {
       return {
         access_token: accessToken,
         token_type: 'Bearer',
-        expires_in: 86400,
+        expires_in: parseInt(process.env.JWT_EXPIRES_IN_SECONDS || '86400', 10),
       };
     }
 

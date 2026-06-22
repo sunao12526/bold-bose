@@ -45,5 +45,5 @@ export const dataProvider: DataProvider = {
     const response = await axiosInstance.delete(`/${resource}/${id}`, { data: variables });
     return { data: response.data };
   },
-  getApiUrl: () => 'http://localhost:3000/admin-api',
+  getApiUrl: () => process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/admin-api',
 };
