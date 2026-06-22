@@ -13,6 +13,7 @@ import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 import { SmsCodeQueryDto } from '../dto/sms-code-query.dto';
 
@@ -21,6 +22,7 @@ export class SmsCodeController {
   constructor(private readonly smsCodeService: SmsCodeService) {}
 
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('send-code')
   @Log({ module: '短信管理', type: 'OTHER', description: '发送短信验证码' })
   async sendCode(
@@ -33,6 +35,7 @@ export class SmsCodeController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('verify-code')
   @Log({ module: '短信管理', type: 'OTHER', description: '验证短信验证码' })
   async verifyCode(

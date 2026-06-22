@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
 import { Log } from '../../../shared/decorators/log.decorator';
+import { CreateSpuDto, UpdateSpuDto } from './dto/spu.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mall/spu')
@@ -23,7 +24,7 @@ export class SpuController {
   @Post()
   @RequirePermissions('mall:spu:create')
   @Log({ module: '商品管理', type: 'CREATE', description: '创建商品' })
-  async create(@Body() data: any) {
+  async create(@Body() data: CreateSpuDto) {
     return this.spuService.create(data);
   }
 
@@ -42,7 +43,7 @@ export class SpuController {
   @Put(':id')
   @RequirePermissions('mall:spu:update')
   @Log({ module: '商品管理', type: 'UPDATE', description: '修改商品' })
-  async update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateSpuDto) {
     return this.spuService.update(id, data);
   }
 

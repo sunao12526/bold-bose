@@ -7,11 +7,14 @@ import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { MallOrderStatus } from '@prisma/client';
 import { PayOrderService } from '../../pay/pay-order.service';
 
+import { ConfigService } from '@nestjs/config';
+
 @Injectable()
 export class OrderService {
   constructor(
     private prisma: PrismaService,
     private payOrderService: PayOrderService,
+    private configService: ConfigService,
   ) {}
 
   async findAll(status?: MallOrderStatus) {
@@ -68,8 +71,7 @@ export class OrderService {
       merchantOrderId: order.no,
       subject: `商城订单: ${order.no}`,
       price: order.payPrice,
-      merchantNotifyUrl:
-        'http://localhost:3000/admin-api/mall/order/pay-notify',
+      merchantNotifyUrl: `${this.configService.get<string>('API_BASE_URL') || 'http://localhost:3000/admin-api'}/mall/order/pay-notify`,
     });
 
     await this.payOrderService.submitPayOrder(payOrder.id, 'mock');

@@ -1,8 +1,9 @@
 import { SpuService } from './spu.service';
+import { CreateSpuDto, UpdateSpuDto } from './dto/spu.dto';
 export declare class SpuController {
     private spuService;
     constructor(spuService: SpuService);
-    create(data: any): Promise<{
+    create(data: CreateSpuDto): Promise<{
         skus: {
             id: number;
             createdAt: Date;
@@ -103,7 +104,7 @@ export declare class SpuController {
         maxPrice: number;
         totalStock: number;
     }>;
-    update(id: number, data: any): Promise<{
+    update(id: number, data: UpdateSpuDto): Promise<{
         skus: {
             id: number;
             createdAt: Date;

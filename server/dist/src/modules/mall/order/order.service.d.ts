@@ -1,10 +1,12 @@
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { MallOrderStatus } from '@prisma/client';
 import { PayOrderService } from '../../pay/pay-order.service';
+import { ConfigService } from '@nestjs/config';
 export declare class OrderService {
     private prisma;
     private payOrderService;
-    constructor(prisma: PrismaService, payOrderService: PayOrderService);
+    private configService;
+    constructor(prisma: PrismaService, payOrderService: PayOrderService, configService: ConfigService);
     findAll(status?: MallOrderStatus): Promise<({
         member: {
             id: number;

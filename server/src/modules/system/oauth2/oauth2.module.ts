@@ -4,10 +4,17 @@ import { OAuth2Service } from './oauth2.service';
 import { OAuth2ClientController } from './oauth2-client.controller';
 import { OAuth2Controller } from './oauth2.controller';
 
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+  throw new Error(
+    'JWT_SECRET environment variable is required but not defined in .env',
+  );
+}
+
 @Module({
   imports: [
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'yudao-nestjs-secret-key-2026',
+      secret: jwtSecret,
       signOptions: { expiresIn: '1d' },
     }),
   ],

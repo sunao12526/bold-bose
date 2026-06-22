@@ -1,8 +1,9 @@
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { CreateSpuDto, UpdateSpuDto } from './dto/spu.dto';
 export declare class SpuService {
     private prisma;
     constructor(prisma: PrismaService);
-    create(data: any): Promise<{
+    create(data: CreateSpuDto): Promise<{
         skus: {
             id: number;
             createdAt: Date;
@@ -103,7 +104,7 @@ export declare class SpuService {
         maxPrice: number;
         totalStock: number;
     }>;
-    update(id: number, data: any): Promise<{
+    update(id: number, data: UpdateSpuDto): Promise<{
         skus: {
             id: number;
             createdAt: Date;

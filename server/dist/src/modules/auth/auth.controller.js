@@ -19,6 +19,7 @@ const login_dto_1 = require("./dto/login.dto");
 const public_decorator_1 = require("../../shared/decorators/public.decorator");
 const jwt_auth_guard_1 = require("../../shared/guards/jwt-auth.guard");
 const captcha_service_1 = require("./captcha.service");
+const throttler_1 = require("@nestjs/throttler");
 let AuthController = class AuthController {
     authService;
     captchaService;
@@ -85,6 +86,7 @@ __decorate([
 ], AuthController.prototype, "getCaptcha", null);
 __decorate([
     (0, public_decorator_1.Public)(),
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 60000 } }),
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),

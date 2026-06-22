@@ -20,6 +20,7 @@ const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const throttler_1 = require("@nestjs/throttler");
 const sms_code_query_dto_1 = require("../dto/sms-code-query.dto");
 let SmsCodeController = class SmsCodeController {
     smsCodeService;
@@ -41,6 +42,7 @@ let SmsCodeController = class SmsCodeController {
 exports.SmsCodeController = SmsCodeController;
 __decorate([
     (0, public_decorator_1.Public)(),
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 60000 } }),
     (0, common_1.Post)('send-code'),
     (0, log_decorator_1.Log)({ module: '短信管理', type: 'OTHER', description: '发送短信验证码' }),
     __param(0, (0, common_1.Body)('mobile')),
@@ -52,6 +54,7 @@ __decorate([
 ], SmsCodeController.prototype, "sendCode", null);
 __decorate([
     (0, public_decorator_1.Public)(),
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 60000 } }),
     (0, common_1.Post)('verify-code'),
     (0, log_decorator_1.Log)({ module: '短信管理', type: 'OTHER', description: '验证短信验证码' }),
     __param(0, (0, common_1.Body)('mobile')),

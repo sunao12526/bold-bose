@@ -14,12 +14,15 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../../shared/prisma/prisma.service");
 const client_1 = require("@prisma/client");
 const pay_order_service_1 = require("../../pay/pay-order.service");
+const config_1 = require("@nestjs/config");
 let OrderService = class OrderService {
     prisma;
     payOrderService;
-    constructor(prisma, payOrderService) {
+    configService;
+    constructor(prisma, payOrderService, configService) {
         this.prisma = prisma;
         this.payOrderService = payOrderService;
+        this.configService = configService;
     }
     async findAll(status) {
         return this.prisma.mallOrder.findMany({
@@ -71,7 +74,7 @@ let OrderService = class OrderService {
             merchantOrderId: order.no,
             subject: `商城订单: ${order.no}`,
             price: order.payPrice,
-            merchantNotifyUrl: 'http://localhost:3000/admin-api/mall/order/pay-notify',
+            merchantNotifyUrl: `${this.configService.get('API_BASE_URL') || 'http://localhost:3000/admin-api'}/mall/order/pay-notify`,
         });
         await this.payOrderService.submitPayOrder(payOrder.id, 'mock');
         return this.prisma.mallOrder.findUnique({
@@ -160,6 +163,7 @@ exports.OrderService = OrderService;
 exports.OrderService = OrderService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        pay_order_service_1.PayOrderService])
+        pay_order_service_1.PayOrderService,
+        config_1.ConfigService])
 ], OrderService);
 //# sourceMappingURL=order.service.js.map

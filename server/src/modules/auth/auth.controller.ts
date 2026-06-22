@@ -14,6 +14,8 @@ import { Public } from '../../shared/decorators/public.decorator';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { CaptchaService } from './captcha.service';
 
+import { Throttle } from '@nestjs/throttler';
+
 @Controller('system/auth')
 export class AuthController {
   constructor(
@@ -28,6 +30,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Req() req: any) {
     console.log('[Login] Received body:', {

@@ -3,7 +3,6 @@ import { axiosInstance } from '../lib/axios';
 
 export const dataProvider: DataProvider = {
   getList: async ({ resource, filters, pagination }) => {
-    console.log('FRONTEND GETLIST:', resource, pagination);
     const params: Record<string, any> = {};
     if (filters) {
       for (const filter of filters) {

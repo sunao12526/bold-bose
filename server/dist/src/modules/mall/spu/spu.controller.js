@@ -19,6 +19,7 @@ const jwt_auth_guard_1 = require("../../../shared/guards/jwt-auth.guard");
 const permissions_guard_1 = require("../../../shared/guards/permissions.guard");
 const require_permissions_decorator_1 = require("../../../shared/decorators/require-permissions.decorator");
 const log_decorator_1 = require("../../../shared/decorators/log.decorator");
+const spu_dto_1 = require("./dto/spu.dto");
 let SpuController = class SpuController {
     spuService;
     constructor(spuService) {
@@ -47,7 +48,7 @@ __decorate([
     (0, log_decorator_1.Log)({ module: '商品管理', type: 'CREATE', description: '创建商品' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [spu_dto_1.CreateSpuDto]),
     __metadata("design:returntype", Promise)
 ], SpuController.prototype, "create", null);
 __decorate([
@@ -72,7 +73,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, spu_dto_1.UpdateSpuDto]),
     __metadata("design:returntype", Promise)
 ], SpuController.prototype, "update", null);
 __decorate([

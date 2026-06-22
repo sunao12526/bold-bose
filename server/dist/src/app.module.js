@@ -10,6 +10,8 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
 const schedule_1 = require("@nestjs/schedule");
+const config_1 = require("@nestjs/config");
+const throttler_1 = require("@nestjs/throttler");
 const prisma_module_1 = require("./shared/prisma/prisma.module");
 const auth_module_1 = require("./modules/auth/auth.module");
 const system_module_1 = require("./modules/system/system.module");
@@ -27,6 +29,13 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+            }),
+            throttler_1.ThrottlerModule.forRoot([{
+                    ttl: 60000,
+                    limit: 60,
+                }]),
             schedule_1.ScheduleModule.forRoot(),
             prisma_module_1.PrismaModule,
             user_cache_module_1.UserCacheModule,
@@ -39,6 +48,10 @@ exports.AppModule = AppModule = __decorate([
             mp_module_1.MpModule,
         ],
         providers: [
+            {
+                provide: core_1.APP_GUARD,
+                useClass: throttler_1.ThrottlerGuard,
+            },
             {
                 provide: core_1.APP_GUARD,
                 useClass: jwt_auth_guard_1.JwtAuthGuard,

@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { CreateSpuDto, UpdateSpuDto } from './dto/spu.dto';
 
 @Injectable()
 export class SpuService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: any) {
+  async create(data: CreateSpuDto) {
     const { skus, ...spuData } = data;
 
     // Calculate SPU aggregate fields based on SKUs
@@ -71,7 +72,7 @@ export class SpuService {
     return spu;
   }
 
-  async update(id: number, data: any) {
+  async update(id: number, data: UpdateSpuDto) {
     await this.findOne(id);
     const { skus, ...spuData } = data;
 

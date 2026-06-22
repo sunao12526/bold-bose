@@ -323,23 +323,7 @@ let AuthService = class AuthService {
         }
         const payload = { id: userId, username };
         const accessToken = this.jwtService.sign(payload);
-        let browser = 'Unknown Browser';
-        let os = 'Unknown OS';
-        if (userAgent) {
-            const ua = userAgent.toLowerCase();
-            if (ua.includes('chrome'))
-                browser = 'Chrome';
-            else if (ua.includes('firefox'))
-                browser = 'Firefox';
-            else if (ua.includes('safari'))
-                browser = 'Safari';
-            if (ua.includes('windows'))
-                os = 'Windows';
-            else if (ua.includes('macintosh') || ua.includes('mac os'))
-                os = 'macOS';
-            else if (ua.includes('linux'))
-                os = 'Linux';
-        }
+        const { browser, os } = this.parseUserAgent(userAgent);
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 1);
         await this.prisma.userSession.create({
