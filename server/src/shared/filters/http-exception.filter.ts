@@ -22,10 +22,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const message =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : 'Internal server error';
 
     // Extract request details to log structurally
     const errorDetails = {
@@ -57,14 +53,27 @@ export class HttpExceptionFilter implements ExceptionFilter {
       );
     }
 
-    response.status(status).json(
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : {
-            statusCode: status,
-            message: '服务器内部错误',
-            error: 'Internal Server Error',
-          },
-    );
+    let code = status;
+    let message = '服务器内部错误';
+    let data: any = null;
+
+    if (exception instanceof HttpException) {
+      const res = exception.getResponse();
+      if (typeof res === 'object' && res !== null) {
+        message = (res as any).message || exception.message;
+        code = (res as any).statusCode || status;
+        data = (res as any).error || null;
+      } else {
+        message = String(res) || exception.message;
+      }
+    } else if (exception instanceof Error) {
+      message = exception.message;
+    }
+
+    response.status(status).json({
+      code,
+      message: Array.isArray(message) ? message[0] : message,
+      data,
+    });
   }
 }

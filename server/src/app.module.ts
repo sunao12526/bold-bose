@@ -15,6 +15,7 @@ import { CmsModule } from './modules/cms/cms.module';
 import { MpModule } from './modules/mp/mp.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { LogInterceptor } from './shared/interceptors/log.interceptor';
+import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
 import { UserCacheModule } from './shared/user-cache.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -65,6 +66,10 @@ import { AppService } from './app.service';
     {
       provide: APP_INTERCEPTOR,
       useClass: LogInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
   ],
 })
