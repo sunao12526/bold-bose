@@ -16,6 +16,8 @@ import { MpModule } from './modules/mp/mp.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { LogInterceptor } from './shared/interceptors/log.interceptor';
 import { UserCacheModule } from './shared/user-cache.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -45,7 +47,9 @@ import { UserCacheModule } from './shared/user-cache.module';
     CmsModule,
     MpModule,
   ],
+  controllers: [AppController],
   providers: [
+    AppService,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
