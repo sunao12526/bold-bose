@@ -1,122 +1,46 @@
-import { IsNotEmpty, IsString, IsOptional, IsInt, IsArray, IsEnum, ValidateNested, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { CommonStatus } from '@prisma/client';
-import { PaginationQueryDto } from '../../../../shared/dto/pagination.dto';
+import { PaginationQuerySchema } from '../../../../shared/dto/pagination.dto';
 
-export class SkuPropertyDto {
-  @IsInt()
-  @IsNotEmpty()
-  propertyId!: number;
+export const SkuPropertySchema = z.object({
+  propertyId: z.number().int(),
+  propertyName: z.string().min(1),
+  valueId: z.number().int(),
+  valueName: z.string().min(1),
+});
+export class SkuPropertyDto extends createZodDto(SkuPropertySchema) { }
 
-  @IsString()
-  @IsNotEmpty()
-  propertyName!: string;
+export const SkuSchema = z.object({
+  properties: z.array(SkuPropertySchema),
+  price: z.number().int().min(0),
+  marketPrice: z.number().int().min(0).optional(),
+  costPrice: z.number().int().min(0).optional(),
+  stock: z.number().int().min(0),
+  picUrl: z.string().optional(),
+  barCode: z.string().optional(),
+});
+export class SkuDto extends createZodDto(SkuSchema) { }
 
-  @IsInt()
-  @IsNotEmpty()
-  valueId!: number;
+export const CreateSpuSchema = z.object({
+  name: z.string({ error: '商品名称不能为空' }).min(1, '商品名称不能为空'),
+  categoryId: z.number({ error: '分类ID不能为空' }).int('分类ID必须是整数'),
+  brandId: z.number().int('品牌ID必须是整数').optional(),
+  picUrl: z.string({ error: '商品主图不能为空' }).min(1, '商品主图不能为空'),
+  sliderPicUrls: z.array(z.string()).min(1, '轮播图不能为空'),
+  description: z.string().optional(),
+  sort: z.number().int().min(0).optional(),
+  status: z.enum(CommonStatus, { error: '状态值不合法' }).optional(),
+  skus: z.array(SkuSchema).min(1, 'SKU列表不能为空'),
+});
+export class CreateSpuDto extends createZodDto(CreateSpuSchema) { }
 
-  @IsString()
-  @IsNotEmpty()
-  valueName!: string;
-}
+export class UpdateSpuDto extends createZodDto(CreateSpuSchema) { }
 
-export class SkuDto {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => SkuPropertyDto)
-  @IsNotEmpty()
-  properties!: SkuPropertyDto[];
-
-  @IsInt()
-  @Min(0)
-  @IsNotEmpty()
-  price!: number;
-
-  @IsInt()
-  @Min(0)
-  @IsOptional()
-  marketPrice?: number;
-
-  @IsInt()
-  @Min(0)
-  @IsOptional()
-  costPrice?: number;
-
-  @IsInt()
-  @Min(0)
-  @IsNotEmpty()
-  stock!: number;
-
-  @IsString()
-  @IsOptional()
-  picUrl?: string;
-
-  @IsString()
-  @IsOptional()
-  barCode?: string;
-}
-
-export class CreateSpuDto {
-  @IsString()
-  @IsNotEmpty({ message: '商品名称不能为空' })
-  name!: string;
-
-  @IsInt({ message: '分类ID必须是整数' })
-  @IsNotEmpty({ message: '分类ID不能为空' })
-  categoryId!: number;
-
-  @IsInt({ message: '品牌ID必须是整数' })
-  @IsOptional()
-  brandId?: number;
-
-  @IsString({ message: '商品图片URL必须是字符串' })
-  @IsNotEmpty({ message: '商品主图不能为空' })
-  picUrl!: string;
-
-  @IsArray({ message: '轮播图URL必须是数组' })
-  @IsString({ each: true, message: '每个轮播图URL必须是字符串' })
-  @IsNotEmpty({ message: '轮播图不能为空' })
-  sliderPicUrls!: string[];
-
-  @IsString()
-  @IsOptional()
-  description?: string;
-
-  @IsInt()
-  @Min(0)
-  @IsOptional()
-  sort?: number;
-
-  @IsEnum(CommonStatus, { message: '状态值不合法' })
-  @IsOptional()
-  status?: CommonStatus;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => SkuDto)
-  @IsNotEmpty({ message: 'SKU列表不能为空' })
-  skus!: SkuDto[];
-}
-
-export class UpdateSpuDto extends CreateSpuDto {}
-
-export class SpuQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @IsString()
-  name?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  categoryId?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  brandId?: number;
-
-  @IsOptional()
-  @IsEnum(CommonStatus)
-  status?: CommonStatus;
-}
+export const SpuQuerySchema = PaginationQuerySchema.extend({
+  name: z.string().optional(),
+  categoryId: z.coerce.number().int().optional(),
+  brandId: z.coerce.number().int().optional(),
+  status: z.enum(CommonStatus).optional(),
+});
+export class SpuQueryDto extends createZodDto(SpuQuerySchema) { }

@@ -1,10 +1,9 @@
-import { IsOptional, IsInt } from 'class-validator';
-import { Type } from 'class-transformer';
-import { PaginationQueryDto } from '../../../shared/dto/pagination.dto';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
+import { PaginationQuerySchema } from '../../../shared/dto/pagination.dto';
 
-export class MenuQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  accountId?: number;
-}
+export const MenuQuerySchema = PaginationQuerySchema.extend({
+  accountId: z.coerce.number().int().optional(),
+});
+
+export class MenuQueryDto extends createZodDto(MenuQuerySchema) {}

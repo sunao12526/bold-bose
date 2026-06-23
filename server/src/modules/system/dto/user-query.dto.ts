@@ -1,27 +1,14 @@
-import { IsOptional, IsString, IsEnum, IsInt } from 'class-validator';
-import { Type } from 'class-transformer';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { CommonStatus } from '@prisma/client';
-import { PaginationQueryDto } from '../../../shared/dto/pagination.dto';
+import { PaginationQuerySchema } from '../../../shared/dto/pagination.dto';
 
-export class UserQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @IsString()
-  username?: string;
+export const UserQuerySchema = PaginationQuerySchema.extend({
+  username: z.string().optional(),
+  nickname: z.string().optional(),
+  mobile: z.string().optional(),
+  status: z.enum(CommonStatus).optional(),
+  deptId: z.coerce.number().int().optional(),
+});
 
-  @IsOptional()
-  @IsString()
-  nickname?: string;
-
-  @IsOptional()
-  @IsString()
-  mobile?: string;
-
-  @IsOptional()
-  @IsEnum(CommonStatus)
-  status?: CommonStatus;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  deptId?: number;
-}
+export class UserQueryDto extends createZodDto(UserQuerySchema) {}

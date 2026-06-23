@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ZodValidationException } from 'nestjs-zod';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -57,7 +58,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let message = '服务器内部错误';
     let data: any = null;
 
-    if (exception instanceof HttpException) {
+    if (exception instanceof ZodValidationException) {
+      const zodError = exception.getZodError() as any;
+      const firstIssue = zodError.issues[0];
+      message = firstIssue ? `${firstIssue.path.join('.')}: ${firstIssue.message}` : exception.message;
+      code = HttpStatus.BAD_REQUEST;
+      data = zodError.format();
+    } else if (exception instanceof HttpException) {
       const res = exception.getResponse();
       if (typeof res === 'object' && res !== null) {
         message = (res as any).message || exception.message;

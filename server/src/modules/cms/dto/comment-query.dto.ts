@@ -1,15 +1,11 @@
-import { IsOptional, IsEnum, IsInt } from 'class-validator';
-import { Type } from 'class-transformer';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { CmsCommentStatus } from '@prisma/client';
-import { PaginationQueryDto } from '../../../shared/dto/pagination.dto';
+import { PaginationQuerySchema } from '../../../shared/dto/pagination.dto';
 
-export class CommentQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  articleId?: number;
+export const CommentQuerySchema = PaginationQuerySchema.extend({
+  articleId: z.coerce.number().int().optional(),
+  status: z.enum(CmsCommentStatus).optional(),
+});
 
-  @IsOptional()
-  @IsEnum(CmsCommentStatus)
-  status?: CmsCommentStatus;
-}
+export class CommentQueryDto extends createZodDto(CommentQuerySchema) {}

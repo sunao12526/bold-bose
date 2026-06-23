@@ -1,6 +1,7 @@
+import { ZodValidationPipe, cleanupOpenApiDoc } from 'nestjs-zod';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, Logger as NestLogger } from '@nestjs/common';
+import { Logger as NestLogger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as express from 'express';
 import * as path from 'path';
@@ -20,12 +21,7 @@ async function bootstrap() {
   app.setGlobalPrefix('admin-api');
 
   // Register validation pipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-    }),
-  );
+  app.useGlobalPipes(new ZodValidationPipe());
 
   // Setup Swagger API documentation in non-production environments
   if (process.env.NODE_ENV !== 'production') {
@@ -46,7 +42,8 @@ async function bootstrap() {
       )
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('admin-api/docs', app, document);
+    const cleanDocument = cleanupOpenApiDoc(document);
+    SwaggerModule.setup('admin-api/docs', app, cleanDocument);
   }
 
   const port = process.env.PORT ?? 3000;

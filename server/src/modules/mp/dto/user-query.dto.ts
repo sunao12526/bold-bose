@@ -1,19 +1,11 @@
-import { IsOptional, IsString, IsInt } from 'class-validator';
-import { Type } from 'class-transformer';
-import { PaginationQueryDto } from '../../../shared/dto/pagination.dto';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
+import { PaginationQuerySchema } from '../../../shared/dto/pagination.dto';
 
-export class UserQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  accountId?: number;
+export const UserQuerySchema = PaginationQuerySchema.extend({
+  accountId: z.coerce.number().int().optional(),
+  keyword: z.string().optional(),
+  subscribeStatus: z.coerce.number().int().optional(),
+});
 
-  @IsOptional()
-  @IsString()
-  keyword?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  subscribeStatus?: number;
-}
+export class UserQueryDto extends createZodDto(UserQuerySchema) {}

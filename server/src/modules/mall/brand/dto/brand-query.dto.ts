@@ -1,13 +1,11 @@
-import { IsOptional, IsString, IsEnum } from 'class-validator';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { CommonStatus } from '@prisma/client';
-import { PaginationQueryDto } from '../../../../shared/dto/pagination.dto';
+import { PaginationQuerySchema } from '../../../../shared/dto/pagination.dto';
 
-export class BrandQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @IsString()
-  name?: string;
+export const BrandQuerySchema = PaginationQuerySchema.extend({
+  name: z.string().optional(),
+  status: z.enum(CommonStatus).optional(),
+});
 
-  @IsOptional()
-  @IsEnum(CommonStatus)
-  status?: CommonStatus;
-}
+export class BrandQueryDto extends createZodDto(BrandQuerySchema) {}

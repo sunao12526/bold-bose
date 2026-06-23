@@ -1,12 +1,10 @@
-import { IsOptional, IsString } from 'class-validator';
-import { PaginationQueryDto } from '../../../shared/dto/pagination.dto';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
+import { PaginationQuerySchema } from '../../../shared/dto/pagination.dto';
 
-export class SmsCodeQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @IsString()
-  mobile?: string;
+export const SmsCodeQuerySchema = PaginationQuerySchema.extend({
+  mobile: z.string().optional(),
+  used: z.string().optional(),
+});
 
-  @IsOptional()
-  @IsString()
-  used?: string;
-}
+export class SmsCodeQueryDto extends createZodDto(SmsCodeQuerySchema) {}

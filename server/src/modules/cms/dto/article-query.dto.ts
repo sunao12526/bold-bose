@@ -1,19 +1,12 @@
-import { IsOptional, IsString, IsEnum, IsInt } from 'class-validator';
-import { Type } from 'class-transformer';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { CmsArticleStatus } from '@prisma/client';
-import { PaginationQueryDto } from '../../../shared/dto/pagination.dto';
+import { PaginationQuerySchema } from '../../../shared/dto/pagination.dto';
 
-export class ArticleQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  categoryId?: number;
+export const ArticleQuerySchema = PaginationQuerySchema.extend({
+  categoryId: z.coerce.number().int().optional(),
+  status: z.enum(CmsArticleStatus).optional(),
+  title: z.string().optional(),
+});
 
-  @IsOptional()
-  @IsEnum(CmsArticleStatus)
-  status?: CmsArticleStatus;
-
-  @IsOptional()
-  @IsString()
-  title?: string;
-}
+export class ArticleQueryDto extends createZodDto(ArticleQuerySchema) {}

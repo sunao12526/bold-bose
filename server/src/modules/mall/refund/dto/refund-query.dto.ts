@@ -1,9 +1,10 @@
-import { IsOptional, IsEnum } from 'class-validator';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { MallRefundStatus } from '@prisma/client';
-import { PaginationQueryDto } from '../../../../shared/dto/pagination.dto';
+import { PaginationQuerySchema } from '../../../../shared/dto/pagination.dto';
 
-export class RefundQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @IsEnum(MallRefundStatus)
-  status?: MallRefundStatus;
-}
+export const RefundQuerySchema = PaginationQuerySchema.extend({
+  status: z.enum(MallRefundStatus).optional(),
+});
+
+export class RefundQueryDto extends createZodDto(RefundQuerySchema) {}

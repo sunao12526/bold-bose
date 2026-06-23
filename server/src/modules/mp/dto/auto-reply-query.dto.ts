@@ -1,15 +1,10 @@
-import { IsOptional, IsInt } from 'class-validator';
-import { Type } from 'class-transformer';
-import { PaginationQueryDto } from '../../../shared/dto/pagination.dto';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
+import { PaginationQuerySchema } from '../../../shared/dto/pagination.dto';
 
-export class AutoReplyQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  accountId?: number;
+export const AutoReplyQuerySchema = PaginationQuerySchema.extend({
+  accountId: z.coerce.number().int().optional(),
+  type: z.coerce.number().int().optional(),
+});
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  type?: number;
-}
+export class AutoReplyQueryDto extends createZodDto(AutoReplyQuerySchema) {}

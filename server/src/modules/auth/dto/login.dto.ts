@@ -1,15 +1,11 @@
-import { IsNotEmpty } from 'class-validator';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
-export class LoginDto {
-  @IsNotEmpty({ message: '用户名不能为空' })
-  username!: string;
+export const LoginSchema = z.object({
+  username: z.string({ error: '用户名不能为空' }).min(1, '用户名不能为空'),
+  password: z.string({ error: '密码不能为空' }).min(1, '密码不能为空'),
+  captchaKey: z.string({ error: '验证码标识不能为空' }).min(1, '验证码标识不能为空'),
+  captchaCode: z.string({ error: '验证码不能为空' }).min(1, '验证码不能为空'),
+});
 
-  @IsNotEmpty({ message: '密码不能为空' })
-  password!: string;
-
-  @IsNotEmpty({ message: '验证码标识不能为空' })
-  captchaKey!: string;
-
-  @IsNotEmpty({ message: '验证码不能为空' })
-  captchaCode!: string;
-}
+export class LoginDto extends createZodDto(LoginSchema) {}

@@ -1,16 +1,11 @@
-import { IsOptional, IsString } from 'class-validator';
-import { PaginationQueryDto } from '../../../shared/dto/pagination.dto';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
+import { PaginationQuerySchema } from '../../../shared/dto/pagination.dto';
 
-export class MailTemplateQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @IsString()
-  code?: string;
+export const MailTemplateQuerySchema = PaginationQuerySchema.extend({
+  code: z.string().optional(),
+  name: z.string().optional(),
+  status: z.string().optional(),
+});
 
-  @IsOptional()
-  @IsString()
-  name?: string;
-
-  @IsOptional()
-  @IsString()
-  status?: string;
-}
+export class MailTemplateQueryDto extends createZodDto(MailTemplateQuerySchema) {}

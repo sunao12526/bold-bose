@@ -1,18 +1,11 @@
-import { IsOptional, IsString, IsInt } from 'class-validator';
-import { Type } from 'class-transformer';
-import { PaginationQueryDto } from '../../../shared/dto/pagination.dto';
+import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
+import { PaginationQuerySchema } from '../../../shared/dto/pagination.dto';
 
-export class NoticeQueryDto extends PaginationQueryDto {
-  @IsOptional()
-  @IsString()
-  title?: string;
+export const NoticeQuerySchema = PaginationQuerySchema.extend({
+  title: z.string().optional(),
+  type: z.coerce.number().int().optional(),
+  status: z.string().optional(),
+});
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  type?: number;
-
-  @IsOptional()
-  @IsString()
-  status?: string;
-}
+export class NoticeQueryDto extends createZodDto(NoticeQuerySchema) {}
