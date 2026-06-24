@@ -38,8 +38,13 @@ export class SignInService {
     });
   }
 
-  async findAllRecords() {
+  async findAllRecords(query?: any) {
+    const where: any = {};
+    if (query?.memberId) {
+      where.memberId = Number(query.memberId);
+    }
     return this.prisma.memberSignInRecord.findMany({
+      where,
       include: {
         member: { select: { id: true, nickname: true, mobile: true } },
       },
@@ -121,6 +126,17 @@ export class SignInService {
           where: { id: memberId },
           data: {
             points: { increment: pointsRewarded },
+          },
+        });
+        await tx.memberPointRecord.create({
+          data: {
+            memberId,
+            bizType: 'SIGN',
+            bizId: String(record.id),
+            point: pointsRewarded,
+            afterPoint: member.points + pointsRewarded,
+            operatorId: 'system',
+            description: `每日签到奖励积分 +${pointsRewarded}`,
           },
         });
       }

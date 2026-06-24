@@ -33,7 +33,7 @@ export default function SignInConfigList() {
     if (!selectedConfig) return;
     setSubmitting(true);
     try {
-      await axiosInstance.put(`/member/sign-in/config/${selectedConfig.day}`, {
+      await axiosInstance.put(`/member/sign-in-config/${selectedConfig.day}`, {
         point: values.point,
         status: values.status
       });

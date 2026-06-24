@@ -4,6 +4,8 @@ import {
   Put,
   Body,
   Param,
+  Query,
+  Req,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -21,8 +23,8 @@ export class MemberController {
 
   @Get()
   @RequirePermissions('member:user:query')
-  async findAll() {
-    return this.memberService.findAll();
+  async findAll(@Query() query: any) {
+    return this.memberService.findAll(query);
   }
 
   @Get(':id')
@@ -47,8 +49,10 @@ export class MemberController {
   async adjustPoints(
     @Param('id', ParseIntPipe) id: number,
     @Body('amount', ParseIntPipe) amount: number,
+    @Req() req: any,
   ) {
-    return this.memberService.adjustPoints(id, amount);
+    const operatorId = req.user?.username || 'system';
+    return this.memberService.adjustPoints(id, amount, operatorId);
   }
 
   @Put(':id/adjust-balance')
@@ -57,8 +61,10 @@ export class MemberController {
   async adjustBalance(
     @Param('id', ParseIntPipe) id: number,
     @Body('amount', ParseIntPipe) amount: number,
+    @Req() req: any,
   ) {
-    return this.memberService.adjustBalance(id, amount);
+    const operatorId = req.user?.username || 'system';
+    return this.memberService.adjustBalance(id, amount, operatorId);
   }
 
   @Put(':id/adjust-experience')
@@ -79,5 +85,25 @@ export class MemberController {
     @Body('tagIds') tagIds: number[],
   ) {
     return this.memberService.assignTags(id, tagIds);
+  }
+
+  @Put(':id/update-level')
+  @RequirePermissions('member:user:update')
+  @Log({ module: '会员管理', type: 'UPDATE', description: '手动调级' })
+  async updateLevel(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('levelId') levelId: number | null,
+  ) {
+    return this.memberService.updateLevel(id, levelId ? Number(levelId) : null);
+  }
+
+  @Put(':id/assign-group')
+  @RequirePermissions('member:user:update')
+  @Log({ module: '会员管理', type: 'UPDATE', description: '分配会员分组' })
+  async assignGroup(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('groupId') groupId: number | null,
+  ) {
+    return this.memberService.assignGroup(id, groupId ? Number(groupId) : null);
   }
 }

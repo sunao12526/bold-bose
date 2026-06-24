@@ -4,10 +4,11 @@ export const dynamic = "force-dynamic";
 
 import React, { useState, useEffect } from 'react';
 import { List } from '@refinedev/antd';
-import { Table, Space, Modal, Form, InputNumber, Tag, Switch, Avatar, Button, Select, message } from 'antd';
+import { Table, Space, Modal, Form, Input, InputNumber, Tag, Switch, Avatar, Button, Select, message, Drawer, Tabs, Card, Descriptions, Row, Col, Statistic } from 'antd';
 import { useTable } from '@refinedev/antd';
-import { UserOutlined, WalletOutlined, StarOutlined, TrophyOutlined, TagsOutlined, CalendarOutlined } from '@ant-design/icons';
+import { UserOutlined, WalletOutlined, StarOutlined, TrophyOutlined, TagsOutlined, CalendarOutlined, SearchOutlined, ReloadOutlined, ApartmentOutlined, ShoppingCartOutlined, FileTextOutlined } from '@ant-design/icons';
 import { axiosInstance } from '@/lib/axios';
+import dayjs from 'dayjs';
 
 interface MemberRecord {
   id: number;
@@ -24,12 +25,27 @@ interface MemberRecord {
     name: string;
     level: number;
   } | null;
+  groupId?: number;
+  group?: {
+    id: number;
+    name: string;
+  } | null;
   tagIds?: number[] | null;
+  createdAt: string;
 }
 
 export default function MemberList() {
-  const { tableProps, tableQuery: tableQueryResult } = useTable<MemberRecord>({
+  const { tableProps, tableQuery: tableQueryResult, searchFormProps } = useTable<MemberRecord>({
     resource: 'member/user',
+    onSearch: (params: any) => {
+      return [
+        { field: 'nickname', operator: 'contains', value: params.nickname },
+        { field: 'mobile', operator: 'contains', value: params.mobile },
+        { field: 'status', operator: 'eq', value: params.status },
+        { field: 'levelId', operator: 'eq', value: params.levelId },
+        { field: 'groupId', operator: 'eq', value: params.groupId },
+      ];
+    },
     syncWithLocation: true,
   });
 
@@ -37,22 +53,79 @@ export default function MemberList() {
   const [balanceModalOpen, setBalanceModalOpen] = useState(false);
   const [expModalOpen, setExpModalOpen] = useState(false);
   const [tagsModalOpen, setTagsModalOpen] = useState(false);
+  const [levelModalOpen, setLevelModalOpen] = useState(false);
+  const [groupModalOpen, setGroupModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<MemberRecord | null>(null);
-  
+
+  // Detail Drawer state
+  const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
+  const [detailMember, setDetailMember] = useState<MemberRecord | null>(null);
+  const [detailTabKey, setDetailTabKey] = useState('balance');
+  const [balanceRecords, setBalanceRecords] = useState<any[]>([]);
+  const [pointRecords, setPointRecords] = useState<any[]>([]);
+  const [signInRecords, setSignInRecords] = useState<any[]>([]);
+  const [orderRecords, setOrderRecords] = useState<any[]>([]);
+  const [loadingDrawerData, setLoadingDrawerData] = useState(false);
+
   const [pointsForm] = Form.useForm();
   const [balanceForm] = Form.useForm();
   const [expForm] = Form.useForm();
   const [tagsForm] = Form.useForm();
+  const [levelForm] = Form.useForm();
+  const [groupForm] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
 
-  // Tags reference list
+  // Reference lists
   const [tagList, setTagList] = useState<any[]>([]);
+  const [levelList, setLevelList] = useState<any[]>([]);
+  const [groupList, setGroupList] = useState<any[]>([]);
 
   useEffect(() => {
+    // Load Tags
     axiosInstance.get('/member/tag')
-      .then(res => setTagList(res.data || []))
+      .then(res => setTagList(res.data?.items || res.data || []))
       .catch(err => console.error('Failed to load tags', err));
+
+    // Load Levels
+    axiosInstance.get('/member/level')
+      .then(res => setLevelList(res.data?.items || res.data || []))
+      .catch(err => console.error('Failed to load levels', err));
+
+    // Load Groups
+    axiosInstance.get('/member/group')
+      .then(res => setGroupList(res.data?.items || res.data || []))
+      .catch(err => console.error('Failed to load groups', err));
   }, []);
+
+  // Fetch Drawer Tab Data
+  const fetchDrawerData = async (memberId: number, tab: string) => {
+    setLoadingDrawerData(true);
+    try {
+      if (tab === 'balance') {
+        const res = await axiosInstance.get(`/member/balance-record?memberId=${memberId}`);
+        setBalanceRecords(res.data?.items || res.data || []);
+      } else if (tab === 'point') {
+        const res = await axiosInstance.get(`/member/point-record?memberId=${memberId}`);
+        setPointRecords(res.data?.items || res.data || []);
+      } else if (tab === 'signin') {
+        const res = await axiosInstance.get(`/member/sign-in-record?memberId=${memberId}`);
+        setSignInRecords(res.data?.items || res.data || []);
+      } else if (tab === 'order') {
+        const res = await axiosInstance.get(`/mall/order?memberId=${memberId}`);
+        setOrderRecords(res.data?.items || res.data || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch detail logs', err);
+    } finally {
+      setLoadingDrawerData(false);
+    }
+  };
+
+  useEffect(() => {
+    if (detailDrawerOpen && detailMember) {
+      fetchDrawerData(detailMember.id, detailTabKey);
+    }
+  }, [detailDrawerOpen, detailMember, detailTabKey]);
 
   const handleStatusChange = async (record: MemberRecord, checked: boolean) => {
     const newStatus = checked ? 'ENABLE' : 'DISABLE';
@@ -60,6 +133,9 @@ export default function MemberList() {
       await axiosInstance.put(`/member/user/${record.id}/status`, { status: newStatus });
       message.success('会员状态更新成功');
       tableQueryResult.refetch();
+      if (detailMember && detailMember.id === record.id) {
+        setDetailMember(prev => prev ? { ...prev, status: newStatus } : null);
+      }
     } catch (err: any) {
       message.error(err.response?.data?.message || '更新会员状态失败');
     }
@@ -91,6 +167,28 @@ export default function MemberList() {
     setTagsModalOpen(true);
   };
 
+  const openLevelModal = (record: MemberRecord) => {
+    setSelectedMember(record);
+    levelForm.setFieldsValue({
+      levelId: record.levelId || undefined
+    });
+    setLevelModalOpen(true);
+  };
+
+  const openGroupModal = (record: MemberRecord) => {
+    setSelectedMember(record);
+    groupForm.setFieldsValue({
+      groupId: record.groupId || undefined
+    });
+    setGroupModalOpen(true);
+  };
+
+  const openDetailDrawer = (record: MemberRecord) => {
+    setDetailMember(record);
+    setDetailTabKey('balance');
+    setDetailDrawerOpen(true);
+  };
+
   const handleAdjustPoints = async (values: any) => {
     if (!selectedMember) return;
     setSubmitting(true);
@@ -101,6 +199,11 @@ export default function MemberList() {
       message.success('会员积分调整成功');
       setPointsModalOpen(false);
       tableQueryResult.refetch();
+      if (detailMember && detailMember.id === selectedMember.id) {
+        const updated = { ...detailMember, points: detailMember.points + values.amount };
+        setDetailMember(updated);
+        fetchDrawerData(selectedMember.id, detailTabKey);
+      }
     } catch (err: any) {
       message.error(err.response?.data?.message || '调整积分失败');
     } finally {
@@ -119,6 +222,11 @@ export default function MemberList() {
       message.success('会员余额调整成功');
       setBalanceModalOpen(false);
       tableQueryResult.refetch();
+      if (detailMember && detailMember.id === selectedMember.id) {
+        const updated = { ...detailMember, balance: detailMember.balance + amountCents };
+        setDetailMember(updated);
+        fetchDrawerData(selectedMember.id, detailTabKey);
+      }
     } catch (err: any) {
       message.error(err.response?.data?.message || '调整余额失败');
     } finally {
@@ -136,6 +244,11 @@ export default function MemberList() {
       message.success('会员成长值调整成功');
       setExpModalOpen(false);
       tableQueryResult.refetch();
+      if (detailMember && detailMember.id === selectedMember.id) {
+        // Refetch the complete user detail to update calculated level
+        const res = await axiosInstance.get(`/member/user/${selectedMember.id}`);
+        setDetailMember(res.data);
+      }
     } catch (err: any) {
       message.error(err.response?.data?.message || '调整成长值失败');
     } finally {
@@ -153,8 +266,53 @@ export default function MemberList() {
       message.success('分配会员标签成功');
       setTagsModalOpen(false);
       tableQueryResult.refetch();
+      if (detailMember && detailMember.id === selectedMember.id) {
+        setDetailMember(prev => prev ? { ...prev, tagIds: values.tagIds } : null);
+      }
     } catch (err: any) {
       message.error(err.response?.data?.message || '分配标签失败');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleUpdateLevel = async (values: any) => {
+    if (!selectedMember) return;
+    setSubmitting(true);
+    try {
+      await axiosInstance.put(`/member/user/${selectedMember.id}/update-level`, {
+        levelId: values.levelId || null,
+      });
+      message.success('会员等级手动修改成功');
+      setLevelModalOpen(false);
+      tableQueryResult.refetch();
+      if (detailMember && detailMember.id === selectedMember.id) {
+        const res = await axiosInstance.get(`/member/user/${selectedMember.id}`);
+        setDetailMember(res.data);
+      }
+    } catch (err: any) {
+      message.error(err.response?.data?.message || '手动调级失败');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAssignGroup = async (values: any) => {
+    if (!selectedMember) return;
+    setSubmitting(true);
+    try {
+      await axiosInstance.put(`/member/user/${selectedMember.id}/assign-group`, {
+        groupId: values.groupId || null,
+      });
+      message.success('会员分组修改成功');
+      setGroupModalOpen(false);
+      tableQueryResult.refetch();
+      if (detailMember && detailMember.id === selectedMember.id) {
+        const res = await axiosInstance.get(`/member/user/${selectedMember.id}`);
+        setDetailMember(res.data);
+      }
+    } catch (err: any) {
+      message.error(err.response?.data?.message || '分配分组失败');
     } finally {
       setSubmitting(false);
     }
@@ -175,6 +333,11 @@ export default function MemberList() {
         )
       });
       tableQueryResult.refetch();
+      if (detailMember && detailMember.id === record.id) {
+        const updatedUser = await axiosInstance.get(`/member/user/${record.id}`);
+        setDetailMember(updatedUser.data);
+        fetchDrawerData(record.id, detailTabKey);
+      }
     } catch (err: any) {
       message.error(err.response?.data?.message || '模拟签到失败');
     }
@@ -182,24 +345,76 @@ export default function MemberList() {
 
   return (
     <div style={{ padding: '24px' }}>
+      {/* 搜索过滤表单 */}
+      <Card style={{ marginBottom: '16px' }} bodyStyle={{ padding: '16px' }}>
+        <Form {...searchFormProps} layout="inline">
+          <Form.Item name="nickname" label="会员昵称">
+            <Input placeholder="输入昵称模糊搜索" allowClear />
+          </Form.Item>
+          <Form.Item name="mobile" label="手机号码">
+            <Input placeholder="输入手机号精确搜索" allowClear />
+          </Form.Item>
+          <Form.Item name="status" label="状态" style={{ width: '120px' }}>
+            <Select placeholder="不限" allowClear>
+              <Select.Option value="ENABLE">启用</Select.Option>
+              <Select.Option value="DISABLE">禁用</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name="levelId" label="会员等级" style={{ width: '150px' }}>
+            <Select placeholder="不限" allowClear>
+              {levelList.map(level => (
+                <Select.Option key={level.id} value={level.id}>{level.name}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="groupId" label="会员分组" style={{ width: '150px' }}>
+            <Select placeholder="不限" allowClear>
+              {groupList.map(g => (
+                <Select.Option key={g.id} value={g.id}>{g.name}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Space>
+              <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                筛选
+              </Button>
+              <Button onClick={() => searchFormProps.form?.resetFields()} icon={<ReloadOutlined />}>
+                重置
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Card>
+
       <List title="会员列表">
         <Table {...tableProps} rowKey="id">
           <Table.Column dataIndex="id" title="ID" width={60} />
           <Table.Column 
             dataIndex="nickname" 
-            title="会员昵称" 
+            title="会员信息 (点击查看详情)" 
             render={(nickname: string, record: MemberRecord) => (
-              <Space>
+              <Space 
+                style={{ cursor: 'pointer' }}
+                onClick={() => openDetailDrawer(record)}
+              >
                 <Avatar src={record.avatar} icon={<UserOutlined />} />
                 <div>
-                  <div style={{ fontWeight: '500' }}>{nickname}</div>
-                  {record.level ? (
-                    <Tag color="purple" icon={<TrophyOutlined />} style={{ marginTop: '4px' }}>
-                      {record.level.name} (Lvl {record.level.level})
-                    </Tag>
-                  ) : (
-                    <Tag style={{ marginTop: '4px' }}>普通会员</Tag>
-                  )}
+                  <div style={{ fontWeight: '600', color: '#1890ff' }}>{nickname}</div>
+                  <Space size={4}>
+                    {record.level ? (
+                      <Tag color="purple" icon={<TrophyOutlined />}>
+                        {record.level.name}
+                      </Tag>
+                    ) : (
+                      <Tag>普通会员</Tag>
+                    )}
+                    {record.group ? (
+                      <Tag color="cyan" icon={<ApartmentOutlined />}>
+                        {record.group.name}
+                      </Tag>
+                    ) : null}
+                  </Space>
                 </div>
               </Space>
             )}
@@ -247,7 +462,7 @@ export default function MemberList() {
                     return tag ? (
                       <Tag color="blue" key={tagId}>{tag.name}</Tag>
                     ) : (
-                      <Tag key={tagId}>TagID: {tagId}</Tag>
+                      <Tag key={tagId}>Tag: {tagId}</Tag>
                     );
                   })}
                 </Space>
@@ -257,20 +472,20 @@ export default function MemberList() {
           <Table.Column 
             dataIndex="status" 
             title="状态" 
-            width={100}
+            width={90}
             render={(status: string, record: MemberRecord) => (
               <Switch 
                 checked={status === 'ENABLE'} 
                 onChange={(checked) => handleStatusChange(record, checked)} 
-                checkedChildren="启用"
-                unCheckedChildren="禁用"
+                checkedChildren="开"
+                unCheckedChildren="关"
               />
             )}
           />
           <Table.Column
             title="操作"
             dataIndex="actions"
-            width={280}
+            width={320}
             render={(_, record: MemberRecord) => (
               <Space wrap>
                 <Button 
@@ -303,6 +518,20 @@ export default function MemberList() {
                 </Button>
                 <Button 
                   size="small" 
+                  icon={<TrophyOutlined style={{ color: '#722ed1' }} />} 
+                  onClick={() => openLevelModal(record)}
+                >
+                  等级
+                </Button>
+                <Button 
+                  size="small" 
+                  icon={<ApartmentOutlined style={{ color: '#08979c' }} />} 
+                  onClick={() => openGroupModal(record)}
+                >
+                  分组
+                </Button>
+                <Button 
+                  size="small" 
                   type="primary" 
                   ghost
                   icon={<CalendarOutlined />} 
@@ -316,6 +545,222 @@ export default function MemberList() {
           />
         </Table>
       </List>
+
+      {/* 侧边详情画像抽屉 */}
+      <Drawer
+        title="会员 360° 全景画像详情"
+        width={800}
+        placement="right"
+        onClose={() => setDetailDrawerOpen(false)}
+        open={detailDrawerOpen}
+        bodyStyle={{ background: '#f5f5f5', padding: '16px' }}
+      >
+        {detailMember && (
+          <Space direction="vertical" style={{ width: '100%' }} size={16}>
+            {/* 会员基本名片 */}
+            <Card>
+              <Row align="middle" gutter={24}>
+                <Col span={4}>
+                  <Avatar size={80} src={detailMember.avatar} icon={<UserOutlined />} />
+                </Col>
+                <Col span={10}>
+                  <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 600 }}>{detailMember.nickname}</h3>
+                  <div style={{ marginTop: '4px', color: '#8c8c8c' }}>手机号：{detailMember.mobile}</div>
+                  <div style={{ marginTop: '8px' }}>
+                    <Space size={6}>
+                      <Switch 
+                        size="small"
+                        checked={detailMember.status === 'ENABLE'} 
+                        onChange={(checked) => handleStatusChange(detailMember, checked)}
+                      />
+                      <span>{detailMember.status === 'ENABLE' ? '激活启用' : '禁用状态'}</span>
+                    </Space>
+                  </div>
+                </Col>
+                <Col span={10} style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '12px', color: '#bfbfbf' }}>注册时间：{dayjs(detailMember.createdAt).format('YYYY-MM-DD HH:mm:ss')}</div>
+                  <div style={{ marginTop: '12px' }}>
+                    <Space size={4}>
+                      {detailMember.level ? <Tag color="purple">{detailMember.level.name}</Tag> : <Tag>普通会员</Tag>}
+                      {detailMember.group ? <Tag color="cyan">{detailMember.group.name}</Tag> : <Tag>暂无分组</Tag>}
+                    </Space>
+                  </div>
+                </Col>
+              </Row>
+            </Card>
+
+            {/* 账户资产概览 */}
+            <Row gutter={16}>
+              <Col span={8}>
+                <Card>
+                  <Statistic 
+                    title="钱包可用余额" 
+                    value={detailMember.balance / 100} 
+                    precision={2} 
+                    prefix="¥" 
+                    valueStyle={{ color: '#cf1322' }} 
+                  />
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card>
+                  <Statistic 
+                    title="会员积分" 
+                    value={detailMember.points} 
+                    valueStyle={{ color: '#d46b08' }} 
+                    suffix="分"
+                  />
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card>
+                  <Statistic 
+                    title="累计成长值" 
+                    value={detailMember.experience} 
+                    valueStyle={{ color: '#722ed1' }} 
+                  />
+                </Card>
+              </Col>
+            </Row>
+
+            {/* 流水明细 Tab 区域 */}
+            <Card bodyStyle={{ padding: '8px 16px 16px 16px' }}>
+              <Tabs activeKey={detailTabKey} onChange={setDetailTabKey}>
+                <Tabs.TabPane tab={<span><WalletOutlined />余额账单流水</span>} key="balance">
+                  <Table 
+                    dataSource={balanceRecords} 
+                    rowKey="id" 
+                    loading={loadingDrawerData} 
+                    size="small"
+                    pagination={{ pageSize: 5 }}
+                  >
+                    <Table.Column dataIndex="id" title="流水ID" width={70} />
+                    <Table.Column 
+                      dataIndex="balance" 
+                      title="变动金额" 
+                      render={(val: number) => (
+                        <span style={{ color: val >= 0 ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>
+                          {val >= 0 ? '+' : ''}{(val / 100).toFixed(2)} 元
+                        </span>
+                      )}
+                    />
+                    <Table.Column 
+                      dataIndex="afterBalance" 
+                      title="变动后余额" 
+                      render={(val: number) => `¥${(val / 100).toFixed(2)}`}
+                    />
+                    <Table.Column dataIndex="description" title="原因描述" />
+                    <Table.Column dataIndex="operatorId" title="操作员" width={90} />
+                    <Table.Column 
+                      dataIndex="createdAt" 
+                      title="产生时间" 
+                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                    />
+                  </Table>
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={<span><StarOutlined />积分日志流水</span>} key="point">
+                  <Table 
+                    dataSource={pointRecords} 
+                    rowKey="id" 
+                    loading={loadingDrawerData} 
+                    size="small"
+                    pagination={{ pageSize: 5 }}
+                  >
+                    <Table.Column dataIndex="id" title="流水ID" width={70} />
+                    <Table.Column 
+                      dataIndex="point" 
+                      title="变动积分" 
+                      render={(val: number) => (
+                        <span style={{ color: val >= 0 ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>
+                          {val >= 0 ? '+' : ''}{val}
+                        </span>
+                      )}
+                    />
+                    <Table.Column dataIndex="afterPoint" title="变动后积分" />
+                    <Table.Column dataIndex="description" title="描述" />
+                    <Table.Column dataIndex="operatorId" title="操作员" width={90} />
+                    <Table.Column 
+                      dataIndex="createdAt" 
+                      title="产生时间" 
+                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                    />
+                  </Table>
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={<span><CalendarOutlined />签到轨迹历史</span>} key="signin">
+                  <Table 
+                    dataSource={signInRecords} 
+                    rowKey="id" 
+                    loading={loadingDrawerData} 
+                    size="small"
+                    pagination={{ pageSize: 5 }}
+                  >
+                    <Table.Column dataIndex="id" title="记录ID" width={70} />
+                    <Table.Column dataIndex="day" title="连续签到天数" render={(day) => `第 ${day} 天`} />
+                    <Table.Column 
+                      dataIndex="point" 
+                      title="奖励积分" 
+                      render={(val) => <span style={{ color: '#d46b08', fontWeight: 'bold' }}>+{val} 分</span>}
+                    />
+                    <Table.Column 
+                      dataIndex="createdAt" 
+                      title="签到时间" 
+                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                    />
+                  </Table>
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={<span><ShoppingCartOutlined />消费订单记录</span>} key="order">
+                  <Table 
+                    dataSource={orderRecords} 
+                    rowKey="id" 
+                    loading={loadingDrawerData} 
+                    size="small"
+                    pagination={{ pageSize: 5 }}
+                  >
+                    <Table.Column dataIndex="no" title="订单编号" />
+                    <Table.Column 
+                      dataIndex="payPrice" 
+                      title="实付金额" 
+                      render={(val) => <strong style={{ color: '#cf1322' }}>¥{(val / 100).toFixed(2)}</strong>} 
+                    />
+                    <Table.Column 
+                      dataIndex="status" 
+                      title="订单状态" 
+                      render={(status) => {
+                        const maps: any = {
+                          UNPAID: { label: '待支付', color: 'orange' },
+                          UNDELIVERED: { label: '待发货', color: 'blue' },
+                          DELIVERED: { label: '已发货', color: 'purple' },
+                          COMPLETED: { label: '已完成', color: 'green' },
+                          CANCELLED: { label: '已取消', color: 'default' },
+                        };
+                        const config = maps[status] || { label: status, color: 'default' };
+                        return <Tag color={config.color}>{config.label}</Tag>;
+                      }}
+                    />
+                    <Table.Column 
+                      title="收货地址" 
+                      render={(_, record: any) => (
+                        <div style={{ fontSize: '11px' }}>
+                          <div>{record.receiverName} ({record.receiverMobile})</div>
+                          <div style={{ color: '#8c8c8c' }}>{record.receiverAddress}</div>
+                        </div>
+                      )} 
+                    />
+                    <Table.Column 
+                      dataIndex="createdAt" 
+                      title="下单时间" 
+                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                    />
+                  </Table>
+                </Tabs.TabPane>
+              </Tabs>
+            </Card>
+          </Space>
+        )}
+      </Drawer>
 
       {/* MODAL 1: Adjust Points */}
       <Modal forceRender
@@ -355,7 +800,7 @@ export default function MemberList() {
         </Form>
       </Modal>
 
-      {/* MODAL 3: Adjust Experience (Growth Value) */}
+      {/* MODAL 3: Adjust Experience */}
       <Modal forceRender
         title={selectedMember ? `调整成长值 - ${selectedMember.nickname}` : '调整成长值'}
         open={expModalOpen}
@@ -383,10 +828,7 @@ export default function MemberList() {
         confirmLoading={submitting}
       >
         <Form form={tagsForm} layout="vertical" onFinish={handleAssignTags}>
-          <Form.Item
-            name="tagIds"
-            label="选择标签"
-          >
+          <Form.Item name="tagIds" label="选择标签">
             <Select
               mode="multiple"
               placeholder="请选择标签"
@@ -396,6 +838,44 @@ export default function MemberList() {
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
             />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* MODAL 5: Manual Adjust Level */}
+      <Modal forceRender
+        title={selectedMember ? `修改会员等级 - ${selectedMember.nickname}` : '修改等级'}
+        open={levelModalOpen}
+        onCancel={() => setLevelModalOpen(false)}
+        onOk={() => levelForm.submit()}
+        confirmLoading={submitting}
+      >
+        <Form form={levelForm} layout="vertical" onFinish={handleUpdateLevel}>
+          <Form.Item name="levelId" label="选择会员等级 (置空代表普通会员)">
+            <Select placeholder="选择会员等级" allowClear style={{ width: '100%' }}>
+              {levelList.map(l => (
+                <Select.Option key={l.id} value={l.id}>{l.name} (Lvl {l.level})</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* MODAL 6: Assign Group */}
+      <Modal forceRender
+        title={selectedMember ? `修改所属分组 - ${selectedMember.nickname}` : '修改分组'}
+        open={groupModalOpen}
+        onCancel={() => setGroupModalOpen(false)}
+        onOk={() => groupForm.submit()}
+        confirmLoading={submitting}
+      >
+        <Form form={groupForm} layout="vertical" onFinish={handleAssignGroup}>
+          <Form.Item name="groupId" label="选择会员分组 (置空代表取消分组)">
+            <Select placeholder="选择分组" allowClear style={{ width: '100%' }}>
+              {groupList.map(g => (
+                <Select.Option key={g.id} value={g.id}>{g.name}</Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Form>
       </Modal>

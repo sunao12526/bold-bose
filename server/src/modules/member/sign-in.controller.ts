@@ -5,6 +5,7 @@ import {
   Put,
   Body,
   Param,
+  Query,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -20,13 +21,13 @@ import { CommonStatus } from '@prisma/client';
 export class SignInController {
   constructor(private signInService: SignInService) {}
 
-  @Get('sign-in/config')
+  @Get('sign-in-config')
   @RequirePermissions('member:sign-in-config:query')
   async findAllConfigs() {
     return this.signInService.findAllConfigs();
   }
 
-  @Put('sign-in/config/:day')
+  @Put('sign-in-config/:day')
   @RequirePermissions('member:sign-in-config:update')
   @Log({ module: '签到规则', type: 'UPDATE', description: '修改签到奖励配置' })
   async updateConfig(
@@ -37,10 +38,10 @@ export class SignInController {
     return this.signInService.updateConfig(day, point, status);
   }
 
-  @Get('sign-in/record')
+  @Get('sign-in-record')
   @RequirePermissions('member:sign-in-record:query')
-  async findAllRecords() {
-    return this.signInService.findAllRecords();
+  async findAllRecords(@Query() query: any) {
+    return this.signInService.findAllRecords(query);
   }
 
   @Post('user/:id/sign-in')

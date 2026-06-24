@@ -453,6 +453,7 @@ model MemberUser {
   points         Int                  @default(0) // Member points
   balance        Int                  @default(0) // Balance in cents
   levelId        Int?                 @map("level_id")
+  groupId        Int?                 @map("group_id")
   experience     Int                  @default(0) // Total experience points
   tagIds         Json?                @map("tag_ids") // JSON array of tag IDs
   createdAt      DateTime             @default(now()) @map("created_at")
@@ -461,8 +462,11 @@ model MemberUser {
   orders         MallOrder[]
   coupons        MallCouponUser[]
   signInRecords  MemberSignInRecord[]
+  pointRecords   MemberPointRecord[]
+  balanceRecords MemberBalanceRecord[]
 
   level          MemberLevel?         @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  group          MemberGroup?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
 
   @@map("member_users")
 }
@@ -1217,5 +1221,50 @@ model MpMessage {
   account   MpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@map("mp_message")
+}
+
+model MemberGroup {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(50)
+  status      CommonStatus @default(ENABLE)
+  description String?      @db.VarChar(200)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  users       MemberUser[]
+
+  @@map("member_groups")
+}
+
+model MemberPointRecord {
+  id           Int          @id @default(autoincrement())
+  memberId     Int          @map("member_id")
+  bizType      String       @map("biz_type") @db.VarChar(50)
+  bizId        String?      @map("biz_id") @db.VarChar(100)
+  point        Int
+  afterPoint   Int          @map("after_point")
+  operatorId   String?      @map("operator_id") @db.VarChar(50)
+  description  String?      @db.VarChar(200)
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  member       MemberUser   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@map("member_point_records")
+}
+
+model MemberBalanceRecord {
+  id           Int          @id @default(autoincrement())
+  memberId     Int          @map("member_id")
+  bizType      String       @map("biz_type") @db.VarChar(50)
+  bizId        String?      @map("biz_id") @db.VarChar(100)
+  balance      Int
+  afterBalance Int          @map("after_balance")
+  operatorId   String?      @map("operator_id") @db.VarChar(50)
+  description  String?      @db.VarChar(200)
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  member       MemberUser   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@map("member_balance_records")
 }
 

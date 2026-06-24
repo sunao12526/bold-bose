@@ -20,6 +20,7 @@ import {
   MenuOutlined,
   BookOutlined,
   ControlOutlined,
+  WalletOutlined,
   MailOutlined,
   MonitorOutlined,
   FileTextOutlined,
@@ -444,6 +445,33 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
               meta: {
                 label: '签到记录',
                 icon: <HistoryOutlined />,
+                parent: 'member',
+              },
+            },
+            {
+              name: 'member/group',
+              list: '/member/group',
+              meta: {
+                label: '会员分组',
+                icon: <TeamOutlined />,
+                parent: 'member',
+              },
+            },
+            {
+              name: 'member/point-record',
+              list: '/member/point-record',
+              meta: {
+                label: '积分明细',
+                icon: <HistoryOutlined />,
+                parent: 'member',
+              },
+            },
+            {
+              name: 'member/balance-record',
+              list: '/member/balance-record',
+              meta: {
+                label: '余额明细',
+                icon: <WalletOutlined />,
                 parent: 'member',
               },
             },
