@@ -21,6 +21,9 @@ export class RefundService {
     if (query.status) {
       where.status = query.status;
     }
+    if (query.memberId) {
+      where.memberId = query.memberId;
+    }
 
     return paginateQuery(this.prisma, 'mallOrderRefund', query, {
       where,

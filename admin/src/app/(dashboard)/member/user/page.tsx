@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { List } from '@refinedev/antd';
 import { Table, Space, Modal, Form, Input, InputNumber, Tag, Switch, Avatar, Button, Select, message, Drawer, Tabs, Card, Descriptions, Row, Col, Statistic } from 'antd';
 import { useTable } from '@refinedev/antd';
-import { UserOutlined, WalletOutlined, StarOutlined, TrophyOutlined, TagsOutlined, CalendarOutlined, SearchOutlined, ReloadOutlined, ApartmentOutlined, ShoppingCartOutlined, FileTextOutlined } from '@ant-design/icons';
+import { UserOutlined, WalletOutlined, StarOutlined, TrophyOutlined, TagsOutlined, CalendarOutlined, SearchOutlined, ReloadOutlined, ApartmentOutlined, ShoppingCartOutlined, FileTextOutlined, EnvironmentOutlined, GiftOutlined } from '@ant-design/icons';
 import { axiosInstance } from '@/lib/axios';
 import dayjs from 'dayjs';
 
@@ -65,6 +65,11 @@ export default function MemberList() {
   const [pointRecords, setPointRecords] = useState<any[]>([]);
   const [signInRecords, setSignInRecords] = useState<any[]>([]);
   const [orderRecords, setOrderRecords] = useState<any[]>([]);
+  const [addressRecords, setAddressRecords] = useState<any[]>([]);
+  const [couponRecords, setCouponRecords] = useState<any[]>([]);
+  const [expRecords, setExpRecords] = useState<any[]>([]);
+  const [refundRecords, setRefundRecords] = useState<any[]>([]);
+  const [levelRecords, setLevelRecords] = useState<any[]>([]);
   const [loadingDrawerData, setLoadingDrawerData] = useState(false);
 
   const [pointsForm] = Form.useForm();
@@ -113,6 +118,21 @@ export default function MemberList() {
       } else if (tab === 'order') {
         const res = await axiosInstance.get(`/mall/order?memberId=${memberId}`);
         setOrderRecords(res.data?.items || res.data || []);
+      } else if (tab === 'address') {
+        const res = await axiosInstance.get(`/member/address?memberId=${memberId}`);
+        setAddressRecords(res.data?.items || res.data || []);
+      } else if (tab === 'coupon') {
+        const res = await axiosInstance.get(`/mall/coupon/user-list?memberId=${memberId}`);
+        setCouponRecords(res.data?.items || res.data || []);
+      } else if (tab === 'experience') {
+        const res = await axiosInstance.get(`/member/experience-record?memberId=${memberId}`);
+        setExpRecords(res.data?.items || res.data || []);
+      } else if (tab === 'refund') {
+        const res = await axiosInstance.get(`/mall/refund?memberId=${memberId}`);
+        setRefundRecords(res.data?.items || res.data || []);
+      } else if (tab === 'level_history') {
+        const res = await axiosInstance.get(`/member/level-record?memberId=${memberId}`);
+        setLevelRecords(res.data?.items || res.data || []);
       }
     } catch (err) {
       console.error('Failed to fetch detail logs', err);
@@ -752,6 +772,184 @@ export default function MemberList() {
                     <Table.Column 
                       dataIndex="createdAt" 
                       title="下单时间" 
+                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                    />
+                  </Table>
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={<span><EnvironmentOutlined />收货地址列表</span>} key="address">
+                  <Table 
+                    dataSource={addressRecords} 
+                    rowKey="id" 
+                    loading={loadingDrawerData} 
+                    size="small"
+                    pagination={{ pageSize: 5 }}
+                  >
+                    <Table.Column dataIndex="id" title="地址ID" width={80} />
+                    <Table.Column dataIndex="name" title="收件人" width={120} />
+                    <Table.Column dataIndex="mobile" title="手机号" width={130} />
+                    <Table.Column dataIndex="areaId" title="地区编码" width={100} render={(val) => val || '-'} />
+                    <Table.Column dataIndex="detailAddress" title="收货详细地址" />
+                    <Table.Column 
+                      dataIndex="defaultStatus" 
+                      title="是否默认" 
+                      width={100}
+                      render={(val: boolean) => (
+                        <Tag color={val ? 'green' : 'default'}>
+                          {val ? '默认' : '否'}
+                        </Tag>
+                      )}
+                    />
+                  </Table>
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={<span><GiftOutlined />优惠券资产</span>} key="coupon">
+                  <Table 
+                    dataSource={couponRecords} 
+                    rowKey="id" 
+                    loading={loadingDrawerData} 
+                    size="small"
+                    pagination={{ pageSize: 5 }}
+                  >
+                    <Table.Column 
+                      dataIndex={['coupon', 'name']} 
+                      title="优惠券名称" 
+                    />
+                    <Table.Column 
+                      dataIndex={['coupon', 'type']} 
+                      title="类型" 
+                      render={(type) => type === 'CASH' ? '代金券' : '折扣券'}
+                    />
+                    <Table.Column 
+                      title="优惠内容" 
+                      render={(_, record: any) => {
+                        const c = record.coupon;
+                        if (!c) return '-';
+                        return c.type === 'CASH' 
+                          ? `减 ¥${(c.value / 100).toFixed(2)}` 
+                          : `${(c.discount / 10).toFixed(1)}折`;
+                      }}
+                    />
+                    <Table.Column 
+                      dataIndex="status" 
+                      title="使用状态" 
+                      render={(status) => {
+                        const maps: any = {
+                          UNUSED: { label: '未使用', color: 'orange' },
+                          USED: { label: '已使用', color: 'green' },
+                          EXPIRED: { label: '已过期', color: 'default' },
+                        };
+                        const config = maps[status] || { label: status, color: 'default' };
+                        return <Tag color={config.color}>{config.label}</Tag>;
+                      }}
+                    />
+                    <Table.Column 
+                      title="有效期" 
+                      render={(_, record: any) => (
+                        <span style={{ fontSize: '11px', color: '#555' }}>
+                          {dayjs(record.validStartTime).format('YYYY-MM-DD')} ~ {dayjs(record.validEndTime).format('YYYY-MM-DD')}
+                        </span>
+                      )}
+                    />
+                    <Table.Column 
+                      dataIndex="usedTime" 
+                      title="使用时间" 
+                      render={(val) => val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : '-'} 
+                    />
+                  </Table>
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={<span><TrophyOutlined />成长值变动流水</span>} key="experience">
+                  <Table 
+                    dataSource={expRecords} 
+                    rowKey="id" 
+                    loading={loadingDrawerData} 
+                    size="small"
+                    pagination={{ pageSize: 5 }}
+                  >
+                    <Table.Column dataIndex="id" title="流水ID" width={70} />
+                    <Table.Column 
+                      dataIndex="experience" 
+                      title="变动成长值" 
+                      render={(val: number) => (
+                        <span style={{ color: val >= 0 ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>
+                          {val >= 0 ? '+' : ''}{val}
+                        </span>
+                      )}
+                    />
+                    <Table.Column dataIndex="afterExperience" title="变动后成长值" />
+                    <Table.Column dataIndex="description" title="原因描述" />
+                    <Table.Column dataIndex="operatorId" title="操作员" width={90} />
+                    <Table.Column 
+                      dataIndex="createdAt" 
+                      title="产生时间" 
+                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                    />
+                  </Table>
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={<span><ReloadOutlined />退款售后记录</span>} key="refund">
+                  <Table 
+                    dataSource={refundRecords} 
+                    rowKey="id" 
+                    loading={loadingDrawerData} 
+                    size="small"
+                    pagination={{ pageSize: 5 }}
+                  >
+                    <Table.Column dataIndex="no" title="退款编号" />
+                    <Table.Column 
+                      dataIndex="refundPrice" 
+                      title="实退金额" 
+                      render={(val) => <strong style={{ color: '#cf1322' }}>¥{(val / 100).toFixed(2)}</strong>} 
+                    />
+                    <Table.Column 
+                      dataIndex="status" 
+                      title="退款状态" 
+                      render={(status) => {
+                        const maps: any = {
+                          APPLY: { label: '待审批', color: 'orange' },
+                          APPROVED: { label: '已同意', color: 'green' },
+                          REJECTED: { label: '已拒绝', color: 'red' },
+                        };
+                        const config = maps[status] || { label: status, color: 'default' };
+                        return <Tag color={config.color}>{config.label}</Tag>;
+                      }}
+                    />
+                    <Table.Column dataIndex="reason" title="退款原因" />
+                    <Table.Column dataIndex="auditRemark" title="审核备注" render={(val) => val || '-'} />
+                    <Table.Column 
+                      dataIndex="createdAt" 
+                      title="申请时间" 
+                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                    />
+                  </Table>
+                </Tabs.TabPane>
+
+                <Tabs.TabPane tab={<span><TrophyOutlined />等级变动历史</span>} key="level_history">
+                  <Table 
+                    dataSource={levelRecords} 
+                    rowKey="id" 
+                    loading={loadingDrawerData} 
+                    size="small"
+                    pagination={{ pageSize: 5 }}
+                  >
+                    <Table.Column dataIndex="id" title="流水ID" width={70} />
+                    <Table.Column 
+                      dataIndex="oldLevelName" 
+                      title="变动前等级" 
+                      render={(val) => val ? <Tag color="blue">{val}</Tag> : <Tag>普通会员</Tag>}
+                    />
+                    <Table.Column 
+                      dataIndex="newLevelName" 
+                      title="变动后等级" 
+                      render={(val) => val ? <Tag color="purple">{val}</Tag> : <Tag>普通会员</Tag>}
+                    />
+                    <Table.Column dataIndex="experience" title="变动时成长值" />
+                    <Table.Column dataIndex="description" title="原因描述" />
+                    <Table.Column dataIndex="operatorId" title="操作员" width={90} />
+                    <Table.Column 
+                      dataIndex="createdAt" 
+                      title="变动时间" 
                       render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
                     />
                   </Table>

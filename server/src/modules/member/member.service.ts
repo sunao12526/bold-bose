@@ -141,16 +141,32 @@ export class MemberService {
     });
   }
 
-  async adjustExperience(id: number, amount: number) {
+  async adjustExperience(id: number, amount: number, operatorId?: string) {
     const member = await this.findOne(id);
     const newExperience = member.experience + amount;
     if (newExperience < 0) {
       throw new BadRequestException('调整后的成长值不能小于 0');
     }
 
-    await this.prisma.memberUser.update({
-      where: { id },
-      data: { experience: newExperience },
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const u = await tx.memberUser.update({
+        where: { id },
+        data: { experience: newExperience },
+        include: { level: true, group: true },
+      });
+
+      await tx.memberExperienceRecord.create({
+        data: {
+          memberId: id,
+          bizType: 'ADMIN',
+          experience: amount,
+          afterExperience: newExperience,
+          operatorId: operatorId || 'system',
+          description: amount >= 0 ? `管理员调整：增加成长值 +${amount}` : `管理员调整：扣减成长值 ${amount}`,
+        },
+      });
+
+      return u;
     });
 
     await this.updateMemberLevel(id);
@@ -168,12 +184,47 @@ export class MemberService {
     });
   }
 
-  async updateLevel(id: number, levelId: number | null) {
-    await this.findOne(id);
-    return this.prisma.memberUser.update({
-      where: { id },
-      data: { levelId },
-      include: { level: true, group: true },
+  async updateLevel(id: number, levelId: number | null, operatorId?: string) {
+    const member = await this.findOne(id);
+    const oldLevelId = member.levelId;
+    const newLevelId = levelId;
+
+    if (oldLevelId === newLevelId) {
+      return member;
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      let oldLevelName: string | null = null;
+      if (oldLevelId) {
+        const oldLevel = await tx.memberLevel.findUnique({ where: { id: oldLevelId } });
+        oldLevelName = oldLevel ? oldLevel.name : null;
+      }
+      let newLevelName: string | null = null;
+      if (newLevelId) {
+        const newLevel = await tx.memberLevel.findUnique({ where: { id: newLevelId } });
+        newLevelName = newLevel ? newLevel.name : null;
+      }
+
+      const updated = await tx.memberUser.update({
+        where: { id },
+        data: { levelId: newLevelId },
+        include: { level: true, group: true },
+      });
+
+      await tx.memberLevelRecord.create({
+        data: {
+          memberId: id,
+          oldLevelId,
+          newLevelId,
+          oldLevelName,
+          newLevelName,
+          experience: member.experience,
+          operatorId: operatorId || 'system',
+          description: `管理员手动调整等级: ${oldLevelName || '普通会员'} -> ${newLevelName || '普通会员'}`,
+        },
+      });
+
+      return updated;
     });
   }
 
@@ -209,9 +260,38 @@ export class MemberService {
     const targetLevelId = matchedLevel ? matchedLevel.id : null;
 
     if (member.levelId !== targetLevelId) {
-      await this.prisma.memberUser.update({
-        where: { id: memberId },
-        data: { levelId: targetLevelId },
+      const oldLevelId = member.levelId;
+      const newLevelId = targetLevelId;
+
+      await this.prisma.$transaction(async (tx) => {
+        let oldLevelName: string | null = null;
+        if (oldLevelId) {
+          const oldLevel = await tx.memberLevel.findUnique({ where: { id: oldLevelId } });
+          oldLevelName = oldLevel ? oldLevel.name : null;
+        }
+        let newLevelName: string | null = null;
+        if (newLevelId) {
+          const newLevel = await tx.memberLevel.findUnique({ where: { id: newLevelId } });
+          newLevelName = newLevel ? newLevel.name : null;
+        }
+
+        await tx.memberUser.update({
+          where: { id: memberId },
+          data: { levelId: newLevelId },
+        });
+
+        await tx.memberLevelRecord.create({
+          data: {
+            memberId,
+            oldLevelId,
+            newLevelId,
+            oldLevelName,
+            newLevelName,
+            experience: member.experience,
+            operatorId: 'system',
+            description: `成长值变动自动重新评定等级: ${oldLevelName || '普通会员'} -> ${newLevelName || '普通会员'}`,
+          },
+        });
       });
     }
   }

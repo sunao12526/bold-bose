@@ -31,8 +31,8 @@ export class PromotionController {
 
   @Get('user-list')
   @RequirePermissions('mall:coupon:query')
-  async findAllUserCoupons() {
-    return this.promotionService.findAllUserCoupons();
+  async findAllUserCoupons(@Query('memberId') memberId?: string) {
+    return this.promotionService.findAllUserCoupons(memberId ? Number(memberId) : undefined);
   }
 
   @Get(':id')

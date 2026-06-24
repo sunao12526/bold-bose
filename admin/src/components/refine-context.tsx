@@ -475,6 +475,24 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
                 parent: 'member',
               },
             },
+            {
+              name: 'member/address',
+            },
+            {
+              name: 'member/config',
+              list: '/member/config',
+              meta: {
+                label: '会员设置',
+                icon: <SettingOutlined />,
+                parent: 'member',
+              },
+            },
+            {
+              name: 'member/experience-record',
+            },
+            {
+              name: 'member/level-record',
+            },
 
             // Parent: Pay
             {

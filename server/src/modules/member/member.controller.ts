@@ -73,8 +73,10 @@ export class MemberController {
   async adjustExperience(
     @Param('id', ParseIntPipe) id: number,
     @Body('amount', ParseIntPipe) amount: number,
+    @Req() req: any,
   ) {
-    return this.memberService.adjustExperience(id, amount);
+    const operatorId = req.user?.username || 'system';
+    return this.memberService.adjustExperience(id, amount, operatorId);
   }
 
   @Put(':id/assign-tags')
@@ -93,8 +95,10 @@ export class MemberController {
   async updateLevel(
     @Param('id', ParseIntPipe) id: number,
     @Body('levelId') levelId: number | null,
+    @Req() req: any,
   ) {
-    return this.memberService.updateLevel(id, levelId ? Number(levelId) : null);
+    const operatorId = req.user?.username || 'system';
+    return this.memberService.updateLevel(id, levelId ? Number(levelId) : null, operatorId);
   }
 
   @Put(':id/assign-group')

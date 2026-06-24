@@ -109,8 +109,13 @@ export class SignInService {
       where: { day: nextConsecutiveDay },
     });
 
-    const pointsRewarded =
+    let pointsRewarded =
       config && config.status === CommonStatus.ENABLE ? config.point : 0;
+
+    if (pointsRewarded === 0) {
+      const globalConfig = await this.prisma.memberConfig.findFirst();
+      pointsRewarded = globalConfig ? globalConfig.signInPoint : 10;
+    }
 
     return this.prisma.$transaction(async (tx) => {
       const record = await tx.memberSignInRecord.create({

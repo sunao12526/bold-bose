@@ -13,6 +13,14 @@ import { PointRecordService } from './point-record.service';
 import { PointRecordController } from './point-record.controller';
 import { BalanceRecordService } from './balance-record.service';
 import { BalanceRecordController } from './balance-record.controller';
+import { AddressService } from './address.service';
+import { AddressController } from './address.controller';
+import { ConfigService } from './config.service';
+import { ConfigController } from './config.controller';
+import { ExperienceRecordService } from './experience-record.service';
+import { ExperienceRecordController } from './experience-record.controller';
+import { LevelRecordService } from './level-record.service';
+import { LevelRecordController } from './level-record.controller';
 
 @Module({
   controllers: [
@@ -23,6 +31,10 @@ import { BalanceRecordController } from './balance-record.controller';
     GroupController,
     PointRecordController,
     BalanceRecordController,
+    AddressController,
+    ConfigController,
+    ExperienceRecordController,
+    LevelRecordController,
   ],
   providers: [
     MemberService,
@@ -32,6 +44,10 @@ import { BalanceRecordController } from './balance-record.controller';
     GroupService,
     PointRecordService,
     BalanceRecordService,
+    AddressService,
+    ConfigService,
+    ExperienceRecordService,
+    LevelRecordService,
   ],
   exports: [
     MemberService,
@@ -41,6 +57,10 @@ import { BalanceRecordController } from './balance-record.controller';
     GroupService,
     PointRecordService,
     BalanceRecordService,
+    AddressService,
+    ConfigService,
+    ExperienceRecordService,
+    LevelRecordService,
   ],
 })
 export class MemberModule {}

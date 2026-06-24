@@ -464,6 +464,9 @@ model MemberUser {
   signInRecords  MemberSignInRecord[]
   pointRecords   MemberPointRecord[]
   balanceRecords MemberBalanceRecord[]
+  addresses      MemberAddress[]
+  experienceRecords MemberExperienceRecord[]
+  levelRecords MemberLevelRecord[]
 
   level          MemberLevel?         @relation(fields: [levelId], references: [id], onDelete: SetNull)
   group          MemberGroup?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
@@ -1266,5 +1269,65 @@ model MemberBalanceRecord {
   member       MemberUser   @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
   @@map("member_balance_records")
+}
+
+model MemberAddress {
+  id            Int          @id @default(autoincrement())
+  memberId      Int          @map("member_id")
+  name          String       @db.VarChar(50)
+  mobile        String       @db.VarChar(20)
+  areaId        Int?         @map("area_id")
+  detailAddress String       @map("detail_address") @db.VarChar(512)
+  defaultStatus Boolean      @default(false) @map("default_status")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  member        MemberUser   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@map("member_addresses")
+}
+
+model MemberConfig {
+  id                    Int      @id @default(autoincrement())
+  tradePointCashPercent Int      @default(0) @map("trade_point_cash_percent")
+  tradePointGivePercent Int      @default(0) @map("trade_point_give_percent")
+  signInPoint           Int      @default(0) @map("sign_in_point")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@map("member_configs")
+}
+
+model MemberExperienceRecord {
+  id              Int          @id @default(autoincrement())
+  memberId        Int          @map("member_id")
+  experience      Int
+  afterExperience Int          @map("after_experience")
+  bizType         String       @map("biz_type") @db.VarChar(50)
+  bizId           String?      @map("biz_id") @db.VarChar(100)
+  operatorId      String?      @map("operator_id") @db.VarChar(50)
+  description     String?      @db.VarChar(200)
+  createdAt       DateTime     @default(now()) @map("created_at")
+
+  member          MemberUser   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@map("member_experience_records")
+}
+
+model MemberLevelRecord {
+  id           Int      @id @default(autoincrement())
+  memberId     Int      @map("member_id")
+  oldLevelId   Int?     @map("old_level_id")
+  newLevelId   Int?     @map("new_level_id")
+  oldLevelName String?  @map("old_level_name") @db.VarChar(50)
+  newLevelName String?  @map("new_level_name") @db.VarChar(50)
+  experience   Int
+  operatorId   String?  @map("operator_id") @db.VarChar(50)
+  description  String?  @db.VarChar(200)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  member       MemberUser @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@map("member_level_records")
 }
 

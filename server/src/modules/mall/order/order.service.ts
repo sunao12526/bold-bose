@@ -110,14 +110,82 @@ export class OrderService {
     }
 
     if (status === 'SUCCESS') {
-      return this.prisma.mallOrder.update({
-        where: { id: order.id },
-        data: {
-          status: MallOrderStatus.UNDELIVERED,
-          payTime: new Date(payTime),
-        },
-        include: { items: true },
+      let givePercent = 1;
+      const globalConfig = await this.prisma.memberConfig.findFirst();
+      if (globalConfig) {
+        givePercent = globalConfig.tradePointGivePercent;
+      }
+
+      const payPriceYuan = order.payPrice / 100;
+      const pointsToGive = Math.floor(payPriceYuan * givePercent);
+      const expToGive = Math.floor(payPriceYuan);
+
+      const updated = await this.prisma.$transaction(async (tx) => {
+        const o = await tx.mallOrder.update({
+          where: { id: order.id },
+          data: {
+            status: MallOrderStatus.UNDELIVERED,
+            payTime: new Date(payTime),
+          },
+          include: { items: true },
+        });
+
+        const member = await tx.memberUser.findUnique({
+          where: { id: order.memberId },
+        });
+
+        if (member) {
+          if (pointsToGive > 0) {
+            const newPoints = member.points + pointsToGive;
+            await tx.memberUser.update({
+              where: { id: member.id },
+              data: { points: newPoints },
+            });
+
+            await tx.memberPointRecord.create({
+              data: {
+                memberId: member.id,
+                bizType: 'ORDER_PAY',
+                bizId: order.no,
+                point: pointsToGive,
+                afterPoint: newPoints,
+                operatorId: 'system',
+                description: `订单消费赠送积分，订单号: ${order.no}`,
+              },
+            });
+          }
+
+          if (expToGive > 0) {
+            const newExp = member.experience + expToGive;
+            await tx.memberUser.update({
+              where: { id: member.id },
+              data: { experience: newExp },
+            });
+
+            await tx.memberExperienceRecord.create({
+              data: {
+                memberId: member.id,
+                bizType: 'ORDER_PAY',
+                bizId: order.no,
+                experience: expToGive,
+                afterExperience: newExp,
+                operatorId: 'system',
+                description: `订单消费赠送成长值，订单号: ${order.no}`,
+              },
+            });
+          }
+        }
+
+        return o;
       });
+
+      try {
+        await this.updateMemberLevel(order.memberId);
+      } catch (err) {
+        console.error('重新计算会员等级失败', err);
+      }
+
+      return updated;
     }
     return order;
   }
@@ -182,5 +250,56 @@ export class OrderService {
 
       return updatedOrder;
     });
+  }
+
+  private async updateMemberLevel(memberId: number) {
+    const member = await this.prisma.memberUser.findUnique({
+      where: { id: memberId },
+    });
+    if (!member) return;
+
+    const levels = await this.prisma.memberLevel.findMany({
+      where: { status: 'ENABLE' },
+      orderBy: { experience: 'desc' },
+    });
+
+    const matchedLevel = levels.find((l) => member.experience >= l.experience);
+    const targetLevelId = matchedLevel ? matchedLevel.id : null;
+
+    if (member.levelId !== targetLevelId) {
+      const oldLevelId = member.levelId;
+      const newLevelId = targetLevelId;
+
+      await this.prisma.$transaction(async (tx) => {
+        let oldLevelName: string | null = null;
+        if (oldLevelId) {
+          const oldLevel = await tx.memberLevel.findUnique({ where: { id: oldLevelId } });
+          oldLevelName = oldLevel ? oldLevel.name : null;
+        }
+        let newLevelName: string | null = null;
+        if (newLevelId) {
+          const newLevel = await tx.memberLevel.findUnique({ where: { id: newLevelId } });
+          newLevelName = newLevel ? newLevel.name : null;
+        }
+
+        await tx.memberUser.update({
+          where: { id: memberId },
+          data: { levelId: newLevelId },
+        });
+
+        await tx.memberLevelRecord.create({
+          data: {
+            memberId,
+            oldLevelId,
+            newLevelId,
+            oldLevelName,
+            newLevelName,
+            experience: member.experience,
+            operatorId: 'system',
+            description: `成长值变动自动重新评定等级: ${oldLevelName || '普通会员'} -> ${newLevelName || '普通会员'}`,
+          },
+        });
+      });
+    }
   }
 }

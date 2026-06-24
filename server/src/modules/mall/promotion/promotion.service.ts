@@ -138,8 +138,13 @@ export class PromotionService {
     });
   }
 
-  async findAllUserCoupons() {
+  async findAllUserCoupons(memberId?: number) {
+    const where: any = {};
+    if (memberId !== undefined) {
+      where.memberId = memberId;
+    }
     return this.prisma.mallCouponUser.findMany({
+      where,
       include: {
         coupon: true,
         member: { select: { id: true, nickname: true, mobile: true } },
