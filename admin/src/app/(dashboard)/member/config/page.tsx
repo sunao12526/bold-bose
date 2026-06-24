@@ -42,7 +42,8 @@ export default function MemberConfigPage() {
   if (loading) {
     return (
       <div style={{ padding: '48px', textAlign: 'center' }}>
-        <Spin size="large" tip="正在加载配置中..." />
+        <Spin size="large" />
+        <div style={{ marginTop: '16px', color: '#8c8c8c' }}>正在加载配置中...</div>
       </div>
     );
   }
@@ -82,13 +83,25 @@ export default function MemberConfigPage() {
               { type: 'number', min: 0, max: 100, message: '比例必须在 0 - 100 之间' }
             ]}
           >
-            <InputNumber 
-              style={{ width: '100%' }} 
-              min={0} 
-              max={100} 
-              addonAfter="%" 
-              placeholder="请输入最大抵扣比例，0 表示不支持积分抵扣"
-            />
+            <Space.Compact style={{ width: '100%' }}>
+              <InputNumber 
+                style={{ width: '100%' }} 
+                min={0} 
+                max={100} 
+                placeholder="请输入最大抵扣比例，0 表示不支持积分抵扣"
+              />
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0 12px',
+                background: '#fafafa',
+                border: '1px solid #d9d9d9',
+                borderLeft: 'none',
+                color: 'rgba(0, 0, 0, 0.45)',
+                borderStartEndRadius: '6px',
+                borderEndEndRadius: '6px'
+              }}>%</span>
+            </Space.Compact>
           </Form.Item>
 
           <Divider />
@@ -102,12 +115,24 @@ export default function MemberConfigPage() {
               { type: 'number', min: 0, message: '赠送积分数不能小于 0' }
             ]}
           >
-            <InputNumber 
-              style={{ width: '100%' }} 
-              min={0} 
-              addonAfter="积分/元" 
-              placeholder="用户每消费一元赠送的积分数"
-            />
+            <Space.Compact style={{ width: '100%' }}>
+              <InputNumber 
+                style={{ width: '100%' }} 
+                min={0} 
+                placeholder="用户每消费一元赠送的积分数"
+              />
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0 12px',
+                background: '#fafafa',
+                border: '1px solid #d9d9d9',
+                borderLeft: 'none',
+                color: 'rgba(0, 0, 0, 0.45)',
+                borderStartEndRadius: '6px',
+                borderEndEndRadius: '6px'
+              }}>积分/元</span>
+            </Space.Compact>
           </Form.Item>
 
           <Divider />
@@ -121,12 +146,24 @@ export default function MemberConfigPage() {
               { type: 'number', min: 0, message: '基础点数不能小于 0' }
             ]}
           >
-            <InputNumber 
-              style={{ width: '100%' }} 
-              min={0} 
-              addonAfter="积分" 
-              placeholder="签到默认获得的基础奖励"
-            />
+            <Space.Compact style={{ width: '100%' }}>
+              <InputNumber 
+                style={{ width: '100%' }} 
+                min={0} 
+                placeholder="签到默认获得的基础奖励"
+              />
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0 12px',
+                background: '#fafafa',
+                border: '1px solid #d9d9d9',
+                borderLeft: 'none',
+                color: 'rgba(0, 0, 0, 0.45)',
+                borderStartEndRadius: '6px',
+                borderEndEndRadius: '6px'
+              }}>积分</span>
+            </Space.Compact>
           </Form.Item>
 
           <Form.Item style={{ marginTop: '32px', textAlign: 'right' }}>

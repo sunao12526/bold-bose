@@ -366,7 +366,7 @@ export default function MemberList() {
   return (
     <div style={{ padding: '24px' }}>
       {/* 搜索过滤表单 */}
-      <Card style={{ marginBottom: '16px' }} bodyStyle={{ padding: '16px' }}>
+      <Card style={{ marginBottom: '16px' }} styles={{ body: { padding: '16px' } }}>
         <Form {...searchFormProps} layout="inline">
           <Form.Item name="nickname" label="会员昵称">
             <Input placeholder="输入昵称模糊搜索" allowClear />
@@ -573,7 +573,7 @@ export default function MemberList() {
         placement="right"
         onClose={() => setDetailDrawerOpen(false)}
         open={detailDrawerOpen}
-        bodyStyle={{ background: '#f5f5f5', padding: '16px' }}
+        styles={{ body: { background: '#f5f5f5', padding: '16px' } }}
       >
         {detailMember && (
           <Space direction="vertical" style={{ width: '100%' }} size={16}>
@@ -644,317 +644,349 @@ export default function MemberList() {
             </Row>
 
             {/* 流水明细 Tab 区域 */}
-            <Card bodyStyle={{ padding: '8px 16px 16px 16px' }}>
-              <Tabs activeKey={detailTabKey} onChange={setDetailTabKey}>
-                <Tabs.TabPane tab={<span><WalletOutlined />余额账单流水</span>} key="balance">
-                  <Table 
-                    dataSource={balanceRecords} 
-                    rowKey="id" 
-                    loading={loadingDrawerData} 
-                    size="small"
-                    pagination={{ pageSize: 5 }}
-                  >
-                    <Table.Column dataIndex="id" title="流水ID" width={70} />
-                    <Table.Column 
-                      dataIndex="balance" 
-                      title="变动金额" 
-                      render={(val: number) => (
-                        <span style={{ color: val >= 0 ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>
-                          {val >= 0 ? '+' : ''}{(val / 100).toFixed(2)} 元
-                        </span>
-                      )}
-                    />
-                    <Table.Column 
-                      dataIndex="afterBalance" 
-                      title="变动后余额" 
-                      render={(val: number) => `¥${(val / 100).toFixed(2)}`}
-                    />
-                    <Table.Column dataIndex="description" title="原因描述" />
-                    <Table.Column dataIndex="operatorId" title="操作员" width={90} />
-                    <Table.Column 
-                      dataIndex="createdAt" 
-                      title="产生时间" 
-                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
-                    />
-                  </Table>
-                </Tabs.TabPane>
-
-                <Tabs.TabPane tab={<span><StarOutlined />积分日志流水</span>} key="point">
-                  <Table 
-                    dataSource={pointRecords} 
-                    rowKey="id" 
-                    loading={loadingDrawerData} 
-                    size="small"
-                    pagination={{ pageSize: 5 }}
-                  >
-                    <Table.Column dataIndex="id" title="流水ID" width={70} />
-                    <Table.Column 
-                      dataIndex="point" 
-                      title="变动积分" 
-                      render={(val: number) => (
-                        <span style={{ color: val >= 0 ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>
-                          {val >= 0 ? '+' : ''}{val}
-                        </span>
-                      )}
-                    />
-                    <Table.Column dataIndex="afterPoint" title="变动后积分" />
-                    <Table.Column dataIndex="description" title="描述" />
-                    <Table.Column dataIndex="operatorId" title="操作员" width={90} />
-                    <Table.Column 
-                      dataIndex="createdAt" 
-                      title="产生时间" 
-                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
-                    />
-                  </Table>
-                </Tabs.TabPane>
-
-                <Tabs.TabPane tab={<span><CalendarOutlined />签到轨迹历史</span>} key="signin">
-                  <Table 
-                    dataSource={signInRecords} 
-                    rowKey="id" 
-                    loading={loadingDrawerData} 
-                    size="small"
-                    pagination={{ pageSize: 5 }}
-                  >
-                    <Table.Column dataIndex="id" title="记录ID" width={70} />
-                    <Table.Column dataIndex="day" title="连续签到天数" render={(day) => `第 ${day} 天`} />
-                    <Table.Column 
-                      dataIndex="point" 
-                      title="奖励积分" 
-                      render={(val) => <span style={{ color: '#d46b08', fontWeight: 'bold' }}>+{val} 分</span>}
-                    />
-                    <Table.Column 
-                      dataIndex="createdAt" 
-                      title="签到时间" 
-                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
-                    />
-                  </Table>
-                </Tabs.TabPane>
-
-                <Tabs.TabPane tab={<span><ShoppingCartOutlined />消费订单记录</span>} key="order">
-                  <Table 
-                    dataSource={orderRecords} 
-                    rowKey="id" 
-                    loading={loadingDrawerData} 
-                    size="small"
-                    pagination={{ pageSize: 5 }}
-                  >
-                    <Table.Column dataIndex="no" title="订单编号" />
-                    <Table.Column 
-                      dataIndex="payPrice" 
-                      title="实付金额" 
-                      render={(val) => <strong style={{ color: '#cf1322' }}>¥{(val / 100).toFixed(2)}</strong>} 
-                    />
-                    <Table.Column 
-                      dataIndex="status" 
-                      title="订单状态" 
-                      render={(status) => {
-                        const maps: any = {
-                          UNPAID: { label: '待支付', color: 'orange' },
-                          UNDELIVERED: { label: '待发货', color: 'blue' },
-                          DELIVERED: { label: '已发货', color: 'purple' },
-                          COMPLETED: { label: '已完成', color: 'green' },
-                          CANCELLED: { label: '已取消', color: 'default' },
-                        };
-                        const config = maps[status] || { label: status, color: 'default' };
-                        return <Tag color={config.color}>{config.label}</Tag>;
-                      }}
-                    />
-                    <Table.Column 
-                      title="收货地址" 
-                      render={(_, record: any) => (
-                        <div style={{ fontSize: '11px' }}>
-                          <div>{record.receiverName} ({record.receiverMobile})</div>
-                          <div style={{ color: '#8c8c8c' }}>{record.receiverAddress}</div>
-                        </div>
-                      )} 
-                    />
-                    <Table.Column 
-                      dataIndex="createdAt" 
-                      title="下单时间" 
-                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
-                    />
-                  </Table>
-                </Tabs.TabPane>
-
-                <Tabs.TabPane tab={<span><EnvironmentOutlined />收货地址列表</span>} key="address">
-                  <Table 
-                    dataSource={addressRecords} 
-                    rowKey="id" 
-                    loading={loadingDrawerData} 
-                    size="small"
-                    pagination={{ pageSize: 5 }}
-                  >
-                    <Table.Column dataIndex="id" title="地址ID" width={80} />
-                    <Table.Column dataIndex="name" title="收件人" width={120} />
-                    <Table.Column dataIndex="mobile" title="手机号" width={130} />
-                    <Table.Column dataIndex="areaId" title="地区编码" width={100} render={(val) => val || '-'} />
-                    <Table.Column dataIndex="detailAddress" title="收货详细地址" />
-                    <Table.Column 
-                      dataIndex="defaultStatus" 
-                      title="是否默认" 
-                      width={100}
-                      render={(val: boolean) => (
-                        <Tag color={val ? 'green' : 'default'}>
-                          {val ? '默认' : '否'}
-                        </Tag>
-                      )}
-                    />
-                  </Table>
-                </Tabs.TabPane>
-
-                <Tabs.TabPane tab={<span><GiftOutlined />优惠券资产</span>} key="coupon">
-                  <Table 
-                    dataSource={couponRecords} 
-                    rowKey="id" 
-                    loading={loadingDrawerData} 
-                    size="small"
-                    pagination={{ pageSize: 5 }}
-                  >
-                    <Table.Column 
-                      dataIndex={['coupon', 'name']} 
-                      title="优惠券名称" 
-                    />
-                    <Table.Column 
-                      dataIndex={['coupon', 'type']} 
-                      title="类型" 
-                      render={(type) => type === 'CASH' ? '代金券' : '折扣券'}
-                    />
-                    <Table.Column 
-                      title="优惠内容" 
-                      render={(_, record: any) => {
-                        const c = record.coupon;
-                        if (!c) return '-';
-                        return c.type === 'CASH' 
-                          ? `减 ¥${(c.value / 100).toFixed(2)}` 
-                          : `${(c.discount / 10).toFixed(1)}折`;
-                      }}
-                    />
-                    <Table.Column 
-                      dataIndex="status" 
-                      title="使用状态" 
-                      render={(status) => {
-                        const maps: any = {
-                          UNUSED: { label: '未使用', color: 'orange' },
-                          USED: { label: '已使用', color: 'green' },
-                          EXPIRED: { label: '已过期', color: 'default' },
-                        };
-                        const config = maps[status] || { label: status, color: 'default' };
-                        return <Tag color={config.color}>{config.label}</Tag>;
-                      }}
-                    />
-                    <Table.Column 
-                      title="有效期" 
-                      render={(_, record: any) => (
-                        <span style={{ fontSize: '11px', color: '#555' }}>
-                          {dayjs(record.validStartTime).format('YYYY-MM-DD')} ~ {dayjs(record.validEndTime).format('YYYY-MM-DD')}
-                        </span>
-                      )}
-                    />
-                    <Table.Column 
-                      dataIndex="usedTime" 
-                      title="使用时间" 
-                      render={(val) => val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : '-'} 
-                    />
-                  </Table>
-                </Tabs.TabPane>
-
-                <Tabs.TabPane tab={<span><TrophyOutlined />成长值变动流水</span>} key="experience">
-                  <Table 
-                    dataSource={expRecords} 
-                    rowKey="id" 
-                    loading={loadingDrawerData} 
-                    size="small"
-                    pagination={{ pageSize: 5 }}
-                  >
-                    <Table.Column dataIndex="id" title="流水ID" width={70} />
-                    <Table.Column 
-                      dataIndex="experience" 
-                      title="变动成长值" 
-                      render={(val: number) => (
-                        <span style={{ color: val >= 0 ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>
-                          {val >= 0 ? '+' : ''}{val}
-                        </span>
-                      )}
-                    />
-                    <Table.Column dataIndex="afterExperience" title="变动后成长值" />
-                    <Table.Column dataIndex="description" title="原因描述" />
-                    <Table.Column dataIndex="operatorId" title="操作员" width={90} />
-                    <Table.Column 
-                      dataIndex="createdAt" 
-                      title="产生时间" 
-                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
-                    />
-                  </Table>
-                </Tabs.TabPane>
-
-                <Tabs.TabPane tab={<span><ReloadOutlined />退款售后记录</span>} key="refund">
-                  <Table 
-                    dataSource={refundRecords} 
-                    rowKey="id" 
-                    loading={loadingDrawerData} 
-                    size="small"
-                    pagination={{ pageSize: 5 }}
-                  >
-                    <Table.Column dataIndex="no" title="退款编号" />
-                    <Table.Column 
-                      dataIndex="refundPrice" 
-                      title="实退金额" 
-                      render={(val) => <strong style={{ color: '#cf1322' }}>¥{(val / 100).toFixed(2)}</strong>} 
-                    />
-                    <Table.Column 
-                      dataIndex="status" 
-                      title="退款状态" 
-                      render={(status) => {
-                        const maps: any = {
-                          APPLY: { label: '待审批', color: 'orange' },
-                          APPROVED: { label: '已同意', color: 'green' },
-                          REJECTED: { label: '已拒绝', color: 'red' },
-                        };
-                        const config = maps[status] || { label: status, color: 'default' };
-                        return <Tag color={config.color}>{config.label}</Tag>;
-                      }}
-                    />
-                    <Table.Column dataIndex="reason" title="退款原因" />
-                    <Table.Column dataIndex="auditRemark" title="审核备注" render={(val) => val || '-'} />
-                    <Table.Column 
-                      dataIndex="createdAt" 
-                      title="申请时间" 
-                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
-                    />
-                  </Table>
-                </Tabs.TabPane>
-
-                <Tabs.TabPane tab={<span><TrophyOutlined />等级变动历史</span>} key="level_history">
-                  <Table 
-                    dataSource={levelRecords} 
-                    rowKey="id" 
-                    loading={loadingDrawerData} 
-                    size="small"
-                    pagination={{ pageSize: 5 }}
-                  >
-                    <Table.Column dataIndex="id" title="流水ID" width={70} />
-                    <Table.Column 
-                      dataIndex="oldLevelName" 
-                      title="变动前等级" 
-                      render={(val) => val ? <Tag color="blue">{val}</Tag> : <Tag>普通会员</Tag>}
-                    />
-                    <Table.Column 
-                      dataIndex="newLevelName" 
-                      title="变动后等级" 
-                      render={(val) => val ? <Tag color="purple">{val}</Tag> : <Tag>普通会员</Tag>}
-                    />
-                    <Table.Column dataIndex="experience" title="变动时成长值" />
-                    <Table.Column dataIndex="description" title="原因描述" />
-                    <Table.Column dataIndex="operatorId" title="操作员" width={90} />
-                    <Table.Column 
-                      dataIndex="createdAt" 
-                      title="变动时间" 
-                      render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
-                    />
-                  </Table>
-                </Tabs.TabPane>
-              </Tabs>
+            <Card styles={{ body: { padding: '8px 16px 16px 16px' } }}>
+              <Tabs 
+                activeKey={detailTabKey} 
+                onChange={setDetailTabKey}
+                items={[
+                  {
+                    key: 'balance',
+                    label: <span><WalletOutlined />余额账单流水</span>,
+                    children: (
+                      <Table 
+                        dataSource={balanceRecords} 
+                        rowKey="id" 
+                        loading={loadingDrawerData} 
+                        size="small"
+                        pagination={{ pageSize: 5 }}
+                      >
+                        <Table.Column dataIndex="id" title="流水ID" width={70} />
+                        <Table.Column 
+                          dataIndex="balance" 
+                          title="变动金额" 
+                          render={(val: number) => (
+                            <span style={{ color: val >= 0 ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>
+                              {val >= 0 ? '+' : ''}{(val / 100).toFixed(2)} 元
+                            </span>
+                          )}
+                        />
+                        <Table.Column 
+                          dataIndex="afterBalance" 
+                          title="变动后余额" 
+                          render={(val: number) => `¥${(val / 100).toFixed(2)}`}
+                        />
+                        <Table.Column dataIndex="description" title="原因描述" />
+                        <Table.Column dataIndex="operatorId" title="操作员" width={90} />
+                        <Table.Column 
+                          dataIndex="createdAt" 
+                          title="产生时间" 
+                          render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                        />
+                      </Table>
+                    )
+                  },
+                  {
+                    key: 'point',
+                    label: <span><StarOutlined />积分日志流水</span>,
+                    children: (
+                      <Table 
+                        dataSource={pointRecords} 
+                        rowKey="id" 
+                        loading={loadingDrawerData} 
+                        size="small"
+                        pagination={{ pageSize: 5 }}
+                      >
+                        <Table.Column dataIndex="id" title="流水ID" width={70} />
+                        <Table.Column 
+                          dataIndex="point" 
+                          title="变动积分" 
+                          render={(val: number) => (
+                            <span style={{ color: val >= 0 ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>
+                              {val >= 0 ? '+' : ''}{val}
+                            </span>
+                          )}
+                        />
+                        <Table.Column dataIndex="afterPoint" title="变动后积分" />
+                        <Table.Column dataIndex="description" title="描述" />
+                        <Table.Column dataIndex="operatorId" title="操作员" width={90} />
+                        <Table.Column 
+                          dataIndex="createdAt" 
+                          title="产生时间" 
+                          render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                        />
+                      </Table>
+                    )
+                  },
+                  {
+                    key: 'signin',
+                    label: <span><CalendarOutlined />签到轨迹历史</span>,
+                    children: (
+                      <Table 
+                        dataSource={signInRecords} 
+                        rowKey="id" 
+                        loading={loadingDrawerData} 
+                        size="small"
+                        pagination={{ pageSize: 5 }}
+                      >
+                        <Table.Column dataIndex="id" title="记录ID" width={70} />
+                        <Table.Column dataIndex="day" title="连续签到天数" render={(day) => `第 ${day} 天`} />
+                        <Table.Column 
+                          dataIndex="point" 
+                          title="奖励积分" 
+                          render={(val) => <span style={{ color: '#d46b08', fontWeight: 'bold' }}>+{val} 分</span>}
+                        />
+                        <Table.Column 
+                          dataIndex="createdAt" 
+                          title="签到时间" 
+                          render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                        />
+                      </Table>
+                    )
+                  },
+                  {
+                    key: 'order',
+                    label: <span><ShoppingCartOutlined />消费订单记录</span>,
+                    children: (
+                      <Table 
+                        dataSource={orderRecords} 
+                        rowKey="id" 
+                        loading={loadingDrawerData} 
+                        size="small"
+                        pagination={{ pageSize: 5 }}
+                      >
+                        <Table.Column dataIndex="no" title="订单编号" />
+                        <Table.Column 
+                          dataIndex="payPrice" 
+                          title="实付金额" 
+                          render={(val) => <strong style={{ color: '#cf1322' }}>¥{(val / 100).toFixed(2)}</strong>} 
+                        />
+                        <Table.Column 
+                          dataIndex="status" 
+                          title="订单状态" 
+                          render={(status) => {
+                            const maps: any = {
+                              UNPAID: { label: '待支付', color: 'orange' },
+                              UNDELIVERED: { label: '待发货', color: 'blue' },
+                              DELIVERED: { label: '已发货', color: 'purple' },
+                              COMPLETED: { label: '已完成', color: 'green' },
+                              CANCELLED: { label: '已取消', color: 'default' },
+                            };
+                            const config = maps[status] || { label: status, color: 'default' };
+                            return <Tag color={config.color}>{config.label}</Tag>;
+                          }}
+                        />
+                        <Table.Column 
+                          title="收货地址" 
+                          render={(_, record: any) => (
+                            <div style={{ fontSize: '11px' }}>
+                              <div>{record.receiverName} ({record.receiverMobile})</div>
+                              <div style={{ color: '#8c8c8c' }}>{record.receiverAddress}</div>
+                            </div>
+                          )} 
+                        />
+                        <Table.Column 
+                          dataIndex="createdAt" 
+                          title="下单时间" 
+                          render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                        />
+                      </Table>
+                    )
+                  },
+                  {
+                    key: 'address',
+                    label: <span><EnvironmentOutlined />收货地址列表</span>,
+                    children: (
+                      <Table 
+                        dataSource={addressRecords} 
+                        rowKey="id" 
+                        loading={loadingDrawerData} 
+                        size="small"
+                        pagination={{ pageSize: 5 }}
+                      >
+                        <Table.Column dataIndex="id" title="地址ID" width={80} />
+                        <Table.Column dataIndex="name" title="收件人" width={120} />
+                        <Table.Column dataIndex="mobile" title="手机号" width={130} />
+                        <Table.Column dataIndex="areaId" title="地区编码" width={100} render={(val) => val || '-'} />
+                        <Table.Column dataIndex="detailAddress" title="收货详细地址" />
+                        <Table.Column 
+                          dataIndex="defaultStatus" 
+                          title="是否默认" 
+                          width={100}
+                          render={(val: boolean) => (
+                            <Tag color={val ? 'green' : 'default'}>
+                              {val ? '默认' : '否'}
+                            </Tag>
+                          )}
+                        />
+                      </Table>
+                    )
+                  },
+                  {
+                    key: 'coupon',
+                    label: <span><GiftOutlined />优惠券资产</span>,
+                    children: (
+                      <Table 
+                        dataSource={couponRecords} 
+                        rowKey="id" 
+                        loading={loadingDrawerData} 
+                        size="small"
+                        pagination={{ pageSize: 5 }}
+                      >
+                        <Table.Column 
+                          dataIndex={['coupon', 'name']} 
+                          title="优惠券名称" 
+                        />
+                        <Table.Column 
+                          dataIndex={['coupon', 'type']} 
+                          title="类型" 
+                          render={(type) => type === 'CASH' ? '代金券' : '折扣券'}
+                        />
+                        <Table.Column 
+                          title="优惠内容" 
+                          render={(_, record: any) => {
+                            const c = record.coupon;
+                            if (!c) return '-';
+                            return c.type === 'CASH' 
+                              ? `减 ¥${(c.value / 100).toFixed(2)}` 
+                              : `${(c.discount / 10).toFixed(1)}折`;
+                          }}
+                        />
+                        <Table.Column 
+                          dataIndex="status" 
+                          title="使用状态" 
+                          render={(status) => {
+                            const maps: any = {
+                              UNUSED: { label: '未使用', color: 'orange' },
+                              USED: { label: '已使用', color: 'green' },
+                              EXPIRED: { label: '已过期', color: 'default' },
+                            };
+                            const config = maps[status] || { label: status, color: 'default' };
+                            return <Tag color={config.color}>{config.label}</Tag>;
+                          }}
+                        />
+                        <Table.Column 
+                          title="有效期" 
+                          render={(_, record: any) => (
+                            <span style={{ fontSize: '11px', color: '#555' }}>
+                              {dayjs(record.validStartTime).format('YYYY-MM-DD')} ~ {dayjs(record.validEndTime).format('YYYY-MM-DD')}
+                            </span>
+                          )}
+                        />
+                        <Table.Column 
+                          dataIndex="usedTime" 
+                          title="使用时间" 
+                          render={(val) => val ? dayjs(val).format('YYYY-MM-DD HH:mm:ss') : '-'} 
+                        />
+                      </Table>
+                    )
+                  },
+                  {
+                    key: 'experience',
+                    label: <span><TrophyOutlined />成长值变动流水</span>,
+                    children: (
+                      <Table 
+                        dataSource={expRecords} 
+                        rowKey="id" 
+                        loading={loadingDrawerData} 
+                        size="small"
+                        pagination={{ pageSize: 5 }}
+                      >
+                        <Table.Column dataIndex="id" title="流水ID" width={70} />
+                        <Table.Column 
+                          dataIndex="experience" 
+                          title="变动成长值" 
+                          render={(val: number) => (
+                            <span style={{ color: val >= 0 ? '#52c41a' : '#ff4d4f', fontWeight: 'bold' }}>
+                              {val >= 0 ? '+' : ''}{val}
+                            </span>
+                          )}
+                        />
+                        <Table.Column dataIndex="afterExperience" title="变动后成长值" />
+                        <Table.Column dataIndex="description" title="原因描述" />
+                        <Table.Column dataIndex="operatorId" title="操作员" width={90} />
+                        <Table.Column 
+                          dataIndex="createdAt" 
+                          title="产生时间" 
+                          render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                        />
+                      </Table>
+                    )
+                  },
+                  {
+                    key: 'refund',
+                    label: <span><ReloadOutlined />退款售后记录</span>,
+                    children: (
+                      <Table 
+                        dataSource={refundRecords} 
+                        rowKey="id" 
+                        loading={loadingDrawerData} 
+                        size="small"
+                        pagination={{ pageSize: 5 }}
+                      >
+                        <Table.Column dataIndex="no" title="退款编号" />
+                        <Table.Column 
+                          dataIndex="refundPrice" 
+                          title="实退金额" 
+                          render={(val) => <strong style={{ color: '#cf1322' }}>¥{(val / 100).toFixed(2)}</strong>} 
+                        />
+                        <Table.Column 
+                          dataIndex="status" 
+                          title="退款状态" 
+                          render={(status) => {
+                            const maps: any = {
+                              APPLY: { label: '待审批', color: 'orange' },
+                              APPROVED: { label: '已同意', color: 'green' },
+                              REJECTED: { label: '已拒绝', color: 'red' },
+                            };
+                            const config = maps[status] || { label: status, color: 'default' };
+                            return <Tag color={config.color}>{config.label}</Tag>;
+                          }}
+                        />
+                        <Table.Column dataIndex="reason" title="退款原因" />
+                        <Table.Column dataIndex="auditRemark" title="审核备注" render={(val) => val || '-'} />
+                        <Table.Column 
+                          dataIndex="createdAt" 
+                          title="申请时间" 
+                          render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                        />
+                      </Table>
+                    )
+                  },
+                  {
+                    key: 'level_history',
+                    label: <span><TrophyOutlined />等级变动历史</span>,
+                    children: (
+                      <Table 
+                        dataSource={levelRecords} 
+                        rowKey="id" 
+                        loading={loadingDrawerData} 
+                        size="small"
+                        pagination={{ pageSize: 5 }}
+                      >
+                        <Table.Column dataIndex="id" title="流水ID" width={70} />
+                        <Table.Column 
+                          dataIndex="oldLevelName" 
+                          title="变动前等级" 
+                          render={(val) => val ? <Tag color="blue">{val}</Tag> : <Tag>普通会员</Tag>}
+                        />
+                        <Table.Column 
+                          dataIndex="newLevelName" 
+                          title="变动后等级" 
+                          render={(val) => val ? <Tag color="purple">{val}</Tag> : <Tag>普通会员</Tag>}
+                        />
+                        <Table.Column dataIndex="experience" title="变动时成长值" />
+                        <Table.Column dataIndex="description" title="原因描述" />
+                        <Table.Column dataIndex="operatorId" title="操作员" width={90} />
+                        <Table.Column 
+                          dataIndex="createdAt" 
+                          title="变动时间" 
+                          render={(val) => dayjs(val).format('YYYY-MM-DD HH:mm:ss')} 
+                        />
+                      </Table>
+                    )
+                  }
+                ]}
+              />
             </Card>
           </Space>
         )}

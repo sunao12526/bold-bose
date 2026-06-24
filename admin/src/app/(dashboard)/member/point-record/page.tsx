@@ -39,7 +39,7 @@ export default function MemberPointRecordList() {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Card style={{ marginBottom: '16px' }} bodyStyle={{ padding: '16px' }}>
+      <Card style={{ marginBottom: '16px' }} styles={{ body: { padding: '16px' } }}>
         <Form {...searchFormProps} layout="inline">
           <Form.Item name="memberId" label="会员 ID">
             <Input placeholder="输入精确会员ID" allowClear style={{ width: '150px' }} />
