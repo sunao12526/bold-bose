@@ -19,7 +19,7 @@ import { RequirePermissions } from '../../../shared/decorators/require-permissio
 import { Log } from '../../../shared/decorators/log.decorator';
 import { UserSessionQueryDto } from '../dto/session-input.dto';
 import { UserSessionResponseDto } from '../dto/session-response.dto';
-import { SuccessResponseDto } from '../../auth/dto/auth-response.dto';
+import { SuccessResponseDto } from '../../../shared/dto/success-response.dto';
 
 @ApiTags('系统 - 在线用户会话')
 @ApiBearerAuth('JWT-auth')

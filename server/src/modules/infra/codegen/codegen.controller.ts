@@ -27,7 +27,7 @@ import {
   CodegenCodePreviewResponseDto,
   CodegenWriteResultResponseDto,
 } from '../dto/codegen-response.dto';
-import { SuccessResponseDto } from '../../auth/dto/auth-response.dto';
+import { SuccessResponseDto } from '../../../shared/dto/success-response.dto';
 
 @ApiTags('基础设施 - 代码生成器')
 @ApiBearerAuth('JWT-auth')

@@ -16,7 +16,7 @@ import {
 import { NotifyService } from './notify.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { NotifyMessageResponseDto } from '../dto/notify-response.dto';
-import { SuccessResponseDto } from '../../auth/dto/auth-response.dto';
+import { SuccessResponseDto } from '../../../shared/dto/success-response.dto';
 
 @ApiTags('系统 - 站内信消息')
 @ApiBearerAuth('JWT-auth')

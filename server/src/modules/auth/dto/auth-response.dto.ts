@@ -33,11 +33,8 @@ export const SocialLoginUrlResponseSchema = z.object({
 });
 export class SocialLoginUrlResponseDto extends createZodDto(SocialLoginUrlResponseSchema) {}
 
-export const SuccessResponseSchema = z.object({
-  success: z.boolean().describe('执行操作是否成功'),
-  message: z.string().optional().describe('提示消息'),
-});
-export class SuccessResponseDto extends createZodDto(SuccessResponseSchema) {}
+export { SuccessResponseSchema, SuccessResponseDto } from '../../../shared/dto/success-response.dto';
+
 
 export const SocialBindStatusSchema = z.object({
   type: z.string().describe('社交平台类型 (例如: GITHUB)'),

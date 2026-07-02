@@ -14,7 +14,7 @@ import { Log } from '../../shared/decorators/log.decorator';
 import { FileService } from '../infra/file/file.service';
 import { UpdateProfileDto, UpdatePasswordDto } from './dto/profile-input.dto';
 import { ProfileResponseDto, ProfileUpdateResponseDto, UploadAvatarResponseDto } from './dto/profile-response.dto';
-import { SuccessResponseDto } from '../auth/dto/auth-response.dto';
+import { SuccessResponseDto } from '../../shared/dto/success-response.dto';
 
 @ApiTags('系统 - 个人中心')
 @ApiBearerAuth('JWT-auth')

@@ -24,7 +24,7 @@ import { Log } from '../../shared/decorators/log.decorator';
 import { RoleQueryDto } from './dto/role-query.dto';
 import { CreateRoleDto, UpdateRoleDto, AssignRoleMenusDto } from './dto/role-input.dto';
 import { RoleResponseDto, RoleListResponseDto } from './dto/role-response.dto';
-import { SuccessResponseDto } from '../auth/dto/auth-response.dto';
+import { SuccessResponseDto } from '../../shared/dto/success-response.dto';
 
 @ApiTags('系统 - 角色管理')
 @ApiBearerAuth('JWT-auth')

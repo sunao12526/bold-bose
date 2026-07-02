@@ -22,7 +22,7 @@ import { RequirePermissions } from '../../../shared/decorators/require-permissio
 import { Log } from '../../../shared/decorators/log.decorator';
 import { CreateJobDto, UpdateJobDto } from '../dto/job-input.dto';
 import { JobResponseDto } from '../dto/job-response.dto';
-import { SuccessResponseDto } from '../../auth/dto/auth-response.dto';
+import { SuccessResponseDto } from '../../../shared/dto/success-response.dto';
 
 @ApiTags('基础设施 - 定时任务配置')
 @ApiBearerAuth('JWT-auth')

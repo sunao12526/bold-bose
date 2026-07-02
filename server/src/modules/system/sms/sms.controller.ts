@@ -39,7 +39,7 @@ import {
   SmsTemplateListResponseDto,
   SmsLogListResponseDto,
 } from '../dto/sms-response.dto';
-import { SuccessResponseDto } from '../../auth/dto/auth-response.dto';
+import { SuccessResponseDto } from '../../../shared/dto/success-response.dto';
 
 // ================= SMS Channels Controller =================
 

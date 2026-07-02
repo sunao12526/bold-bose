@@ -24,7 +24,7 @@ import { Throttle } from '@nestjs/throttler';
 import { SmsCodeQueryDto } from '../dto/sms-code-query.dto';
 import { SendSmsCodeDto, VerifySmsCodeDto } from '../dto/sms-input.dto';
 import { SmsCodeListResponseDto, SendSmsCodeResponseDto } from '../dto/sms-response.dto';
-import { SuccessResponseDto } from '../../auth/dto/auth-response.dto';
+import { SuccessResponseDto } from '../../../shared/dto/success-response.dto';
 
 @ApiTags('系统 - 短信验证码')
 @Controller('system/sms')

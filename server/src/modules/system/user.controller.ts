@@ -24,7 +24,7 @@ import { Log } from '../../shared/decorators/log.decorator';
 import { UserQueryDto } from './dto/user-query.dto';
 import { CreateUserDto, UpdateUserDto, AssignUserRolesDto } from './dto/user-input.dto';
 import { UserResponseDto, UserListResponseDto } from './dto/user-response.dto';
-import { SuccessResponseDto } from '../auth/dto/auth-response.dto';
+import { SuccessResponseDto } from '../../shared/dto/success-response.dto';
 
 @ApiTags('系统 - 用户管理')
 @ApiBearerAuth('JWT-auth')

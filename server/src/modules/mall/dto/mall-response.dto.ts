@@ -62,7 +62,7 @@ export const MallCouponResponseSchema = z.object({
   takeCount: z.number().int().describe('领用总量'),
   useCount: z.number().int().describe('使用总量'),
   scopeType: z.enum(MallCouponScopeType).describe('商品适用范围类型'),
-  scopeValue: z.any().nullable().describe('适用范围具体 ID 列表 (JSON)'),
+  scopeValue: z.array(z.number()).nullable().describe('适用范围具体 ID 列表'),
   validityType: z.enum(MallCouponValidityType).describe('有效期类型'),
   validStartTime: z.string().nullable().describe('固定日期有效开始时间'),
   validEndTime: z.string().nullable().describe('固定日期有效截止时间'),
@@ -94,6 +94,13 @@ export const MallCouponUserResponseSchema = z.object({
 });
 export class MallCouponUserResponseDto extends createZodDto(MallCouponUserResponseSchema) {}
 
+export const SkuPropertyResponseSchema = z.object({
+  propertyId: z.number().int().describe('规格属性 ID'),
+  propertyName: z.string().describe('规格属性名称'),
+  valueId: z.number().int().describe('规格属性值 ID'),
+  valueName: z.string().describe('规格属性值名称'),
+});
+
 export const MallOrderItemResponseSchema = z.object({
   id: z.number().int().describe('订单项 ID'),
   orderId: z.number().int().describe('关联的订单 ID'),
@@ -101,11 +108,12 @@ export const MallOrderItemResponseSchema = z.object({
   skuId: z.number().int().describe('商品 SKU ID'),
   spuName: z.string().describe('商品名称'),
   picUrl: z.string().describe('商品主图 URL'),
-  properties: z.any().describe('商品属性规格 JSON 数据'),
+  properties: z.array(SkuPropertyResponseSchema).describe('商品属性规格列表'),
   price: z.number().int().describe('下单单价 (分)'),
   count: z.number().int().describe('购买数量'),
 });
 export class MallOrderItemResponseDto extends createZodDto(MallOrderItemResponseSchema) {}
+
 
 export const MallOrderResponseSchema = z.object({
   id: z.number().int().describe('商城订单自增 ID'),
@@ -163,7 +171,7 @@ export class MallOrderRefundListResponseDto extends createZodDto(MallOrderRefund
 export const SkuResponseSchema = z.object({
   id: z.number().int().describe('SKU ID'),
   spuId: z.number().int().describe('SPU ID'),
-  properties: z.any().describe('SKU属性规格'),
+  properties: z.array(SkuPropertyResponseSchema).describe('SKU属性规格'),
   price: z.number().int().describe('单价 (分)'),
   marketPrice: z.number().int().nullable().describe('市场价 (分)'),
   costPrice: z.number().int().nullable().describe('成本价 (分)'),
@@ -180,7 +188,7 @@ export const SpuResponseSchema = z.object({
   categoryId: z.number().int().describe('分类 ID'),
   brandId: z.number().int().nullable().describe('品牌 ID'),
   picUrl: z.string().describe('主图 URL'),
-  sliderPicUrls: z.any().describe('轮播图 URLs'),
+  sliderPicUrls: z.array(z.string()).describe('轮播图 URLs'),
   description: z.string().nullable().describe('商品描述'),
   sort: z.number().int().describe('排序'),
   status: z.enum(CommonStatus).describe('启用状态'),

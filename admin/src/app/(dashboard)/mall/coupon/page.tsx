@@ -77,7 +77,7 @@ export default function CouponPage() {
         ]);
         setCategories(catRes.data || []);
         setSpus(spuRes.data?.items || spuRes.data || []);
-        setMembers(memRes.data || []);
+        setMembers(memRes.data?.items || memRes.data || []);
       } catch (err) {
         console.error('Failed to load baseline dictionaries', err);
       }

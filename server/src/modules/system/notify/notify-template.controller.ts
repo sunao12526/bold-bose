@@ -22,7 +22,7 @@ import { RequirePermissions } from '../../../shared/decorators/require-permissio
 import { Log } from '../../../shared/decorators/log.decorator';
 import { CreateNotifyTemplateDto, UpdateNotifyTemplateDto, SendTestNotifyDto } from '../dto/notify-input.dto';
 import { NotifyTemplateResponseDto } from '../dto/notify-response.dto';
-import { SuccessResponseDto } from '../../auth/dto/auth-response.dto';
+import { SuccessResponseDto } from '../../../shared/dto/success-response.dto';
 
 @ApiTags('系统 - 站内信模板')
 @ApiBearerAuth('JWT-auth')
