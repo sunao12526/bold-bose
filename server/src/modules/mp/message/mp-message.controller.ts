@@ -1,11 +1,19 @@
 import { Controller, Get, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { MpMessageService } from './mp-message.service';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../../shared/decorators/require-permissions.decorator';
-
 import { MessageQueryDto } from '../dto/message-query.dto';
+import { MpMessageResponseDto, MpMessageListResponseDto } from '../dto/mp-response.dto';
 
+@ApiTags('微信公众号 - 消息历史')
+@ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('mp/message')
 export class MpMessageController {
@@ -13,9 +21,14 @@ export class MpMessageController {
 
   @Get()
   @RequirePermissions('mp:message:query')
+  @ApiOperation({ summary: '分页查询消息历史列表' })
+  @ApiOkResponse({ type: MpMessageListResponseDto })
   async findAll(@Query() query: MessageQueryDto) { return this.service.findAll(query); }
 
   @Get(':id')
   @RequirePermissions('mp:message:query')
+  @ApiOperation({ summary: '根据 ID 获取消息详情' })
+  @ApiOkResponse({ type: MpMessageResponseDto })
   async findOne(@Param('id', ParseIntPipe) id: number) { return this.service.findOne(id); }
 }
+

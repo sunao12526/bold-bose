@@ -181,7 +181,7 @@ export class UserService {
 
   async updateProfile(
     userId: number,
-    data: { nickname: string; email?: string; mobile?: string; avatar?: string },
+    data: { nickname: string; email?: string | null; mobile?: string | null; avatar?: string | null },
   ) {
     return this.prisma.user.update({
       where: { id: userId },

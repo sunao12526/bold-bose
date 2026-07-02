@@ -10,13 +10,22 @@ import {
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { OAuth2Service } from './oauth2.service';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { Public } from '../../../shared/decorators/public.decorator';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
-import { Response } from 'express';
+import type { Response } from 'express';
+import { OAuth2AuthorizeQueryDto, OAuth2TokenBodyDto } from '../dto/oauth2-input.dto';
+import { OAuth2TokenResponseDto, OAuth2UserInfoResponseDto } from '../dto/oauth2-response.dto';
 
+@ApiTags('系统 - OAuth2 认证流')
 @Controller('system/oauth2')
 export class OAuth2Controller {
   constructor(
@@ -27,15 +36,15 @@ export class OAuth2Controller {
 
   @UseGuards(JwtAuthGuard)
   @Get('authorize')
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ summary: 'OAuth2 授权申请接口 (Authorization Code 模式)' })
   async authorize(
-    @Query('client_id') clientId: string,
-    @Query('redirect_uri') redirectUri: string,
-    @Query('response_type') responseType: string,
-    @Query('scope') scopeStr: string,
-    @Query('state') state: string,
+    @Query() query: OAuth2AuthorizeQueryDto,
     @Req() req: any,
-    @Res() res: any,
+    @Res() res: Response,
   ) {
+    const { client_id: clientId, redirect_uri: redirectUri, response_type: responseType, scope: scopeStr, state } = query;
+
     if (responseType !== 'code') {
       throw new BadRequestException(
         'Unsupported response_type. Must be "code".',
@@ -74,13 +83,13 @@ export class OAuth2Controller {
 
   @Public()
   @Post('token')
+  @ApiOperation({ summary: 'OAuth2 获取 Access Token 接口' })
+  @ApiOkResponse({ type: OAuth2TokenResponseDto })
   async token(
-    @Body('grant_type') grantType: string,
-    @Body('code') code: string,
-    @Body('client_id') clientId: string,
-    @Body('client_secret') clientSecret: string,
-    @Body('redirect_uri') redirectUri: string,
+    @Body() body: OAuth2TokenBodyDto,
   ) {
+    const { grant_type: grantType, code, client_id: clientId, client_secret: clientSecret, redirect_uri: redirectUri } = body;
+
     const clients = await this.prisma.oAuth2Client.findMany({
       where: { clientId, status: 'ENABLE' },
     });
@@ -94,6 +103,9 @@ export class OAuth2Controller {
     }
 
     if (grantType === 'authorization_code') {
+      if (!code) {
+        throw new BadRequestException('Code is required for authorization_code grant type.');
+      }
       try {
         const { userId, scopes } = await this.oauth2Service.verifyCode(
           code,
@@ -141,6 +153,8 @@ export class OAuth2Controller {
 
   @Public()
   @Get('userinfo')
+  @ApiOperation({ summary: 'OAuth2 获取用户信息接口 (携带 Bearer Access Token)' })
+  @ApiOkResponse({ type: OAuth2UserInfoResponseDto })
   async userinfo(@Req() req: any) {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -153,7 +167,7 @@ export class OAuth2Controller {
       const payload = this.jwtService.verify(token);
       if (payload.clientId) {
         // Client credentials token
-        return { client_id: payload.clientId, scopes: payload.scopes };
+        return { sub: `client_${payload.clientId}`, client_id: payload.clientId, scopes: payload.scopes };
       }
 
       const user = await this.prisma.user.findUnique({
@@ -184,3 +198,4 @@ export class OAuth2Controller {
     }
   }
 }
+
