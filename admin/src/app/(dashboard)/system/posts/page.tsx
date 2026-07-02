@@ -6,6 +6,8 @@ import React, { useState } from 'react';
 import { List, CreateButton, EditButton, DeleteButton } from '@refinedev/antd';
 import { Table, Space, Modal, Form, Input, InputNumber, Select, Tag } from 'antd';
 import { useTable, useForm, useSelect } from '@refinedev/antd';
+import { ExcelExportButton } from '@/components/excel/ExcelExportButton';
+import { ExcelImportButton } from '@/components/excel/ExcelImportButton';
 
 export default function PostsList() {
   const { tableProps, tableQuery: tableQueryResult } = useTable({
@@ -49,7 +51,45 @@ export default function PostsList() {
     <div style={{ padding: '24px' }}>
       <List
         headerProps={{
-          extra: <CreateButton onClick={handleCreate} />,
+          extra: (
+            <Space>
+              <ExcelImportButton
+                resource="system/posts"
+                columns={[
+                  { title: '岗位名称', dataIndex: 'name' },
+                  { title: '岗位编码', dataIndex: 'code' },
+                  { title: '显示顺序', dataIndex: 'sort' },
+                  { title: '备注', dataIndex: 'remark' },
+                ]}
+                prepareData={(data) =>
+                  data.map((item) => ({
+                    ...item,
+                    sort: item.sort ? Number(item.sort) : 0,
+                    status: 'ENABLE',
+                  }))
+                }
+                onSuccess={() => tableQueryResult.refetch()}
+              />
+              <ExcelExportButton
+                resource="system/posts"
+                filename="岗位列表"
+                columns={[
+                  { title: '岗位编号', dataIndex: 'id' },
+                  { title: '岗位名称', dataIndex: 'name' },
+                  { title: '岗位编码', dataIndex: 'code' },
+                  { title: '显示顺序', dataIndex: 'sort' },
+                  {
+                    title: '状态',
+                    dataIndex: 'status',
+                    render: (status) => (status === 'ENABLE' ? '启用' : '禁用'),
+                  },
+                  { title: '备注', dataIndex: 'remark' },
+                  { title: '创建时间', dataIndex: 'createdAt', render: (val) => val ? new Date(val).toLocaleString() : '-' },
+                ]}
+              />
+              <CreateButton onClick={handleCreate} />
+            </Space>
+          ),
         }}
       >
         <Table {...tableProps} rowKey="id">

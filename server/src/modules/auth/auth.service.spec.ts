@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserCacheService } from '../../shared/user-cache.service';
+import { IpService } from '../../shared/ip/ip.service';
 import { UnauthorizedException, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
@@ -51,6 +52,10 @@ describe('AuthService', () => {
     invalidateUser: jest.fn(),
   };
 
+  const mockIpService = {
+    search: jest.fn().mockResolvedValue('内网IP'),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -58,6 +63,7 @@ describe('AuthService', () => {
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: UserCacheService, useValue: mockUserCacheService },
+        { provide: IpService, useValue: mockIpService },
       ],
     }).compile();
 

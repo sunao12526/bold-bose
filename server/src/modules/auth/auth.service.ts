@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { UserCacheService } from '../../shared/user-cache.service';
+import { IpService } from '../../shared/ip/ip.service';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 
@@ -18,6 +19,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private userCache: UserCacheService,
+    private ipService: IpService,
   ) {}
 
   private parseUserAgent(userAgentStr: string) {
@@ -45,10 +47,12 @@ export class AuthService {
   async login(loginDto: LoginDto, ip = '127.0.0.1', userAgent = '') {
     const writeLog = async (status: string, message: string) => {
       try {
+        const location = await this.ipService.search(ip);
         await this.prisma.loginLog.create({
           data: {
             username: loginDto.username,
             ip,
+            location,
             userAgent,
             status,
             message,
@@ -270,8 +274,9 @@ export class AuthService {
       message: string,
     ) => {
       try {
+        const location = await this.ipService.search(ip);
         await this.prisma.loginLog.create({
-          data: { username, ip, userAgent, status, message },
+          data: { username, ip, location, userAgent, status, message },
         });
       } catch (err) {
         this.logger.error('Failed to write login log:', err);

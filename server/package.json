@@ -36,6 +36,7 @@
     "@types/cron": "^2.0.1",
     "bcrypt": "^6.0.0",
     "cache-manager": "^7.2.8",
+    "ip2region-ts": "^2.0.1",
     "nestjs-pino": "^4.6.1",
     "nestjs-zod": "^5.4.0",
     "nodemailer": "^8.0.11",

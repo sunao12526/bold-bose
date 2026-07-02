@@ -6,6 +6,8 @@ import React, { useState } from 'react';
 import { List, CreateButton, EditButton, DeleteButton } from '@refinedev/antd';
 import { Table, Space, Modal, Form, Input, Select, Tag } from 'antd';
 import { useTable, useForm, useSelect } from '@refinedev/antd';
+import { ExcelExportButton } from '@/components/excel/ExcelExportButton';
+import { ExcelImportButton } from '@/components/excel/ExcelImportButton';
 
 export default function UserList() {
   const { tableProps, tableQuery: tableQueryResult } = useTable({
@@ -63,7 +65,53 @@ export default function UserList() {
     <div style={{ padding: '24px' }}>
       <List
         headerProps={{
-          extra: <CreateButton onClick={handleCreate} />,
+          extra: (
+            <Space>
+              <ExcelImportButton
+                resource="system/user"
+                columns={[
+                  { title: '用户名', dataIndex: 'username' },
+                  { title: '昵称', dataIndex: 'nickname' },
+                  { title: '密码', dataIndex: 'password' },
+                  { title: '邮箱', dataIndex: 'email' },
+                  { title: '手机号', dataIndex: 'mobile' },
+                  { title: '备注', dataIndex: 'remark' },
+                ]}
+                prepareData={(data) =>
+                  data.map((item) => ({
+                    ...item,
+                    password: item.password || '123456',
+                    status: 'ENABLE',
+                  }))
+                }
+                onSuccess={() => tableQueryResult.refetch()}
+              />
+              <ExcelExportButton
+                resource="system/user"
+                filename="用户列表"
+                columns={[
+                  { title: 'ID', dataIndex: 'id' },
+                  { title: '用户名', dataIndex: 'username' },
+                  { title: '昵称', dataIndex: 'nickname' },
+                  { title: '邮箱', dataIndex: 'email' },
+                  { title: '手机号', dataIndex: 'mobile' },
+                  { title: '部门', dataIndex: 'dept.name' },
+                  {
+                    title: '角色',
+                    dataIndex: 'roles',
+                    render: (roles: any[]) => roles?.map((r) => r.role.name).join(','),
+                  },
+                  {
+                    title: '状态',
+                    dataIndex: 'status',
+                    render: (status) => (status === 'ENABLE' ? '开启' : '禁用'),
+                  },
+                  { title: '创建时间', dataIndex: 'createdAt', render: (val) => val ? new Date(val).toLocaleString() : '-' },
+                ]}
+              />
+              <CreateButton onClick={handleCreate} />
+            </Space>
+          ),
         }}
       >
         <Table {...tableProps} rowKey="id">

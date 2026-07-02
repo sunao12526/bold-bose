@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { List, CreateButton, EditButton, DeleteButton } from '@refinedev/antd';
 import { Table, Space, Modal, Form, Input, InputNumber, Select, Tag } from 'antd';
 import { useTable, useForm, useSelect } from '@refinedev/antd';
+import { ExcelExportButton } from '@/components/excel/ExcelExportButton';
 
 export default function DeptList() {
   const { tableProps, tableQuery: tableQueryResult } = useTable({
@@ -96,7 +97,29 @@ export default function DeptList() {
     <div style={{ padding: '24px' }}>
       <List
         headerProps={{
-          extra: <CreateButton onClick={handleCreate} />,
+          extra: (
+            <Space>
+              <ExcelExportButton
+                resource="system/dept"
+                filename="部门列表"
+                columns={[
+                  { title: '部门ID', dataIndex: 'id' },
+                  { title: '部门名称', dataIndex: 'name' },
+                  { title: '排序', dataIndex: 'sort' },
+                  { title: '负责人', dataIndex: 'leader.nickname' },
+                  { title: '联系电话', dataIndex: 'phone' },
+                  { title: '电子邮箱', dataIndex: 'email' },
+                  {
+                    title: '状态',
+                    dataIndex: 'status',
+                    render: (status) => (status === 'ENABLE' ? '启用' : '禁用'),
+                  },
+                  { title: '创建时间', dataIndex: 'createdAt', render: (val) => val ? new Date(val).toLocaleString() : '-' },
+                ]}
+              />
+              <CreateButton onClick={handleCreate} />
+            </Space>
+          ),
         }}
       >
         <Table {...tableProps} dataSource={treeData} rowKey="id" pagination={false}>

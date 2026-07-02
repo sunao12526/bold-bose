@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { List, CreateButton, EditButton, DeleteButton } from '@refinedev/antd';
 import { Table, Space, Modal, Form, Input, Select, Tag, Switch } from 'antd';
 import { useTable, useForm } from '@refinedev/antd';
+import { ExcelExportButton } from '@/components/excel/ExcelExportButton';
 
 export default function ConfigList() {
   const { tableProps, tableQuery: tableQueryResult } = useTable({
@@ -40,7 +41,28 @@ export default function ConfigList() {
     <div style={{ padding: '24px' }}>
       <List
         headerProps={{
-          extra: <CreateButton onClick={handleCreate} />,
+          extra: (
+            <Space>
+              <ExcelExportButton
+                resource="system/config"
+                filename="参数配置列表"
+                columns={[
+                  { title: '参数ID', dataIndex: 'id' },
+                  { title: '参数名称', dataIndex: 'name' },
+                  { title: '参数键名', dataIndex: 'key' },
+                  { title: '参数键值', dataIndex: 'value' },
+                  {
+                    title: '系统内置',
+                    dataIndex: 'visible',
+                    render: (visible) => (visible ? '是' : '否'),
+                  },
+                  { title: '备注', dataIndex: 'remark' },
+                  { title: '创建时间', dataIndex: 'createdAt', render: (val) => val ? new Date(val).toLocaleString() : '-' },
+                ]}
+              />
+              <CreateButton onClick={handleCreate} />
+            </Space>
+          ),
         }}
       >
         <Table {...tableProps} rowKey="id">

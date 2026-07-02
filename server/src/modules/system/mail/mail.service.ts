@@ -169,6 +169,36 @@ export class MailService {
     });
   }
 
+  async ensureTemplateExists(
+    code: string,
+    defaultData: { name: string; title: string; content: string },
+  ) {
+    let template = await this.prisma.mailTemplate.findUnique({
+      where: { code },
+    });
+    if (!template) {
+      const defaultAccount = await this.prisma.mailAccount.findFirst({
+        where: { status: 'ENABLE' },
+      });
+      if (!defaultAccount) {
+        throw new Error(
+          '未找到可用的邮件发信账号，请先在[系统管理 - 邮件配置]中配置发信账号。',
+        );
+      }
+      template = await this.prisma.mailTemplate.create({
+        data: {
+          accountId: defaultAccount.id,
+          code,
+          name: defaultData.name,
+          title: defaultData.title,
+          content: defaultData.content,
+          status: 'ENABLE',
+        },
+      });
+    }
+    return template;
+  }
+
   // ================= Mail Sending Simulation =================
 
   async sendMail(

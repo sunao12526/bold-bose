@@ -164,6 +164,35 @@ export class SmsService {
     });
   }
 
+  async ensureTemplateExists(
+    code: string,
+    defaultData: { name: string; content: string },
+  ) {
+    let template = await this.prisma.smsTemplate.findUnique({
+      where: { code },
+    });
+    if (!template) {
+      const defaultChannel = await this.prisma.smsChannel.findFirst({
+        where: { status: 'ENABLE' },
+      });
+      if (!defaultChannel) {
+        throw new Error(
+          '未找到启用的短信渠道，请先在[系统管理 - 短信配置]中配置短信发信渠道。',
+        );
+      }
+      template = await this.prisma.smsTemplate.create({
+        data: {
+          channelId: defaultChannel.id,
+          code,
+          name: defaultData.name,
+          content: defaultData.content,
+          status: 'ENABLE',
+        },
+      });
+    }
+    return template;
+  }
+
   // ================= SMS Sending Simulation =================
 
   async sendSms(

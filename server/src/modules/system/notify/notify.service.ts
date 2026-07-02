@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { ConfigService } from '../config/config.service';
-import * as nodemailer from 'nodemailer';
+import { MailService } from '../mail/mail.service';
+import { SmsService } from '../sms/sms.service';
 
 @Injectable()
 export class NotifyService {
@@ -14,6 +15,8 @@ export class NotifyService {
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
+    private mailService: MailService,
+    private smsService: SmsService,
   ) {}
 
   // ==================== Templates CRUD ====================
@@ -147,7 +150,14 @@ export class NotifyService {
         errorMessage = `用户 [${user.username}] 未绑定邮箱地址`;
       } else {
         try {
-          await this.sendEmail(user.email, renderedTitle, renderedContent);
+          // 确保 MailTemplate 存在（如果不存在则基于 NotifyTemplate 动态新建并关联默认邮件账号）
+          await this.mailService.ensureTemplateExists(template.code, {
+            name: template.name,
+            title: template.title,
+            content: template.content,
+          });
+          // 使用统一的邮件服务进行发信和 MailLog 日志记录
+          await this.mailService.sendMail(template.code, user.email, variables);
         } catch (err: any) {
           status = 500;
           errorMessage = err.message || '发送邮件失败';
@@ -168,13 +178,23 @@ export class NotifyService {
         },
       });
     } else if (template.type === 'SMS') {
-      // SMS Notification (Simulated)
-      this.logger.log(
-        `[SMS SEND SIMULATION] To: ${user.mobile || 'Unknown'}, Body: ${renderedContent}`,
-      );
+      // SMS Notification
       if (!user.mobile) {
         status = 500;
         errorMessage = `用户 [${user.username}] 未绑定手机号`;
+      } else {
+        try {
+          // 确保 SmsTemplate 存在（如果不存在则基于 NotifyTemplate 动态新建并关联默认短信渠道）
+          await this.smsService.ensureTemplateExists(template.code, {
+            name: template.name,
+            content: template.content,
+          });
+          // 使用统一的短信服务进行发送和 SmsLog 日志记录
+          await this.smsService.sendSms(template.code, user.mobile, variables);
+        } catch (err: any) {
+          status = 500;
+          errorMessage = err.message || '发送短信失败';
+        }
       }
 
       await this.prisma.notifyMessage.create({
@@ -198,61 +218,6 @@ export class NotifyService {
     }
 
     return { success: true };
-  }
-
-  /**
-   * Helper to dynamic load SMTP config and send an email
-   */
-  private async sendEmail(to: string, subject: string, htmlContent: string) {
-    let host = 'smtp.mailtrap.io';
-    let port = 2525;
-    let username = '';
-    let password = '';
-    let secure = false;
-    let from = 'system@yudao.local';
-
-    // Attempt to load from dynamic configs
-    try {
-      const configHost = await this.configService.findByKey('sys.mail.host');
-      host = configHost.value;
-      const configPort = await this.configService.findByKey('sys.mail.port');
-      port = parseInt(configPort.value, 10) || port;
-      const configUsername =
-        await this.configService.findByKey('sys.mail.username');
-      username = configUsername.value;
-      const configPassword =
-        await this.configService.findByKey('sys.mail.password');
-      password = configPassword.value;
-      const configSsl = await this.configService.findByKey('sys.mail.ssl');
-      secure = configSsl.value === 'true' || configSsl.value === '1';
-      const configFrom = await this.configService.findByKey('sys.mail.from');
-      from = configFrom.value;
-    } catch (err) {
-      this.logger.warn(
-        'Unable to load SMTP configurations from SysConfig, falling back to process env defaults.',
-      );
-      host = process.env.SMTP_HOST || host;
-      port = parseInt(process.env.SMTP_PORT || '', 10) || port;
-      username = process.env.SMTP_USERNAME || username;
-      password = process.env.SMTP_PASSWORD || password;
-      secure = process.env.SMTP_SSL === 'true' || secure;
-      from = process.env.SMTP_FROM || from;
-    }
-
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure,
-      auth:
-        username && password ? { user: username, pass: password } : undefined,
-    });
-
-    await transporter.sendMail({
-      from,
-      to,
-      subject,
-      html: htmlContent,
-    });
   }
 
   // ==================== User Inbox Operations ====================

@@ -8,6 +8,7 @@ export class LoginLogService {
   async create(data: {
     username: string;
     ip: string;
+    location?: string | null;
     userAgent: string;
     status: string;
     message?: string;
@@ -16,6 +17,7 @@ export class LoginLogService {
       data: {
         username: data.username,
         ip: data.ip,
+        location: data.location || null,
         userAgent: data.userAgent,
         status: data.status,
         message: data.message || null,

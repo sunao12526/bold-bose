@@ -10,6 +10,7 @@ import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { PrismaService } from '../prisma/prisma.service';
 import { LOG_METADATA_KEY, LogOptions } from '../decorators/log.decorator';
+import { IpService } from '../ip/ip.service';
 
 @Injectable()
 export class LogInterceptor implements NestInterceptor {
@@ -18,6 +19,7 @@ export class LogInterceptor implements NestInterceptor {
   constructor(
     private reflector: Reflector,
     private prisma: PrismaService,
+    private ipService: IpService,
   ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -64,6 +66,8 @@ export class LogInterceptor implements NestInterceptor {
         ip = request.socket.remoteAddress;
       }
 
+      const location = await this.ipService.search(ip);
+
       await this.prisma.operationLog.create({
         data: {
           userId: user?.id || null,
@@ -74,6 +78,7 @@ export class LogInterceptor implements NestInterceptor {
           path: request.url,
           method: request.method,
           ip: typeof ip === 'string' ? ip.substring(0, 50) : '',
+          location,
           status,
           duration,
         },

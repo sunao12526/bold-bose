@@ -7,6 +7,7 @@ import { List, CreateButton, EditButton, DeleteButton } from '@refinedev/antd';
 import { Table, Space, Modal, Form, Input, Select, Tag, Row, Col, Card, Empty, Button } from 'antd';
 import { useTable, useForm } from '@refinedev/antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ExcelExportButton } from '@/components/excel/ExcelExportButton';
 
 export default function DictManagement() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -102,13 +103,30 @@ export default function DictManagement() {
           <Card 
             title="字典类型" 
             extra={
-              <Button 
-                type="primary" 
-                icon={<PlusOutlined />} 
-                onClick={handleCreateType}
-              >
-                新增类型
-              </Button>
+              <Space>
+                <ExcelExportButton
+                  resource="system/dict-type"
+                  filename="字典类型列表"
+                  columns={[
+                    { title: '类型ID', dataIndex: 'id' },
+                    { title: '字典名称', dataIndex: 'name' },
+                    { title: '字典类型', dataIndex: 'type' },
+                    {
+                      title: '状态',
+                      dataIndex: 'status',
+                      render: (status) => (status === 'ENABLE' ? '启用' : '禁用'),
+                    },
+                    { title: '备注', dataIndex: 'remark' },
+                  ]}
+                />
+                <Button 
+                  type="primary" 
+                  icon={<PlusOutlined />} 
+                  onClick={handleCreateType}
+                >
+                  新增类型
+                </Button>
+              </Space>
             }
           >
             <Table 
@@ -165,13 +183,32 @@ export default function DictManagement() {
             title={selectedType ? `字典数据 [${selectedType}]` : "字典数据"} 
             extra={
               selectedType && (
-                <Button 
-                  type="primary" 
-                  icon={<PlusOutlined />} 
-                  onClick={handleCreateData}
-                >
-                  新增数据
-                </Button>
+                <Space>
+                  <ExcelExportButton
+                    resource="system/dict-data"
+                    filename={`字典数据-${selectedType}`}
+                    filters={[{ field: 'dictType', operator: 'eq', value: selectedType }]}
+                    columns={[
+                      { title: '数据ID', dataIndex: 'id' },
+                      { title: '数据标签', dataIndex: 'label' },
+                      { title: '数据键值', dataIndex: 'value' },
+                      { title: '显示排序', dataIndex: 'sort' },
+                      {
+                        title: '状态',
+                        dataIndex: 'status',
+                        render: (status) => (status === 'ENABLE' ? '启用' : '禁用'),
+                      },
+                      { title: '备注', dataIndex: 'remark' },
+                    ]}
+                  />
+                  <Button 
+                    type="primary" 
+                    icon={<PlusOutlined />} 
+                    onClick={handleCreateData}
+                  >
+                    新增数据
+                  </Button>
+                </Space>
               )
             }
           >

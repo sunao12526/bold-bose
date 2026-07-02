@@ -7,6 +7,7 @@ import { List } from '@refinedev/antd';
 import { Table, Space, Button, Modal, Descriptions, Tag } from 'antd';
 import { useTable } from '@refinedev/antd';
 import { EyeOutlined } from '@ant-design/icons';
+import { ExcelExportButton } from '@/components/excel/ExcelExportButton';
 
 export default function LogList() {
   const { tableProps } = useTable({
@@ -34,7 +35,34 @@ export default function LogList() {
 
   return (
     <div style={{ padding: '24px' }}>
-      <List>
+      <List
+        headerProps={{
+          extra: (
+            <ExcelExportButton
+              resource="infra/log"
+              filename="操作日志列表"
+              columns={[
+                { title: 'ID', dataIndex: 'id' },
+                { title: '操作人', dataIndex: 'username' },
+                { title: '系统模块', dataIndex: 'module' },
+                { title: '操作类型', dataIndex: 'type' },
+                { title: '操作描述', dataIndex: 'description' },
+                { title: '请求方式', dataIndex: 'method' },
+                { title: '请求路径', dataIndex: 'path' },
+                { title: '主机地址', dataIndex: 'ip' },
+                { title: '操作地点', dataIndex: 'location' },
+                {
+                  title: '操作状态',
+                  dataIndex: 'status',
+                  render: (status) => (status === 200 ? '成功' : '失败'),
+                },
+                { title: '执行耗时', dataIndex: 'duration', render: (val) => `${val} ms` },
+                { title: '操作时间', dataIndex: 'createdAt', render: (val) => val ? new Date(val).toLocaleString() : '-' },
+              ]}
+            />
+          )
+        }}
+      >
         <Table {...tableProps} rowKey="id">
           <Table.Column dataIndex="id" title="ID" width={80} />
           <Table.Column 
@@ -61,6 +89,7 @@ export default function LogList() {
           />
           <Table.Column dataIndex="path" title="请求路径" ellipsis />
           <Table.Column dataIndex="ip" title="主机地址" width={130} />
+          <Table.Column dataIndex="location" title="操作地点" width={150} render={(val) => val || '-'} />
           <Table.Column 
             dataIndex="status" 
             title="操作状态" 
@@ -130,6 +159,7 @@ export default function LogList() {
               <Tag color={getMethodColor(selectedRecord.method)}>{selectedRecord.method}</Tag>
             </Descriptions.Item>
             <Descriptions.Item label="操作 IP">{selectedRecord.ip}</Descriptions.Item>
+            <Descriptions.Item label="操作地点">{selectedRecord.location || '-'}</Descriptions.Item>
             <Descriptions.Item label="操作状态">
               <Tag color={selectedRecord.status === 200 ? 'green' : 'red'}>
                 {selectedRecord.status === 200 ? '成功' : '失败'}
