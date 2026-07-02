@@ -38,10 +38,28 @@ export default function MpAccountList() {
           <Table.Column dataIndex="name" title="公众号名称" />
           <Table.Column dataIndex="account" title="公众号账号" />
           <Table.Column dataIndex="appId" title="AppID" ellipsis />
+          <Table.Column dataIndex="qrCodeUrl" title="二维码" width={100} render={(url: string) => url ? <img src={url} alt="二维码" style={{ width: 40, height: 40, cursor: 'pointer' }} onClick={() => Modal.info({ title: '公众号二维码', content: <img src={url} alt="二维码" style={{ width: '100%' }} />, width: 340 })} /> : '-'} />
           <Table.Column dataIndex="status" title="状态" width={80} render={(s: string) => <Tag color={s === 'ENABLE' ? 'green' : 'red'}>{s === 'ENABLE' ? '启用' : '禁用'}</Tag>} />
-          <Table.Column title="操作" width={150} render={(_, r: any) => (
+          <Table.Column title="操作" width={320} render={(_, r: any) => (
             <Space>
               <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(r)}>编辑</Button>
+              <Button size="small" type="dashed" onClick={async () => {
+                try {
+                  const res = await axiosInstance.put(`/mp/account/generate-qr-code?id=${r.id}`);
+                  message.success('生成二维码成功');
+                  tableQuery.refetch();
+                } catch (e: any) {
+                  message.error(e.response?.data?.message || '生成失败');
+                }
+              }}>生成二维码</Button>
+              <Button size="small" danger type="dashed" onClick={async () => {
+                try {
+                  await axiosInstance.put(`/mp/account/clear-quota?id=${r.id}`);
+                  message.success('已清空 API 额度');
+                } catch (e: any) {
+                  message.error(e.response?.data?.message || '操作失败');
+                }
+              }}>重置配额</Button>
               <Popconfirm title="确定删除？" onConfirm={() => handleDelete(r.id)}><Button size="small" danger icon={<DeleteOutlined />}>删除</Button></Popconfirm>
             </Space>
           )} />

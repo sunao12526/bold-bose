@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -32,6 +32,22 @@ export class MpAccountController {
   @ApiOperation({ summary: '获取全部微信公众号账号列表' })
   @ApiOkResponse({ type: MpAccountResponseDto, isArray: true })
   async findAll() { return this.service.findAll(); }
+
+  @Put('generate-qr-code')
+  @RequirePermissions('mp:account:qr-code')
+  @ApiOperation({ summary: '生成公众号二维码' })
+  async generateQrCode(@Query('id', ParseIntPipe) id: number) {
+    const url = await this.service.generateAccountQrCode(id);
+    return { data: url };
+  }
+
+  @Put('clear-quota')
+  @RequirePermissions('mp:account:clear-quota')
+  @ApiOperation({ summary: '清空公众号 API 配额' })
+  async clearQuota(@Query('id', ParseIntPipe) id: number) {
+    await this.service.clearAccountQuota(id);
+    return { data: true };
+  }
 
   @Get(':id')
   @RequirePermissions('mp:account:query')

@@ -1092,8 +1092,27 @@ model MpAccount {
   users      MpUser[]
   tags       MpTag[]
   messages   MpMessage[]
+  messageTemplates MpMessageTemplate[]
 
   @@map("mp_account")
+}
+
+model MpMessageTemplate {
+  id              Int      @id @default(autoincrement())
+  accountId       Int      @map("account_id")
+  appId           String   @map("app_id") @db.VarChar(100)
+  templateId      String   @map("template_id") @db.VarChar(100)
+  title           String   @db.VarChar(200)
+  content         String   @db.VarChar(2000)
+  example         String?  @db.VarChar(2000)
+  primaryIndustry String?  @map("primary_industry") @db.VarChar(100)
+  deputyIndustry  String?  @map("deputy_industry") @db.VarChar(100)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  account         MpAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@map("mp_message_template")
 }
 
 model MpMaterial {

@@ -53,5 +53,23 @@ export class MpMenuController {
   @ApiOperation({ summary: '删除微信公众号菜单项' })
   @ApiOkResponse({ type: MpMenuResponseDto })
   async remove(@Param('id', ParseIntPipe) id: number) { return this.service.remove(id); }
+
+  @Post('publish')
+  @RequirePermissions('mp:menu:create')
+  @Log({ module: '公众号菜单', type: 'UPDATE', description: '下发菜单到微信' })
+  @ApiOperation({ summary: '一键把本地自定义菜单发布到微信服务器生效' })
+  async publish(@Query('accountId', ParseIntPipe) accountId: number) {
+    await this.service.publishMenu(accountId);
+    return { data: true };
+  }
+
+  @Post('sync')
+  @RequirePermissions('mp:menu:create')
+  @Log({ module: '公众号菜单', type: 'UPDATE', description: '同步微信端菜单' })
+  @ApiOperation({ summary: '从微信服务器拉取菜单配置到本地' })
+  async sync(@Query('accountId', ParseIntPipe) accountId: number) {
+    await this.service.syncMenu(accountId);
+    return { data: true };
+  }
 }
 

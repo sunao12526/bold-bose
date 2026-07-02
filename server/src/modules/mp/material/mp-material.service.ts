@@ -1,12 +1,81 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { MpClientService } from '../shared/mp-client.service';
 
 @Injectable()
 export class MpMaterialService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mpClient: MpClientService
+  ) {}
 
-  async create(data: any) {
-    return this.prisma.mpMaterial.create({ data });
+  /**
+   * 上传临时素材并入库
+   */
+  async uploadTemporary(
+    accountId: number,
+    type: string,
+    fileBuffer: Buffer,
+    fileName: string
+  ) {
+    const account = await this.prisma.mpAccount.findUnique({ where: { id: accountId } });
+    if (!account) throw new NotFoundException('公众号账号不存在');
+
+    // 上传到微信服务器
+    const wxMaterial = await this.mpClient.uploadTemporaryMaterial(account.appId, type, fileBuffer, fileName);
+
+    // 写入本地数据库
+    return this.prisma.mpMaterial.create({
+      data: {
+        accountId: account.id,
+        appId: account.appId,
+        mediaId: wxMaterial.media_id,
+        type,
+        permanent: false,
+        url: wxMaterial.url || '',
+        name: fileName,
+      },
+    });
+  }
+
+  /**
+   * 上传永久素材并入库
+   */
+  async uploadPermanent(
+    accountId: number,
+    type: string,
+    fileBuffer: Buffer,
+    fileName: string,
+    title?: string,
+    introduction?: string
+  ) {
+    const account = await this.prisma.mpAccount.findUnique({ where: { id: accountId } });
+    if (!account) throw new NotFoundException('公众号账号不存在');
+
+    // 上传到微信服务器
+    const wxMaterial = await this.mpClient.uploadPermanentMaterial(
+      account.appId,
+      type,
+      fileBuffer,
+      fileName,
+      title,
+      introduction
+    );
+
+    // 写入本地数据库
+    return this.prisma.mpMaterial.create({
+      data: {
+        accountId: account.id,
+        appId: account.appId,
+        mediaId: wxMaterial.media_id,
+        type,
+        permanent: true,
+        url: wxMaterial.url || '',
+        name: fileName,
+        title: title || null,
+        introduction: introduction || null,
+      },
+    });
   }
 
   async findAll(query?: any) {
@@ -22,13 +91,21 @@ export class MpMaterialService {
     return record;
   }
 
-  async update(id: number, data: any) {
-    await this.findOne(id);
-    return this.prisma.mpMaterial.update({ where: { id }, data });
-  }
-
+  /**
+   * 删除永久素材 (本地数据库 + 微信服务器同步)
+   */
   async remove(id: number) {
-    await this.findOne(id);
+    const record = await this.findOne(id);
+    
+    // 如果是永久素材，需要调用微信删除接口
+    if (record.permanent && record.mediaId) {
+      try {
+        await this.mpClient.deletePermanentMaterial(record.appId, record.mediaId);
+      } catch (e) {
+        // 允许微信端已失效/不存在时的容错
+      }
+    }
+
     return this.prisma.mpMaterial.delete({ where: { id } });
   }
 }

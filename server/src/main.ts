@@ -15,6 +15,9 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors();
 
+  // Parse text/xml and application/xml raw body for WeChat Callback
+  app.use(express.text({ type: ['text/xml', 'application/xml'] }));
+
   // Serve static files from uploads folder
   app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 

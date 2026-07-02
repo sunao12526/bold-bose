@@ -45,7 +45,7 @@ export class MpTagController {
   @Log({ module: '公众号标签', type: 'UPDATE', description: '修改标签' })
   @ApiOperation({ summary: '修改微信公众号标签' })
   @ApiOkResponse({ type: MpTagResponseDto })
-  async update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateMpTagDto) { return this.service.update(id, data); }
+  async update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateMpTagDto) { return this.service.update(id, { name: data.name as string }); }
 
   @Delete(':id')
   @RequirePermissions('mp:tag:delete')
@@ -53,5 +53,14 @@ export class MpTagController {
   @ApiOperation({ summary: '删除微信公众号标签' })
   @ApiOkResponse({ type: MpTagResponseDto })
   async remove(@Param('id', ParseIntPipe) id: number) { return this.service.remove(id); }
+
+  @Post('sync')
+  @RequirePermissions('mp:tag:sync')
+  @Log({ module: '公众号标签', type: 'UPDATE', description: '同步公众号标签' })
+  @ApiOperation({ summary: '同步微信公众号标签到本地' })
+  async syncTag(@Query('accountId', ParseIntPipe) accountId: number) {
+    await this.service.syncTag(accountId);
+    return { data: true };
+  }
 }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -30,5 +30,15 @@ export class MpMessageController {
   @ApiOperation({ summary: '根据 ID 获取消息详情' })
   @ApiOkResponse({ type: MpMessageResponseDto })
   async findOne(@Param('id', ParseIntPipe) id: number) { return this.service.findOne(id); }
+
+  @Post('send')
+  @RequirePermissions('mp:message:send')
+  @ApiOperation({ summary: '给粉丝发送客服消息' })
+  async sendMessage(
+    @Body() body: { accountId: number; openid: string; type: string; content: string; mediaId?: string }
+  ) {
+    const record = await this.service.sendKefuMessage(body);
+    return { data: record };
+  }
 }
 
