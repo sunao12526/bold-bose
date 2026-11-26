@@ -18,11 +18,25 @@ export const dataProvider: DataProvider = {
     }
     const response = await axiosInstance.get(`/${resource}`, { params });
     const data = response.data;
-    if (data && typeof data === 'object' && 'items' in data) {
-      return {
-        data: data.items,
-        total: data.total,
-      };
+    if (data && typeof data === 'object') {
+      if ('items' in data && Array.isArray(data.items)) {
+        return {
+          data: data.items,
+          total: typeof data.total === 'number' ? data.total : data.items.length,
+        };
+      }
+      if ('list' in data && Array.isArray(data.list)) {
+        return {
+          data: data.list,
+          total: typeof data.total === 'number' ? data.total : data.list.length,
+        };
+      }
+      if ('data' in data && Array.isArray(data.data)) {
+        return {
+          data: data.data,
+          total: typeof data.total === 'number' ? data.total : data.data.length,
+        };
+      }
     }
     return {
       data: Array.isArray(data) ? data : [],

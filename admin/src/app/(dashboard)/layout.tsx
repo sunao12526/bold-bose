@@ -9,7 +9,7 @@ import { CustomHeader } from '../../components/header';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <Authenticated key="dashboard" fallback={null}>
+      <Authenticated key="dashboard" redirectOnFail="/login">
         <ThemedLayout Header={CustomHeader}>{children}</ThemedLayout>
       </Authenticated>
     </Suspense>

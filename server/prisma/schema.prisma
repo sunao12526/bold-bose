@@ -1351,3 +1351,312 @@ model MemberLevelRecord {
   @@map("member_level_records")
 }
 
+// ==========================================
+// 大健康研发知识平台 (药食同源大健康研发模块)
+// ==========================================
+
+model HealthMaterial {
+  id              Int      @id @default(autoincrement())
+  code            String?  @db.VarChar(50)
+  name            String   @db.VarChar(100) // 原料名称
+  latinName       String?  @map("latin_name") @db.VarChar(200) // 拉丁学名
+  pinyin          String?  @db.VarChar(100) // 拼音首字母
+  category        String?  @db.VarChar(100) // 原料分类
+  source          String?  @db.VarChar(200) // 基原/来源
+  originRegion    String?  @map("origin_region") @db.VarChar(200) // 道地产区
+  medicinalParts  String?  @map("medicinal_parts") @db.VarChar(100) // 入药/食用部位
+  flavorProperty  String?  @map("flavor_property") @db.VarChar(100) // 性味归经
+  traditionalEff  String?  @map("traditional_eff") @db.Text // 传统功效
+  modernResearch  String?  @map("modern_research") @db.Text // 现代药理研究
+  activeComponents String? @map("active_components") @db.Text // 主要活性成分
+  safetyDose      String?  @map("safety_dose") @db.VarChar(200) // 安全用量
+  foodStatus      String?  @map("food_status") @db.VarChar(100) // 食用身份(食药物质/新食品原料)
+  regulatoryLimit String?  @map("regulatory_limit") @db.Text // 法规限制
+  priceGrade      String?  @map("price_grade") @db.VarChar(50) // 价格等级
+  remark          String?  @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_materials")
+}
+
+model HealthFunction {
+  id              Int      @id @default(autoincrement())
+  code            String?  @db.VarChar(50)
+  categoryName    String   @map("category_name") @db.VarChar(100) // 功能类别
+  rdFunction      String?  @map("rd_function") @db.VarChar(200) // 研发功能
+  legalFunction   String?  @map("legal_function") @db.VarChar(200) // 法规允许功能
+  marketingExpr   String?  @map("marketing_expr") @db.VarChar(200) // 营销表达
+  legalClaim      String?  @map("legal_claim") @db.Text // 法规允许宣称
+  sceneNormalFood String?  @map("scene_normal_food") @db.Text // 适用场景-普通食品
+  sceneHealthFood String?  @map("scene_health_food") @db.Text // 适用场景-保健食品
+  relatedMaterials String? @map("related_materials") @db.Text // 关联原料
+  relatedIngredients String? @map("related_ingredients") @db.Text // 关联活性成分
+  typicalDirection String? @map("typical_direction") @db.Text // 典型产品方向
+  riskWarning     String?  @map("risk_warning") @db.Text // 法规风险提示
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_functions")
+}
+
+model HealthIngredient {
+  id              Int      @id @default(autoincrement())
+  name            String   @db.VarChar(100) // 成分名称
+  casNo           String?  @map("cas_no") @db.VarChar(50) // CAS号
+  sourceMaterial  String?  @map("source_material") @db.VarChar(200) // 来源原料
+  category        String?  @db.VarChar(100) // 成分类别
+  chemCategory    String?  @map("chem_category") @db.VarChar(100) // 化学分类
+  researchDir     String?  @map("research_dir") @db.VarChar(200) // 研究方向
+  mechanism       String?  @map("mechanism") @db.Text // 作用机制
+  evidenceLevel   String?  @map("evidence_level") @db.VarChar(50) // 证据等级
+  clinicalEvidence String? @map("clinical_evidence") @db.Text // 关键临床证据
+  paperCount      Int?     @default(0) @map("paper_count") // 文献数量
+  formulaStructure String? @map("formula_structure") @db.Text // 分子式/结构特征
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_ingredients")
+}
+
+model HealthFormula {
+  id              Int      @id @default(autoincrement())
+  code            String?  @db.VarChar(50)
+  name            String   @db.VarChar(100) // 产品名称
+  positioning     String?  @db.VarChar(200) // 产品定位
+  targetCrowd     String?  @map("target_crowd") @db.VarChar(200) // 目标人群
+  coreMaterials   String?  @map("core_materials") @db.Text // 核心原料
+  dosagePerUnit   String?  @map("dosage_per_unit") @db.VarChar(200) // 原料添加量
+  dailyIntake     String?  @map("daily_intake") @db.VarChar(200) // 每日摄入量
+  activeTarget    String?  @map("active_target") @db.VarChar(200) // 有效成分目标
+  dosageForm      String?  @map("dosage_form") @db.VarChar(100) // 剂型
+  materialSource  String?  @map("material_source") @db.VarChar(200) // 原料来源
+  extractionRatio String?  @map("extraction_ratio") @db.VarChar(100) // 提取倍率
+  qualityStandard String?  @map("quality_standard") @db.Text // 质量标准
+  theoreticalBasis String? @map("theoretical_basis") @db.Text // 理论依据
+  sensoryEvaluation String? @map("sensory_evaluation") @db.Text // 感官评价
+  stability       String?  @db.VarChar(100) // 稳定性
+  shelfLifePred   String?  @map("shelf_life_pred") @db.VarChar(100) // 保质期预测
+  competitors     String?  @db.Text // 参考竞品
+  riskWarning     String?  @map("risk_warning") @db.Text // 法规风险提示
+  validationStatus String? @map("validation_status") @db.VarChar(50) // 配方验证状态
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_formulas")
+}
+
+model HealthCompetitor {
+  id              Int      @id @default(autoincrement())
+  name            String   @db.VarChar(100) // 产品名称
+  company         String?  @db.VarChar(100) // 生产企业
+  brand           String?  @db.VarChar(100) // 品牌
+  functionPos     String?  @map("function_pos") @db.VarChar(200) // 功能定位
+  mainIngredients String?  @map("main_ingredients") @db.Text // 主要成分
+  dosageForm      String?  @map("dosage_form") @db.VarChar(100) // 剂型
+  launchTime      String?  @map("launch_time") @db.VarChar(50) // 上市时间
+  price           String?  @db.VarChar(50) // 参考售价
+  priceRange      String?  @map("price_range") @db.VarChar(50) // 价格区间
+  channels        String?  @db.VarChar(200) // 销售渠道
+  monthlySales    String?  @map("monthly_sales") @db.VarChar(50) // 月销量(估)
+  annualSales     String?  @map("annual_sales") @db.VarChar(50) // 年销售额(估)
+  socialHeat      String?  @map("social_heat") @db.Text // 社交媒体热度(小红书/抖音/淘宝/京东)
+  userReviews     String?  @map("user_reviews") @db.Text // 用户评价
+  opportunity     String?  @db.Text // 机会分析
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_competitors")
+}
+
+model HealthLiterature {
+  id              Int      @id @default(autoincrement())
+  code            String?  @db.VarChar(50)
+  title           String   @db.Text // 文献标题
+  authors         String?  @db.Text // 作者
+  journal         String?  @db.VarChar(500) // 期刊
+  year            Int?     // 发表年份
+  material        String?  @db.VarChar(200) // 研究原料
+  researchDir     String?  @map("research_dir") @db.Text // 研究方向
+  model           String?  @db.Text // 研究模型
+  expType         String?  @map("exp_type") @db.VarChar(200) // 实验类型
+  sampleSize      String?  @map("sample_size") @db.VarChar(200) // 样本量
+  dosage          String?  @db.VarChar(200) // 剂量
+  expPeriod       String?  @map("exp_period") @db.VarChar(200) // 实验周期
+  evidenceLevel   String?  @map("evidence_level") @db.VarChar(100) // 证据等级
+  conclusionCred  String?  @map("conclusion_cred") @db.VarChar(100) // 结论可信度
+  keyConclusion   String?  @map("key_conclusion") @db.Text // 关键结论
+  aiSummary       String?  @map("ai_summary") @db.Text // AI核心结论
+  doi             String?  @db.Text // DOI/来源
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_literatures")
+}
+
+model HealthPatent {
+  id              Int      @id @default(autoincrement())
+  patentNo        String   @map("patent_no") @db.VarChar(200) // 专利号
+  title           String   @db.Text // 专利名称
+  applicant       String?  @db.Text // 申请人
+  applyDate       String?  @map("apply_date") @db.VarChar(100) // 申请日期
+  materials       String?  @db.Text // 涉及原料
+  techDirection   String?  @map("tech_direction") @db.Text // 技术方向
+  abstract        String?  @db.Text // 专利摘要
+  patentStatus    String?  @map("patent_status") @db.VarChar(100) // 专利状态
+  legalStatus     String?  @map("legal_status") @db.VarChar(100) // 法律状态
+  familyPatents   String?  @map("family_patents") @db.Text // 同族专利
+  competitors     String?  @db.Text // 竞争企业
+  verification    String?  @db.Text // 真实性状态/核验日期
+  url             String?  @db.Text // 公开链接
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_patents")
+}
+
+model HealthQualityStandard {
+  id              Int      @id @default(autoincrement())
+  materialName    String   @map("material_name") @db.VarChar(200) // 原料名称
+  testItem        String   @map("test_item") @db.VarChar(200) // 检测项目
+  standardLimit   String   @map("standard_limit") @db.Text // 标准要求
+  testMethod      String   @map("test_method") @db.Text // 检测方法
+  standardSource  String?  @map("standard_source") @db.Text // 药典/标准依据
+  qualityGrade    String?  @map("quality_grade") @db.VarChar(100) // 质量等级
+  remark          String?  @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_quality_standards")
+}
+
+model HealthProcess {
+  id              Int      @id @default(autoincrement())
+  materialName    String   @map("material_name") @db.VarChar(200) // 原料名称
+  targetComponent String?  @map("target_component") @db.VarChar(200) // 目标成分
+  solvent         String?  @db.VarChar(200) // 提取溶剂
+  temperature     String?  @db.VarChar(100) // 提取温度
+  duration        String?  @db.VarChar(200) // 提取时间
+  concentration   String?  @db.Text // 浓缩方式
+  keyParams       String?  @map("key_params") @db.Text // 关键工艺参数
+  qualityIndex    String?  @map("quality_index") @db.Text // 质量指标
+  yieldRate       String?  @map("yield_rate") @db.VarChar(200) // 收率/转移率
+  labScale        String?  @map("lab_scale") @db.VarChar(200) // 实验规模
+  pilotScale      String?  @map("pilot_scale") @db.VarChar(200) // 中试规模
+  scaleUpRisk     String?  @map("scale_up_risk") @db.Text // 放大风险
+  criticalControl String?  @map("critical_control") @db.Text // 关键控制点
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_processes")
+}
+
+model HealthSupplier {
+  id              Int      @id @default(autoincrement())
+  materialName    String   @map("material_name") @db.VarChar(200) // 原料名称
+  supplierName    String   @map("supplier_name") @db.Text // 供应商
+  origin          String?  @db.VarChar(200) // 产地
+  annualCapacity  String?  @map("annual_capacity") @db.VarChar(200) // 年产量
+  gmpCertified    String?  @map("gmp_certified") @db.VarChar(100) // GMP认证
+  testingCapacity String?  @map("testing_capacity") @db.Text // 检测能力
+  qualitySystem   String?  @map("quality_system") @db.VarChar(200) // 质量体系
+  auditStatus     String?  @map("audit_status") @db.VarChar(100) // 审核状态
+  auditDate       String?  @map("audit_date") @db.VarChar(100) // 审计日期
+  coaCapacity     String?  @map("coa_capacity") @db.VarChar(200) // COA能力
+  price           String?  @db.VarChar(200) // 参考价格
+  supplyStability String?  @map("supply_stability") @db.VarChar(100) // 供应稳定性
+  stabilityPeriod String?  @map("stability_period") @db.VarChar(200) // 稳定供应周期
+  altSupplier     String?  @map("alt_supplier") @db.Text // 替代供应商
+  coopStatus      String?  @map("coop_status") @db.VarChar(100) // 合作状态
+  remark          String?  @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_suppliers")
+}
+
+model HealthAiTag {
+  id              Int      @id @default(autoincrement())
+  code            String?  @db.VarChar(50) // 标签编号
+  category        String   @db.VarChar(100) // 标签类别
+  name            String   @db.VarChar(200) // 标签名称
+  description     String?  @db.Text // 标签描述
+  relatedSheet    String?  @map("related_sheet") @db.VarChar(200) // 关联Sheet
+  relatedField    String?  @map("related_field") @db.VarChar(200) // 关联字段
+  aiUsage         String?  @map("ai_usage") @db.Text // AI用途
+  weight          String?  @db.VarChar(100) // 权重
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_ai_tags")
+}
+
+model HealthProductLifecycle {
+  id              Int      @id @default(autoincrement())
+  code            String?  @db.VarChar(50) // 产品编号
+  name            String   @db.VarChar(200) // 产品名称
+  stage           String?  @db.VarChar(100) // 所处阶段
+  initiationTime  String?  @map("initiation_time") @db.VarChar(100) // 立项时间
+  launchExpected  String?  @map("launch_expected") @db.VarChar(100) // 预计上市
+  targetMarket    String?  @map("target_market") @db.VarChar(500) // 目标市场
+  sellingPoint    String?  @map("selling_point") @db.Text // 核心卖点
+  targetRevenue   String?  @map("target_revenue") @db.VarChar(200) // 目标营收
+  currentStatus   String?  @map("current_status") @db.Text // 当前状态
+  nextPlan        String?  @map("next_plan") @db.Text // 下一步计划
+  riskPoints      String?  @map("risk_points") @db.Text // 风险点
+  owner           String?  @db.VarChar(100) // 负责人
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_product_lifecycles")
+}
+
+model HealthTarget {
+  id              Int      @id @default(autoincrement())
+  activeIngredient String  @map("active_ingredient") @db.VarChar(200) // 活性成分
+  targetName      String   @map("target_name") @db.VarChar(200) // 靶点名称
+  signalPathway   String?  @map("signal_pathway") @db.Text // 信号通路
+  diseaseDomain   String?  @map("disease_domain") @db.Text // 疾病领域
+  actionType      String?  @map("action_type") @db.VarChar(100) // 作用类型
+  evidenceLevel   String?  @map("evidence_level") @db.VarChar(100) // 证据等级
+  keyLiterature   String?  @map("key_literature") @db.Text // 关键文献/依据
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_targets")
+}
+
+model HealthRegulation {
+  id              Int      @id @default(autoincrement())
+  name            String   @db.Text // 法规名称
+  publisher       String?  @db.VarChar(200) // 发布部门
+  publishDate     String?  @map("publish_date") @db.VarChar(100) // 发布日期
+  codeNo          String?  @map("code_no") @db.VarChar(200) // 法规编号
+  scope           String?  @db.Text // 适用范围
+  materials       String?  @db.Text // 涉及原料
+  restrictions    String?  @db.Text // 限制要求
+  status          String?  @db.VarChar(100) // 法规状态
+  url             String?  @db.Text // 法规链接
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_regulations")
+}
+
+model HealthTestMethod {
+  id              Int      @id @default(autoincrement())
+  materialName    String   @map("material_name") @db.VarChar(200) // 原料名称
+  testItem        String   @map("test_item") @db.VarChar(200) // 检测项目
+  testMethod      String   @map("test_method") @db.Text // 检测方法
+  methodStandard  String?  @map("method_standard") @db.Text // 方法标准
+  limitRequirement String? @map("limit_requirement") @db.Text // 限量要求
+  equipment       String?  @db.VarChar(500) // 检测设备
+  source          String?  @db.Text // 方法来源
+  duration        String?  @db.VarChar(200) // 检测周期
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("health_test_methods")
+}
+
+

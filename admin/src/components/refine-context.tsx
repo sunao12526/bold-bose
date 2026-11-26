@@ -73,6 +73,114 @@ export const RefineContext: React.FC<{ children: React.ReactNode }> = ({ childre
           authProvider={authProvider}
           notificationProvider={useNotificationProvider}
           resources={[
+            // Parent: Health R&D Knowledge Platform
+            {
+              name: 'health-rd',
+              meta: {
+                label: '大健康研发平台',
+                icon: <BookOutlined />,
+              },
+            },
+            {
+              name: 'health-rd/dashboard',
+              list: '/health-rd',
+              meta: {
+                label: '研发现状总览',
+                icon: <AppstoreOutlined />,
+                parent: 'health-rd',
+              },
+            },
+            {
+              name: 'health-rd/material',
+              list: '/health-rd/material',
+              meta: {
+                label: '药食同源原料库',
+                icon: <DatabaseOutlined />,
+                parent: 'health-rd',
+              },
+            },
+            {
+              name: 'health-rd/ingredient',
+              list: '/health-rd/ingredient',
+              meta: {
+                label: '天然活性成分库',
+                icon: <CodeOutlined />,
+                parent: 'health-rd',
+              },
+            },
+            {
+              name: 'health-rd/formula',
+              list: '/health-rd/formula',
+              meta: {
+                label: '产品配方库',
+                icon: <ShopOutlined />,
+                parent: 'health-rd',
+              },
+            },
+            {
+              name: 'health-rd/target',
+              list: '/health-rd/target',
+              meta: {
+                label: '作用靶点数据库',
+                icon: <SafetyCertificateOutlined />,
+                parent: 'health-rd',
+              },
+            },
+            {
+              name: 'health-rd/literature',
+              list: '/health-rd/literature',
+              meta: {
+                label: '文献证据库',
+                icon: <FileTextOutlined />,
+                parent: 'health-rd',
+              },
+            },
+            {
+              name: 'health-rd/function',
+              list: '/health-rd/function',
+              meta: {
+                label: '健康功能分类',
+                icon: <TagsOutlined />,
+                parent: 'health-rd',
+              },
+            },
+            {
+              name: 'health-rd/regulation',
+              list: '/health-rd/regulation',
+              meta: {
+                label: '法规知识库',
+                icon: <ControlOutlined />,
+                parent: 'health-rd',
+              },
+            },
+            {
+              name: 'health-rd/competitor',
+              list: '/health-rd/competitor',
+              meta: {
+                label: '竞品数据库',
+                icon: <ShoppingOutlined />,
+                parent: 'health-rd',
+              },
+            },
+            {
+              name: 'health-rd/process',
+              list: '/health-rd/process',
+              meta: {
+                label: '工艺技术数据库',
+                icon: <ToolOutlined />,
+                parent: 'health-rd',
+              },
+            },
+            {
+              name: 'health-rd/supplier',
+              list: '/health-rd/supplier',
+              meta: {
+                label: '供应链数据库',
+                icon: <SolutionOutlined />,
+                parent: 'health-rd',
+              },
+            },
+
             // Parent: System
             {
               name: 'system',

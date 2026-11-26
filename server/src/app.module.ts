@@ -13,6 +13,7 @@ import { MallModule } from './modules/mall/mall.module';
 import { MemberModule } from './modules/member/member.module';
 import { CmsModule } from './modules/cms/cms.module';
 import { MpModule } from './modules/mp/mp.module';
+import { HealthRdModule } from './modules/health-rd/health-rd.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
 import { LogInterceptor } from './shared/interceptors/log.interceptor';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
@@ -49,6 +50,7 @@ import { AppService } from './app.service';
     MemberModule,
     CmsModule,
     MpModule,
+    HealthRdModule,
   ],
   controllers: [AppController],
   providers: [
