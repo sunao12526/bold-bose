@@ -9,6 +9,7 @@ import { ApiAccessLogService } from './api-log/api-access-log.service';
 import { ApiErrorLogController } from './api-log/api-error-log.controller';
 import { ApiErrorLogService } from './api-log/api-error-log.service';
 import { RedisMonitorController } from './redis/redis-monitor.controller';
+import { SseController } from './sse/sse.controller';
 
 @Module({
   imports: [FileModule, CodegenModule, JobModule],
@@ -17,6 +18,7 @@ import { RedisMonitorController } from './redis/redis-monitor.controller';
     ApiAccessLogController,
     ApiErrorLogController,
     RedisMonitorController,
+    SseController,
   ],
   providers: [LogService, ApiAccessLogService, ApiErrorLogService],
   exports: [

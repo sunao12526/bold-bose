@@ -21,6 +21,7 @@ export class UpdateSmsChannelDto extends createZodDto(UpdateSmsChannelSchema) {}
 export const CreateSmsTemplateSchema = z.object({
   channelId: z.number().int({ error: '短信渠道 ID 必须为整数' }).describe('短信渠道 ID'),
   code: z.string({ error: '模板编码不能为空' }).min(1, '模板编码不能为空').max(50, '模板编码不能超过50').describe('模板唯一标识编码'),
+  apiTemplateId: z.string().max(100).nullable().optional().describe('第三方短信平台模板 ID'),
   name: z.string({ error: '模板名称不能为空' }).min(1, '模板名称不能为空').max(100, '模板名称不能超过100').describe('模板名称'),
   content: z.string({ error: '模板内容不能为空' }).min(1, '模板内容不能为空').max(500, '模板内容不能超过500').describe('模板短信内容 (支持 {param} 占位符)'),
   status: z.enum(CommonStatus).default('ENABLE').describe('状态 (ENABLE/DISABLE)'),

@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { SmsClientFactory } from './client/sms-client.factory';
 
 @Injectable()
 export class SmsService {
@@ -81,6 +82,7 @@ export class SmsService {
       data: {
         channelId: Number(data.channelId),
         code: data.code,
+        apiTemplateId: data.apiTemplateId || null,
         name: data.name,
         content: data.content,
         status: data.status || 'ENABLE',
@@ -127,6 +129,7 @@ export class SmsService {
         channelId:
           data.channelId !== undefined ? Number(data.channelId) : undefined,
         code: data.code,
+        apiTemplateId: data.apiTemplateId,
         name: data.name,
         content: data.content,
         status: data.status,
@@ -193,7 +196,7 @@ export class SmsService {
     return template;
   }
 
-  // ================= SMS Sending Simulation =================
+  // ================= SMS Real/Debug Dispatch & Callback =================
 
   async sendSms(
     templateCode: string,
@@ -226,19 +229,89 @@ export class SmsService {
       );
     });
 
-    this.logger.log(
-      `[SMS Simulation] Sending SMS to ${mobile} via channel ${template.channel.name}. Content: "${content}"`,
-    );
+    const client = SmsClientFactory.create({
+      code: template.channel.code,
+      apiKey: template.channel.apiKey,
+      apiSecret: template.channel.apiSecret,
+      signature: template.channel.signature,
+    });
 
-    // Create log
+    let sendResult: { success: boolean; serialNo?: string; errorMessage?: string };
+    try {
+      sendResult = await client.sendSms({
+        mobile,
+        content,
+        apiTemplateId: template.apiTemplateId,
+        params,
+      });
+    } catch (err: any) {
+      sendResult = {
+        success: false,
+        errorMessage: err?.message || String(err),
+      };
+    }
+
     return this.prisma.smsLog.create({
       data: {
         templateId: template.id,
         mobile,
         content,
-        status: 'SUCCESS',
-        errorMessage: null,
+        status: sendResult.success ? 'SUCCESS' : 'FAIL',
+        apiSerialNo: sendResult.serialNo || null,
+        receiveStatus: sendResult.success ? 'WAITING' : 'FAIL',
+        errorMessage: sendResult.success
+          ? null
+          : (sendResult.errorMessage || '短信发送失败').slice(0, 500),
       },
     });
+  }
+
+  async receiveCallback(channelCode: string, payload: any) {
+    const items = Array.isArray(payload) ? payload : [payload];
+    const codeUpper = (channelCode || '').toUpperCase();
+    let updatedCount = 0;
+
+    for (const item of items) {
+      if (!item || typeof item !== 'object') continue;
+
+      let serialNo = '';
+      let isSuccess = false;
+      let receiveMsg = '';
+      let receiveTime = new Date();
+
+      if (codeUpper === 'ALIYUN') {
+        serialNo = String(item.biz_id || item.bizId || '');
+        isSuccess = item.success === true || item.success === 'true';
+        receiveMsg = String(item.err_msg || item.err_code || '');
+        if (item.report_time) {
+          receiveTime = new Date(item.report_time);
+        }
+      } else if (codeUpper === 'TENCENT') {
+        serialNo = String(item.sid || item.serial_no || '');
+        isSuccess = String(item.report_status || '').toUpperCase() === 'SUCCESS';
+        receiveMsg = String(item.description || item.errmsg || '');
+        if (item.user_receive_time) {
+          receiveTime = new Date(item.user_receive_time);
+        }
+      } else {
+        serialNo = String(item.serialNo || item.biz_id || item.sid || '');
+        isSuccess = Boolean(item.success);
+        receiveMsg = String(item.message || '');
+      }
+
+      if (!serialNo) continue;
+
+      const res = await this.prisma.smsLog.updateMany({
+        where: { apiSerialNo: serialNo },
+        data: {
+          receiveStatus: isSuccess ? 'SUCCESS' : 'FAIL',
+          receiveTime,
+          receiveMsg: receiveMsg.slice(0, 500) || null,
+        },
+      });
+      updatedCount += res.count;
+    }
+
+    return { updatedCount };
   }
 }

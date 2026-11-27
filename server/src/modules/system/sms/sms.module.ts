@@ -7,6 +7,7 @@ import {
 } from './sms.controller';
 import { SmsCodeService } from './sms-code.service';
 import { SmsCodeController } from './sms-code.controller';
+import { SmsCallbackController } from './sms-callback.controller';
 
 @Module({
   controllers: [
@@ -14,6 +15,7 @@ import { SmsCodeController } from './sms-code.controller';
     SmsTemplateController,
     SmsLogController,
     SmsCodeController,
+    SmsCallbackController,
   ],
   providers: [SmsService, SmsCodeService],
   exports: [SmsService, SmsCodeService],

@@ -80,4 +80,22 @@ export class JobHandlers {
       }
     }
   }
+
+  // 5. payOrderExpireJob: closes expired unpaid pay orders
+  async payOrderExpireJob(): Promise<void> {
+    const result = await this.prisma.payOrder.updateMany({
+      where: {
+        status: 'UNPAID',
+        expireTime: { lt: new Date() },
+      },
+      data: {
+        status: 'CLOSED',
+      },
+    });
+    if (result.count > 0) {
+      this.logger.log(
+        `[Job: payOrderExpireJob] Closed ${result.count} expired unpaid pay orders.`,
+      );
+    }
+  }
 }

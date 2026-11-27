@@ -24,5 +24,8 @@ export class CreatePayChannelDto extends createZodDto(CreatePayChannelSchema) {}
 
 export const SubmitPayOrderSchema = z.object({
   channelCode: z.string({ error: '支付通道编码不能为空' }).min(1, '通道编码不能为空').describe('支付通道编码'),
+  userId: z.coerce.number().int().optional().describe('用户 ID (钱包支付必传)'),
+  openid: z.string().optional().describe('微信 OpenID (JSAPI/小程序支付使用)'),
+  returnUrl: z.string().optional().describe('支付完成回跳地址'),
 });
 export class SubmitPayOrderDto extends createZodDto(SubmitPayOrderSchema) {}

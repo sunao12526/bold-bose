@@ -24,6 +24,7 @@ import { ExcelModule } from './shared/excel/excel.module';
 import { RedisModule } from './shared/redis/redis.module';
 import { RedisService } from './shared/redis/redis.service';
 import { RedisThrottlerStorage } from './shared/redis/redis-throttler.storage';
+import { SseModule } from './shared/sse/sse.module';
 import { TenantMiddleware } from './shared/tenant/tenant.middleware';
 import { UserCacheModule } from './shared/user-cache.module';
 import { IpModule } from './shared/ip/ip.module';
@@ -60,6 +61,7 @@ import { AppService } from './app.service';
     PrismaModule,
     DataPermissionModule,
     ExcelModule,
+    SseModule,
     UserCacheModule,
     IpModule,
     AuthModule, 

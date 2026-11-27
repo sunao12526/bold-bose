@@ -735,6 +735,9 @@ model PayOrder {
   subject           String          @db.VarChar(128)
   price             Int
   channelCode       String?         @map("channel_code") @db.VarChar(32)
+  channelOrderNo    String?         @map("channel_order_no") @db.VarChar(128)
+  channelUserId     String?         @map("channel_user_id") @db.VarChar(128)
+  extensionData     Json?           @map("extension_data")
   status            PayOrderStatus  @default(UNPAID)
   payTime           DateTime?       @map("pay_time")
   expireTime        DateTime        @map("expire_at")
@@ -758,6 +761,8 @@ model PayRefund {
   merchantRefundId  String          @map("merchant_refund_id") @db.VarChar(64)
   price             Int
   refundPrice       Int             @map("refund_price")
+  channelCode       String?         @map("channel_code") @db.VarChar(32)
+  channelRefundNo   String?         @map("channel_refund_no") @db.VarChar(128)
   status            PayRefundStatus @default(APPLY)
   reason            String          @db.VarChar(200)
   refundTime        DateTime?       @map("refund_time")
@@ -842,8 +847,9 @@ model SmsChannel {
 model SmsTemplate {
   id           Int          @id @default(autoincrement())
   channelId    Int          @map("channel_id")
-  code         String       @unique @db.VarChar(50) // e.g. code_login
-  name         String       @db.VarChar(100)
+  code          String       @unique @db.VarChar(50) // e.g. code_login
+  apiTemplateId String?      @map("api_template_id") @db.VarChar(100)
+  name          String       @db.VarChar(100)
   content      String       @db.VarChar(500)
   status       CommonStatus @default(ENABLE)
   remark       String?      @db.VarChar(500)
@@ -860,8 +866,12 @@ model SmsLog {
   templateId   Int       @map("template_id")
   mobile       String    @db.VarChar(20)
   content      String    @db.VarChar(500)
-  status       String    @db.VarChar(20) // SUCCESS, FAIL
-  errorMessage String?   @map("error_message") @db.VarChar(500)
+  status        String      @db.VarChar(20) // SUCCESS, FAIL
+  apiSerialNo   String?     @map("api_serial_no") @db.VarChar(100)
+  receiveStatus String?     @map("receive_status") @db.VarChar(20) // WAITING, SUCCESS, FAIL
+  receiveTime   DateTime?   @map("receive_time")
+  receiveMsg    String?     @map("receive_msg") @db.VarChar(500)
+  errorMessage  String?     @map("error_message") @db.VarChar(500)
   sendTime     DateTime  @default(now()) @map("send_time")
   template     SmsTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
@@ -1776,6 +1786,79 @@ model Tenant {
 
   @@map("system_tenants")
 }
+
+// ==================== 支付钱包管理 ====================
+
+model PayWallet {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @map("user_id")
+  userType      Int      @default(1) @map("user_type") // 1=会员, 2=管理员
+  balance       Int      @default(0) // 分
+  totalExpense  Int      @default(0) @map("total_expense")
+  totalRecharge Int      @default(0) @map("total_recharge")
+  freezePrice   Int      @default(0) @map("freeze_price")
+  tenantId      Int      @default(1) @map("tenant_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  transactions  PayWalletTransaction[]
+  recharges     PayWalletRecharge[]
+
+  @@unique([userId, userType])
+  @@index([tenantId])
+  @@map("pay_wallets")
+}
+
+model PayWalletRechargePackage {
+  id         Int          @id @default(autoincrement())
+  name       String       @db.VarChar(64)
+  payPrice   Int          @map("pay_price")
+  bonusPrice Int          @default(0) @map("bonus_price")
+  status     CommonStatus @default(ENABLE)
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+
+  @@map("pay_wallet_recharge_packages")
+}
+
+model PayWalletRecharge {
+  id             Int       @id @default(autoincrement())
+  walletId       Int       @map("wallet_id")
+  totalPrice     Int       @map("total_price")
+  payPrice       Int       @map("pay_price")
+  bonusPrice     Int       @default(0) @map("bonus_price")
+  packageId      Int?      @map("package_id")
+  payStatus      Boolean   @default(false) @map("pay_status")
+  payOrderId     Int?      @map("pay_order_id")
+  payChannelCode String?   @map("pay_channel_code") @db.VarChar(32)
+  payTime        DateTime? @map("pay_time")
+  refundStatus   Int       @default(0) @map("refund_status")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  wallet         PayWallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@map("pay_wallet_recharges")
+}
+
+model PayWalletTransaction {
+  id        Int       @id @default(autoincrement())
+  walletId  Int       @map("wallet_id")
+  bizType   Int       @map("biz_type") // 1=充值, 2=充值退款, 3=支付消费, 4=支付退款, 5=后台调整
+  bizId     String    @map("biz_id") @db.VarChar(64)
+  no        String    @unique @db.VarChar(64)
+  title     String    @db.VarChar(128)
+  price     Int
+  balance   Int
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  wallet    PayWallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@map("pay_wallet_transactions")
+}
+
 
 
 

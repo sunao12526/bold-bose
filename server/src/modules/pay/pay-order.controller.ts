@@ -5,6 +5,7 @@ import {
   Put,
   Body,
   Param,
+  Req,
   UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -53,8 +54,13 @@ export class PayOrderController {
   async submit(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: SubmitPayOrderDto,
+    @Req() req: any,
   ) {
-    return this.orderService.submitPayOrder(id, body.channelCode);
+    return this.orderService.submitPayOrder(id, body.channelCode, {
+      userId: body.userId ?? req.user?.id,
+      openid: body.openid,
+      returnUrl: body.returnUrl,
+    });
   }
 
   @Put(':id/pay-mock')

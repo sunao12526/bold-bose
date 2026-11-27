@@ -42,6 +42,15 @@ export class PayRefundController {
     return this.refundService.findOne(id);
   }
 
+  @Put(':id/submit')
+  @RequirePermissions('pay:refund:update')
+  @Log({ module: '退款订单', type: 'UPDATE', description: '向支付渠道提交退款' })
+  @ApiOperation({ summary: '提交渠道退款（支持钱包/微信/支付宝/Mock）' })
+  @ApiOkResponse({ type: PayRefundResponseDto })
+  async submit(@Param('id', ParseIntPipe) id: number) {
+    return this.refundService.submitRefund(id);
+  }
+
   @Put(':id/refund-mock')
   @RequirePermissions('pay:refund:update')
   @Log({ module: '退款订单', type: 'UPDATE', description: '模拟退款成功' })

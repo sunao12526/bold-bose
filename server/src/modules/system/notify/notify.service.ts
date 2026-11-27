@@ -3,8 +3,10 @@ import {
   BadRequestException,
   NotFoundException,
   Logger,
+  Optional,
 } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { SseService } from '../../../shared/sse/sse.service';
 import { ConfigService } from '../config/config.service';
 import { MailService } from '../mail/mail.service';
 import { SmsService } from '../sms/sms.service';
@@ -17,6 +19,7 @@ export class NotifyService {
     private configService: ConfigService,
     private mailService: MailService,
     private smsService: SmsService,
+    @Optional() private sseService?: SseService,
   ) {}
 
   // ==================== Templates CRUD ====================
@@ -128,7 +131,7 @@ export class NotifyService {
     if (template.type === 'SYSTEM') {
       // System Notification (站内信)
       try {
-        await this.prisma.notifyMessage.create({
+        const created = await this.prisma.notifyMessage.create({
           data: {
             templateId: template.id,
             templateCode: template.code,
@@ -139,6 +142,18 @@ export class NotifyService {
             status: 200,
           },
         });
+        this.sseService?.sendToUser(
+          user.id,
+          'notify',
+          {
+            id: created.id,
+            templateCode: template.code,
+            title: renderedTitle,
+            content: renderedContent,
+            createdAt: created.createdAt,
+          },
+          2,
+        );
       } catch (err: any) {
         status = 500;
         errorMessage = err.message || '写入站内信失败';

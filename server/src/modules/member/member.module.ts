@@ -92,6 +92,8 @@ if (!jwtSecret) {
     ExperienceRecordService,
     LevelRecordService,
     AppMemberAuthService,
+    MemberAuthGuard,
+    JwtModule,
   ],
 })
 export class MemberModule {}
