@@ -13,10 +13,25 @@ import { RefundController } from './refund/refund.controller';
 import { RefundService } from './refund/refund.service';
 import { PromotionController } from './promotion/promotion.controller';
 import { PromotionService } from './promotion/promotion.service';
+import { DeliveryService } from './delivery/delivery.service';
+import {
+  DeliveryExpressController,
+  DeliveryTemplateController,
+} from './delivery/delivery.controller';
+import { InteractionService } from './interaction/interaction.service';
+import { ProductCommentController } from './interaction/comment.controller';
+import { AppProductInteractionController } from './interaction/app-interaction.controller';
+import { CartService } from './trade/cart.service';
+import { AppCartController } from './trade/app-cart.controller';
+import { AppTradeOrderService } from './trade/app-trade-order.service';
+import { AppTradeOrderController } from './trade/app-trade-order.controller';
+import { MallStatisticsService } from './statistics/mall-statistics.service';
+import { MallStatisticsController } from './statistics/mall-statistics.controller';
 import { PayModule } from '../pay/pay.module';
+import { MemberModule } from '../member/member.module';
 
 @Module({
-  imports: [PayModule],
+  imports: [PayModule, MemberModule],
   controllers: [
     CategoryController,
     BrandController,
@@ -25,6 +40,13 @@ import { PayModule } from '../pay/pay.module';
     OrderController,
     RefundController,
     PromotionController,
+    DeliveryExpressController,
+    DeliveryTemplateController,
+    ProductCommentController,
+    AppProductInteractionController,
+    AppCartController,
+    AppTradeOrderController,
+    MallStatisticsController,
   ],
   providers: [
     CategoryService,
@@ -34,6 +56,11 @@ import { PayModule } from '../pay/pay.module';
     OrderService,
     RefundService,
     PromotionService,
+    DeliveryService,
+    InteractionService,
+    CartService,
+    AppTradeOrderService,
+    MallStatisticsService,
   ],
   exports: [
     CategoryService,
@@ -43,6 +70,11 @@ import { PayModule } from '../pay/pay.module';
     OrderService,
     RefundService,
     PromotionService,
+    DeliveryService,
+    InteractionService,
+    CartService,
+    AppTradeOrderService,
+    MallStatisticsService,
   ],
 })
 export class MallModule {}

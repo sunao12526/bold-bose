@@ -550,6 +550,11 @@ model MallOrder {
   payPrice        Int               @map("pay_price") // Payable price in cents
   totalPrice      Int               @map("total_price") // Original price in cents
   discountPrice   Int               @default(0) @map("discount_price") // Price discount in cents
+  deliveryPrice   Int               @default(0) @map("delivery_price") // 运费(分)
+  couponId        Int?              @map("coupon_id")
+  couponPrice     Int               @default(0) @map("coupon_price") // 优惠券抵扣(分)
+  payOrderId      Int?              @map("pay_order_id")
+  commentStatus   Boolean           @default(false) @map("comment_status")
   deliveryStatus  Boolean           @default(false) @map("delivery_status") // Shipped or not
   logisticsCo     String?           @map("logistics_co") @db.VarChar(100) // Logistics Company
   logisticsNo     String?           @map("logistics_no") @db.VarChar(100) // Tracking Number
@@ -1858,6 +1863,221 @@ model PayWalletTransaction {
   @@index([walletId])
   @@map("pay_wallet_transactions")
 }
+
+// ==================== 商城交易扩展 ====================
+
+model MallCart {
+  id        Int      @id @default(autoincrement())
+  memberId  Int      @map("member_id")
+  spuId     Int      @map("spu_id")
+  skuId     Int      @map("sku_id")
+  count     Int      @default(1)
+  selected  Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([memberId, skuId])
+  @@index([memberId])
+  @@map("mall_carts")
+}
+
+model MallDeliveryExpress {
+  id        Int          @id @default(autoincrement())
+  code      String       @unique @db.VarChar(64)
+  name      String       @db.VarChar(100)
+  logo      String?      @db.VarChar(512)
+  sort      Int          @default(0)
+  status    CommonStatus @default(ENABLE)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  @@map("mall_delivery_express")
+}
+
+model MallDeliveryExpressTemplate {
+  id         Int          @id @default(autoincrement())
+  name       String       @db.VarChar(100)
+  chargeMode Int          @default(1) @map("charge_mode") // 1=按件
+  sort       Int          @default(0)
+  basePrice  Int          @default(0) @map("base_price") // 首件运费(分)
+  extraPrice Int          @default(0) @map("extra_price") // 续件运费(分)
+  freePrice  Int?         @map("free_price") // 满额包邮(分)
+  status     CommonStatus @default(ENABLE)
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+
+  @@map("mall_delivery_express_templates")
+}
+
+model MallProductComment {
+  id                Int       @id @default(autoincrement())
+  memberId          Int       @map("member_id")
+  userNickname      String    @map("user_nickname") @db.VarChar(50)
+  userAvatar        String?   @map("user_avatar") @db.VarChar(512)
+  anonymous         Boolean   @default(false)
+  orderId           Int?      @map("order_id")
+  orderItemId       Int?      @map("order_item_id")
+  spuId             Int       @map("spu_id")
+  spuName           String    @map("spu_name") @db.VarChar(200)
+  skuId             Int?      @map("sku_id")
+  visible           Boolean   @default(true)
+  scores            Int       @default(5)
+  descriptionScores Int       @default(5) @map("description_scores")
+  benefitScores     Int       @default(5) @map("benefit_scores")
+  content           String    @db.Text
+  picUrls           Json?     @map("pic_urls")
+  replyStatus       Boolean   @default(false) @map("reply_status")
+  replyUserId       Int?      @map("reply_user_id")
+  replyContent      String?   @map("reply_content") @db.Text
+  replyTime         DateTime? @map("reply_time")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@index([spuId])
+  @@index([memberId])
+  @@map("mall_product_comments")
+}
+
+model MallProductFavorite {
+  id        Int      @id @default(autoincrement())
+  memberId  Int      @map("member_id")
+  spuId     Int      @map("spu_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([memberId, spuId])
+  @@index([memberId])
+  @@map("mall_product_favorites")
+}
+
+// ==================== BPM 工作流引擎 ====================
+
+model BpmCategory {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(64)
+  code        String       @unique @db.VarChar(64)
+  description String?      @db.VarChar(500)
+  status      CommonStatus @default(ENABLE)
+  sort        Int          @default(0)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  @@map("bpm_categories")
+}
+
+model BpmForm {
+  id        Int          @id @default(autoincrement())
+  name      String       @db.VarChar(100)
+  status    CommonStatus @default(ENABLE)
+  conf      Json
+  fields    Json
+  remark    String?      @db.VarChar(500)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  @@map("bpm_forms")
+}
+
+model BpmModel {
+  id           Int                  @id @default(autoincrement())
+  key          String               @unique @db.VarChar(64)
+  name         String               @db.VarChar(100)
+  categoryCode String               @map("category_code") @db.VarChar(64)
+  formId       Int?                 @map("form_id")
+  description  String?              @db.VarChar(500)
+  nodes        Json
+  version      Int                  @default(1)
+  deployed     Boolean              @default(false)
+  status       CommonStatus         @default(ENABLE)
+  tenantId     Int                  @default(1) @map("tenant_id")
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
+
+  instances    BpmProcessInstance[]
+
+  @@index([tenantId])
+  @@map("bpm_models")
+}
+
+model BpmProcessInstance {
+  id               Int                      @id @default(autoincrement())
+  modelId          Int                      @map("model_id")
+  modelKey         String                   @map("model_key") @db.VarChar(64)
+  name             String                   @db.VarChar(128)
+  categoryCode     String                   @map("category_code") @db.VarChar(64)
+  startUserId      Int                      @map("start_user_id")
+  status           Int                      @default(1) // 1=审批中, 2=通过, 3=不通过, 4=已取消
+  formVariables    Json?                    @map("form_variables")
+  businessKey      String?                  @map("business_key") @db.VarChar(100)
+  currentNodeIndex Int                      @default(0) @map("current_node_index")
+  endTime          DateTime?                @map("end_time")
+  tenantId         Int                      @default(1) @map("tenant_id")
+  createdAt        DateTime                 @default(now()) @map("created_at")
+  updatedAt        DateTime                 @updatedAt @map("updated_at")
+
+  model            BpmModel                 @relation(fields: [modelId], references: [id])
+  tasks            BpmTask[]
+  copies           BpmProcessInstanceCopy[]
+
+  @@index([startUserId])
+  @@index([tenantId])
+  @@map("bpm_process_instances")
+}
+
+model BpmTask {
+  id                Int                @id @default(autoincrement())
+  processInstanceId Int                @map("process_instance_id")
+  nodeKey           String             @map("node_key") @db.VarChar(64)
+  nodeName          String             @map("node_name") @db.VarChar(100)
+  nodeIndex         Int                @map("node_index")
+  assigneeUserId    Int                @map("assignee_user_id")
+  status            Int                @default(1) // 1=审批中, 2=通过, 3=驳回, 4=取消, 5=转办
+  reason            String?            @db.VarChar(500)
+  endTime           DateTime?          @map("end_time")
+  tenantId          Int                @default(1) @map("tenant_id")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  processInstance   BpmProcessInstance @relation(fields: [processInstanceId], references: [id], onDelete: Cascade)
+
+  @@index([assigneeUserId, status])
+  @@map("bpm_tasks")
+}
+
+model BpmProcessInstanceCopy {
+  id                  Int                @id @default(autoincrement())
+  processInstanceId   Int                @map("process_instance_id")
+  processInstanceName String             @map("process_instance_name") @db.VarChar(128)
+  startUserId         Int                @map("start_user_id")
+  userId              Int                @map("user_id")
+  nodeKey             String?            @map("node_key") @db.VarChar(64)
+  nodeName            String?            @map("node_name") @db.VarChar(100)
+  read                Boolean            @default(false)
+  createdAt           DateTime           @default(now()) @map("created_at")
+
+  processInstance     BpmProcessInstance @relation(fields: [processInstanceId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("bpm_process_instance_copies")
+}
+
+model BpmOaLeave {
+  id                Int      @id @default(autoincrement())
+  userId            Int      @map("user_id")
+  type              Int
+  reason            String   @db.Text
+  startTime         DateTime @map("start_time")
+  endTime           DateTime @map("end_time")
+  day               Float
+  status            Int      @default(1) // 1=审批中, 2=通过, 3=驳回, 4=取消
+  processInstanceId Int?     @map("process_instance_id")
+  tenantId          Int      @default(1) @map("tenant_id")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("bpm_oa_leaves")
+}
+
 
 
 
