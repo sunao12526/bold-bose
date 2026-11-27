@@ -1,6 +1,7 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Optional } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
 import { UserCacheService } from '../../shared/user-cache.service';
+import { DataPermissionService } from '../../shared/data-permission/data-permission.service';
 import { paginateQuery } from '../../shared/pagination';
 import * as bcrypt from 'bcrypt';
 
@@ -9,6 +10,7 @@ export class UserService {
   constructor(
     private prisma: PrismaService,
     private userCache: UserCacheService,
+    @Optional() private dataPermission?: DataPermissionService,
   ) {}
 
   async create(data: any) {
@@ -60,8 +62,17 @@ export class UserService {
     return where;
   }
 
-  async findAll(query?: any) {
-    const where = this.buildWhere(query);
+  async findAll(query?: any, currentUserId?: number) {
+    let where = this.buildWhere(query);
+    if (currentUserId && this.dataPermission) {
+      const scopeWhere = await this.dataPermission.buildUserScopeWhere(
+        currentUserId,
+        { deptField: 'deptId', userField: 'id' },
+      );
+      if (Object.keys(scopeWhere).length > 0) {
+        where = { AND: [where, scopeWhere] };
+      }
+    }
 
     return paginateQuery(this.prisma, 'user', query || {}, {
       where,
@@ -88,9 +99,20 @@ export class UserService {
     });
   }
 
-  async findAllForExport(query?: any) {
+  async findAllForExport(query?: any, currentUserId?: number) {
+    let where = this.buildWhere(query);
+    if (currentUserId && this.dataPermission) {
+      const scopeWhere = await this.dataPermission.buildUserScopeWhere(
+        currentUserId,
+        { deptField: 'deptId', userField: 'id' },
+      );
+      if (Object.keys(scopeWhere).length > 0) {
+        where = { AND: [where, scopeWhere] };
+      }
+    }
+
     return this.prisma.user.findMany({
-      where: this.buildWhere(query),
+      where,
       orderBy: { id: 'desc' },
       select: {
         id: true,

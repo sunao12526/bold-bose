@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   Query,
+  Req,
   Res,
   UploadedFile,
   UseGuards,
@@ -57,16 +58,20 @@ export class UserController {
   @RequirePermissions('system:user:query')
   @ApiOperation({ summary: '分页查询用户列表' })
   @ApiOkResponse({ type: UserListResponseDto })
-  async findAll(@Query() query: UserQueryDto) {
-    return this.userService.findAll(query);
+  async findAll(@Query() query: UserQueryDto, @Req() req: any) {
+    return this.userService.findAll(query, req.user?.id);
   }
 
   @Get('export-excel')
   @Keep()
   @RequirePermissions('system:user:export')
   @ApiOperation({ summary: '导出系统用户 Excel' })
-  async exportExcel(@Query() query: UserQueryDto, @Res() res: Response) {
-    const rows = await this.userService.findAllForExport(query);
+  async exportExcel(
+    @Query() query: UserQueryDto,
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
+    const rows = await this.userService.findAllForExport(query, req.user?.id);
     this.excelService.sendExcelResponse(
       res,
       '系统用户.xlsx',

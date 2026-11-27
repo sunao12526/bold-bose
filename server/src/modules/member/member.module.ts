@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { SmsModule } from '../system/sms/sms.module';
 import { MemberService } from './member.service';
 import { MemberController } from './member.controller';
 import { LevelService } from './level.service';
@@ -21,8 +23,29 @@ import { ExperienceRecordService } from './experience-record.service';
 import { ExperienceRecordController } from './experience-record.controller';
 import { LevelRecordService } from './level-record.service';
 import { LevelRecordController } from './level-record.controller';
+import { AppMemberAuthService } from './app/app-member-auth.service';
+import { MemberAuthGuard } from './app/member-auth.guard';
+import { AppMemberAuthController } from './app/app-member-auth.controller';
+import { AppMemberUserController } from './app/app-member-user.controller';
+import { AppMemberAddressController } from './app/app-member-address.controller';
+import { AppMemberSignInController } from './app/app-member-sign-in.controller';
+import { AppMemberAssetsController } from './app/app-member-assets.controller';
+
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+  throw new Error(
+    'JWT_SECRET environment variable is required but not defined in .env',
+  );
+}
 
 @Module({
+  imports: [
+    SmsModule,
+    JwtModule.register({
+      secret: jwtSecret,
+      signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN || '1d') as any },
+    }),
+  ],
   controllers: [
     MemberController,
     LevelController,
@@ -35,6 +58,11 @@ import { LevelRecordController } from './level-record.controller';
     ConfigController,
     ExperienceRecordController,
     LevelRecordController,
+    AppMemberAuthController,
+    AppMemberUserController,
+    AppMemberAddressController,
+    AppMemberSignInController,
+    AppMemberAssetsController,
   ],
   providers: [
     MemberService,
@@ -48,6 +76,8 @@ import { LevelRecordController } from './level-record.controller';
     ConfigService,
     ExperienceRecordService,
     LevelRecordService,
+    AppMemberAuthService,
+    MemberAuthGuard,
   ],
   exports: [
     MemberService,
@@ -61,6 +91,7 @@ import { LevelRecordController } from './level-record.controller';
     ConfigService,
     ExperienceRecordService,
     LevelRecordService,
+    AppMemberAuthService,
   ],
 })
 export class MemberModule {}

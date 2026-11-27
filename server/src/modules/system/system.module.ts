@@ -20,6 +20,7 @@ import { OAuth2Module } from './oauth2/oauth2.module';
 import { LoginLogModule } from './login-log/login-log.module';
 import { SocialModule } from './social/social.module';
 import { AreaModule } from './area/area.module';
+import { TenantModule } from './tenant/tenant.module';
 import { FileModule } from '../infra/file/file.module';
 import { NotifyService } from './notify/notify.service';
 import { NotifyTemplateController } from './notify/notify-template.controller';
@@ -39,6 +40,7 @@ import { ProfileController } from './profile.controller';
     LoginLogModule,
     SocialModule,
     AreaModule,
+    TenantModule,
     FileModule,
   ],
   controllers: [

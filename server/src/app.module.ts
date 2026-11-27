@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
@@ -19,10 +19,12 @@ import { ApiAccessLogInterceptor } from './shared/interceptors/api-access-log.in
 import { IdempotentInterceptor } from './shared/interceptors/idempotent.interceptor';
 import { LogInterceptor } from './shared/interceptors/log.interceptor';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
+import { DataPermissionModule } from './shared/data-permission/data-permission.module';
 import { ExcelModule } from './shared/excel/excel.module';
 import { RedisModule } from './shared/redis/redis.module';
 import { RedisService } from './shared/redis/redis.service';
 import { RedisThrottlerStorage } from './shared/redis/redis-throttler.storage';
+import { TenantMiddleware } from './shared/tenant/tenant.middleware';
 import { UserCacheModule } from './shared/user-cache.module';
 import { IpModule } from './shared/ip/ip.module';
 import { AppController } from './app.controller';
@@ -56,6 +58,7 @@ import { AppService } from './app.service';
     }),
     ScheduleModule.forRoot(), 
     PrismaModule,
+    DataPermissionModule,
     ExcelModule,
     UserCacheModule,
     IpModule,
@@ -101,4 +104,10 @@ import { AppService } from './app.service';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(TenantMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

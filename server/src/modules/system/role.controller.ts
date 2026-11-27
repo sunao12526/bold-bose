@@ -26,7 +26,12 @@ import { Keep } from '../../shared/decorators/keep.decorator';
 import { Log } from '../../shared/decorators/log.decorator';
 import { ExcelService } from '../../shared/excel/excel.service';
 import { RoleQueryDto } from './dto/role-query.dto';
-import { CreateRoleDto, UpdateRoleDto, AssignRoleMenusDto } from './dto/role-input.dto';
+import {
+  AssignRoleDataScopeDto,
+  AssignRoleMenusDto,
+  CreateRoleDto,
+  UpdateRoleDto,
+} from './dto/role-input.dto';
 import { RoleResponseDto, RoleListResponseDto } from './dto/role-response.dto';
 import { SuccessResponseDto } from '../../shared/dto/success-response.dto';
 
@@ -121,6 +126,22 @@ export class RoleController {
     @Body() body: AssignRoleMenusDto,
   ) {
     return this.roleService.assignMenus(id, body.menuIds);
+  }
+
+  @Put(':id/data-scope')
+  @RequirePermissions('system:role:update')
+  @Log({ module: '角色管理', type: 'UPDATE', description: '分配角色数据权限' })
+  @ApiOperation({ summary: '分配角色数据权限' })
+  @ApiOkResponse({ type: RoleResponseDto })
+  async assignDataScope(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: AssignRoleDataScopeDto,
+  ) {
+    return this.roleService.assignDataScope(
+      id,
+      body.dataScope,
+      body.dataScopeDeptIds ?? [],
+    );
   }
 }
 

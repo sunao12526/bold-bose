@@ -2,7 +2,7 @@ import { ZodValidationPipe, cleanupOpenApiDoc } from 'nestjs-zod';
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger as NestLogger } from '@nestjs/common';
+import { Logger as NestLogger, RequestMethod } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as express from 'express';
 import * as path from 'path';
@@ -21,8 +21,10 @@ async function bootstrap() {
   // Serve static files from uploads folder
   app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
-  // Set global API prefix
-  app.setGlobalPrefix('admin-api');
+  // Set global API prefix (exclude C-end app-api routes)
+  app.setGlobalPrefix('admin-api', {
+    exclude: [{ path: 'app-api/(.*)', method: RequestMethod.ALL }],
+  });
 
   // Register validation pipe
   app.useGlobalPipes(new ZodValidationPipe());

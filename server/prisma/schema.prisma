@@ -33,6 +33,7 @@ model User {
   status    CommonStatus @default(ENABLE)
   remark    String?      @db.VarChar(500)
   deptId    Int?         @map("dept_id")
+  tenantId  Int          @default(1) @map("tenant_id")
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
 
@@ -42,22 +43,27 @@ model User {
   socialUsers SocialUser[]
   posts       UserPost[]
 
+  @@index([tenantId])
   @@map("system_users")
 }
 
 model Role {
-  id        Int          @id @default(autoincrement())
-  name      String       @db.VarChar(50)
-  code      String       @unique @db.VarChar(50)
-  sort      Int          @default(0)
-  status    CommonStatus @default(ENABLE)
-  remark    String?      @db.VarChar(500)
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @updatedAt @map("updated_at")
+  id               Int          @id @default(autoincrement())
+  name             String       @db.VarChar(50)
+  code             String       @unique @db.VarChar(50)
+  sort             Int          @default(0)
+  status           CommonStatus @default(ENABLE)
+  remark           String?      @db.VarChar(500)
+  dataScope        Int          @default(1) @map("data_scope") // 1=全部 2=自定义部门 3=本部门 4=本部门及以下 5=仅本人
+  dataScopeDeptIds Json?        @map("data_scope_dept_ids")
+  tenantId         Int          @default(1) @map("tenant_id")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
 
   users     UserRole[]
   menus     RoleMenu[]
 
+  @@index([tenantId])
   @@map("system_roles")
 }
 
@@ -189,8 +195,10 @@ model OperationLog {
   location    String?  @db.VarChar(100)
   status      Int
   duration    Int
+  tenantId    Int      @default(1) @map("tenant_id")
   createdAt   DateTime @default(now()) @map("created_at")
 
+  @@index([tenantId])
   @@map("system_operation_logs")
 }
 
@@ -241,9 +249,11 @@ model Post {
   sort      Int
   remark    String?      @db.VarChar(500)
   status    CommonStatus @default(ENABLE)
+  tenantId  Int          @default(1) @map("tenant_id")
   createdAt DateTime     @default(now()) @map("created_at")
   users     UserPost[]
 
+  @@index([tenantId])
   @@map("system_posts")
 }
 
@@ -285,11 +295,13 @@ model NotifyTemplate {
   content      String          @db.VarChar(2000) // e.g. Hello {nickname}, welcome!
   status       CommonStatus    @default(ENABLE)
   remark       String?         @db.VarChar(500)
+  tenantId     Int             @default(1) @map("tenant_id")
   createdAt    DateTime        @default(now()) @map("created_at")
   updatedAt    DateTime        @updatedAt @map("updated_at")
 
   messages     NotifyMessage[]
 
+  @@index([tenantId])
   @@map("system_notify_templates")
 }
 
@@ -305,10 +317,12 @@ model NotifyMessage {
   readTime     DateTime?      @map("read_time")
   status       Int            // 200 = Success, 500 = Fail
   errorMessage String?        @map("error_message") @db.VarChar(1000)
+  tenantId     Int            @default(1) @map("tenant_id")
   createdAt    DateTime       @default(now()) @map("created_at")
 
   template     NotifyTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
+  @@index([tenantId])
   @@map("system_notify_messages")
 }
 
@@ -449,6 +463,7 @@ model MemberUser {
   nickname       String               @db.VarChar(50)
   avatar         String?              @db.VarChar(512)
   mobile         String               @unique @db.VarChar(20)
+  password       String?              @db.VarChar(100)
   status         CommonStatus         @default(ENABLE)
   points         Int                  @default(0) // Member points
   balance        Int                  @default(0) // Balance in cents
@@ -456,6 +471,9 @@ model MemberUser {
   groupId        Int?                 @map("group_id")
   experience     Int                  @default(0) // Total experience points
   tagIds         Json?                @map("tag_ids") // JSON array of tag IDs
+  lastLoginIp    String?              @map("last_login_ip") @db.VarChar(50)
+  lastLoginDate  DateTime?            @map("last_login_date")
+  tenantId       Int                  @default(1) @map("tenant_id")
   createdAt      DateTime             @default(now()) @map("created_at")
   updatedAt      DateTime             @updatedAt @map("updated_at")
 
@@ -471,6 +489,7 @@ model MemberUser {
   level          MemberLevel?         @relation(fields: [levelId], references: [id], onDelete: SetNull)
   group          MemberGroup?         @relation(fields: [groupId], references: [id], onDelete: SetNull)
 
+  @@index([tenantId])
   @@map("member_users")
 }
 
@@ -541,6 +560,7 @@ model MallOrder {
   payTime         DateTime?         @map("pay_time")
   deliveryTime    DateTime?         @map("delivery_time")
   receiveTime     DateTime?         @map("receive_time")
+  tenantId        Int               @default(1) @map("tenant_id")
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
 
@@ -548,6 +568,7 @@ model MallOrder {
   items           MallOrderItem[]
   refunds         MallOrderRefund[]
 
+  @@index([tenantId])
   @@map("mall_orders")
 }
 
@@ -680,12 +701,14 @@ model PayApp {
   code      String       @unique @db.VarChar(64)
   status    CommonStatus @default(ENABLE)
   remark    String?      @db.VarChar(512)
+  tenantId  Int          @default(1) @map("tenant_id")
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
 
   channels  PayChannel[]
   orders    PayOrder[]
 
+  @@index([tenantId])
   @@map("pay_apps")
 }
 
@@ -717,12 +740,14 @@ model PayOrder {
   expireTime        DateTime        @map("expire_at")
   merchantNotifyUrl String          @map("merchant_notify_url") @db.VarChar(512)
   notifyStatus      PayNotifyStatus @default(NO)
+  tenantId          Int             @default(1) @map("tenant_id")
 
   app               PayApp          @relation(fields: [appId], references: [id], onDelete: Cascade)
   refunds           PayRefund[]
   notifyLogs        PayNotifyLog[]
 
   @@unique([appId, merchantOrderId])
+  @@index([tenantId])
   @@map("pay_orders")
 }
 
@@ -773,12 +798,14 @@ model Dept {
   phone     String?      @db.VarChar(20)
   email     String?      @db.VarChar(100)
   status    CommonStatus @default(ENABLE)
+  tenantId  Int          @default(1) @map("tenant_id")
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
 
   leader    User?        @relation("DeptLeader", fields: [leaderId], references: [id], onDelete: SetNull)
   users     User[]       @relation("UserDept")
 
+  @@index([tenantId])
   @@map("system_dept")
 }
 
@@ -788,9 +815,11 @@ model Notice {
   type      Int          // 1 = Notice (通知), 2 = Announcement (公告)
   content   String       @db.Text
   status    CommonStatus @default(ENABLE)
+  tenantId  Int          @default(1) @map("tenant_id")
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
 
+  @@index([tenantId])
   @@map("system_notice")
 }
 
@@ -924,8 +953,10 @@ model LoginLog {
   userAgent String   @map("user_agent") @db.VarChar(500)
   status    String   @db.VarChar(20) // SUCCESS, FAIL
   message   String?  @db.VarChar(200)
+  tenantId  Int      @default(1) @map("tenant_id")
   loginTime DateTime @default(now()) @map("login_time")
 
+  @@index([tenantId])
   @@map("system_login_log")
 }
 
@@ -1710,6 +1741,42 @@ model InfraApiErrorLog {
   @@index([processStatus])
   @@map("infra_api_error_logs")
 }
+
+// ==================== 多租户管理 ====================
+
+model TenantPackage {
+  id        Int          @id @default(autoincrement())
+  name      String       @unique @db.VarChar(50)
+  status    CommonStatus @default(ENABLE)
+  remark    String?      @db.VarChar(500)
+  menuIds   Json         @map("menu_ids")
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  tenants   Tenant[]
+
+  @@map("system_tenant_packages")
+}
+
+model Tenant {
+  id            Int            @id @default(autoincrement())
+  name          String         @unique @db.VarChar(50)
+  contactUserId Int?           @map("contact_user_id")
+  contactName   String         @map("contact_name") @db.VarChar(50)
+  contactMobile String?        @map("contact_mobile") @db.VarChar(20)
+  status        CommonStatus   @default(ENABLE)
+  website       String?        @db.VarChar(256)
+  packageId     Int?           @map("package_id")
+  expireTime    DateTime       @map("expire_time")
+  accountCount  Int            @default(100) @map("account_count")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  package       TenantPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+
+  @@map("system_tenants")
+}
+
 
 
 

@@ -72,4 +72,20 @@ export class RoleService {
     this.userCache.invalidateAll();
     return { success: true };
   }
+
+  async assignDataScope(
+    roleId: number,
+    dataScope: number,
+    dataScopeDeptIds: number[] = [],
+  ) {
+    const result = await this.prisma.role.update({
+      where: { id: roleId },
+      data: {
+        dataScope,
+        dataScopeDeptIds: dataScope === 2 ? dataScopeDeptIds : [],
+      },
+    });
+    this.userCache.invalidateAll();
+    return result;
+  }
 }
