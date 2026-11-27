@@ -101,8 +101,16 @@ export class TransferTaskDto extends createZodDto(TransferTaskSchema) {}
 export const CreateOaLeaveSchema = z.object({
   type: z.coerce.number().int().min(1).max(5),
   reason: z.string().min(1).max(1000),
-  startTime: z.coerce.date(),
-  endTime: z.coerce.date(),
+  startTime: z
+    .string({ error: '开始时间格式不正确' })
+    .refine((val) => !Number.isNaN(Date.parse(val)), {
+      message: '开始时间格式不正确',
+    }),
+  endTime: z
+    .string({ error: '结束时间格式不正确' })
+    .refine((val) => !Number.isNaN(Date.parse(val)), {
+      message: '结束时间格式不正确',
+    }),
   day: z.coerce.number().positive(),
 });
 export class CreateOaLeaveDto extends createZodDto(CreateOaLeaveSchema) {}

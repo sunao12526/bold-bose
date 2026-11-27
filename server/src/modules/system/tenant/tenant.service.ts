@@ -76,7 +76,7 @@ export class TenantService {
     status?: CommonStatus;
     website?: string | null;
     packageId?: number | null;
-    expireTime: Date;
+    expireTime: Date | string;
     accountCount?: number;
     username?: string;
     password?: string;
@@ -109,7 +109,7 @@ export class TenantService {
           status: tenantFields.status ?? CommonStatus.ENABLE,
           website: tenantFields.website ?? null,
           packageId: tenantFields.packageId ?? null,
-          expireTime: tenantFields.expireTime,
+          expireTime: new Date(tenantFields.expireTime),
           accountCount: tenantFields.accountCount ?? 100,
         },
       });
@@ -156,7 +156,7 @@ export class TenantService {
       status?: CommonStatus;
       website?: string | null;
       packageId?: number | null;
-      expireTime?: Date;
+      expireTime?: Date | string;
       accountCount?: number;
     },
   ) {
@@ -177,9 +177,15 @@ export class TenantService {
         throw new BadRequestException('关联的租户套餐不存在');
       }
     }
+    const updateData = {
+      ...data,
+      ...(data.expireTime !== undefined
+        ? { expireTime: new Date(data.expireTime) }
+        : {}),
+    };
     return this.prisma.tenant.update({
       where: { id },
-      data,
+      data: updateData,
     });
   }
 

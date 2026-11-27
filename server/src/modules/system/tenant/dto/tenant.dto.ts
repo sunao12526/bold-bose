@@ -36,7 +36,11 @@ export const CreateTenantSchema = z.object({
   status: z.enum(CommonStatus).optional().default('ENABLE'),
   website: z.string().max(256).nullable().optional(),
   packageId: z.number().int().nullable().optional(),
-  expireTime: z.coerce.date({ error: '过期时间格式不正确' }),
+  expireTime: z
+    .string({ error: '过期时间格式不正确' })
+    .refine((val) => !Number.isNaN(Date.parse(val)), {
+      message: '过期时间格式不正确',
+    }),
   accountCount: z.coerce.number().int().min(1).default(100),
   username: z.string().min(3).max(50).optional(),
   password: z.string().min(6).max(50).optional(),

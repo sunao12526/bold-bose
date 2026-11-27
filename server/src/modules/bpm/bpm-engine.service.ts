@@ -497,8 +497,8 @@ export class BpmEngineService {
     data: {
       type: number;
       reason: string;
-      startTime: Date;
-      endTime: Date;
+      startTime: Date | string;
+      endTime: Date | string;
       day: number;
     },
   ) {
@@ -507,8 +507,8 @@ export class BpmEngineService {
         userId,
         type: data.type,
         reason: data.reason,
-        startTime: data.startTime,
-        endTime: data.endTime,
+        startTime: new Date(data.startTime),
+        endTime: new Date(data.endTime),
         day: data.day,
         status: BpmStatus.RUNNING,
       },
