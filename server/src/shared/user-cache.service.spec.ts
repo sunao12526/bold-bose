@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserCacheService } from './user-cache.service';
 import { PrismaService } from './prisma/prisma.service';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { RedisService } from './redis/redis.service';
 
 describe('UserCacheService', () => {
   let service: UserCacheService;
@@ -15,12 +15,11 @@ describe('UserCacheService', () => {
     },
   };
 
-  const mockCacheManager = {
-    get: jest.fn(),
-    set: jest.fn(),
+  const mockRedisService = {
+    getJson: jest.fn(),
+    setJson: jest.fn(),
     del: jest.fn(),
-    clear: jest.fn(),
-    reset: jest.fn(),
+    delByPattern: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -28,7 +27,7 @@ describe('UserCacheService', () => {
       providers: [
         UserCacheService,
         { provide: PrismaService, useValue: mockPrismaService },
-        { provide: CACHE_MANAGER, useValue: mockCacheManager },
+        { provide: RedisService, useValue: mockRedisService },
       ],
     }).compile();
 
@@ -46,18 +45,18 @@ describe('UserCacheService', () => {
         permissions: ['sys:user:list'],
         isSuperAdmin: false,
       };
-      mockCacheManager.get.mockResolvedValue(mockAuth);
+      mockRedisService.getJson.mockResolvedValue(mockAuth);
 
       const res = await service.getUserAuth(1);
 
       expect(res).toEqual(mockAuth);
-      expect(mockCacheManager.get).toHaveBeenCalledWith('user_auth:1');
+      expect(mockRedisService.getJson).toHaveBeenCalledWith('user_auth:1');
       expect(mockPrismaService.userRole.findMany).not.toHaveBeenCalled();
     });
 
     it('如果缓存中不存在，且用户是超级管理员，应该查询数据库并写入缓存', async () => {
-      mockCacheManager.get.mockResolvedValue(null);
-      
+      mockRedisService.getJson.mockResolvedValue(null);
+
       const userRoles = [
         { roleId: 1, role: { code: 'super_admin' } },
       ];
@@ -75,16 +74,20 @@ describe('UserCacheService', () => {
         include: { role: true },
       });
       expect(mockPrismaService.roleMenu.findMany).not.toHaveBeenCalled();
-      expect(mockCacheManager.set).toHaveBeenCalledWith('user_auth:2', {
-        roleCodes: ['super_admin'],
-        permissions: [],
-        isSuperAdmin: true,
-      }, 300000);
+      expect(mockRedisService.setJson).toHaveBeenCalledWith(
+        'user_auth:2',
+        {
+          roleCodes: ['super_admin'],
+          permissions: [],
+          isSuperAdmin: true,
+        },
+        300000,
+      );
     });
 
     it('如果缓存中不存在，且用户是普通管理员，应该查询关联菜单权限并写入缓存', async () => {
-      mockCacheManager.get.mockResolvedValue(null);
-      
+      mockRedisService.getJson.mockResolvedValue(null);
+
       const userRoles = [
         { roleId: 2, role: { code: 'admin' } },
       ];
@@ -107,17 +110,21 @@ describe('UserCacheService', () => {
         where: { roleId: { in: [2] } },
         include: { menu: true },
       });
-      expect(mockCacheManager.set).toHaveBeenCalledWith('user_auth:3', {
-        roleCodes: ['admin'],
-        permissions: ['sys:user:create', 'sys:user:edit'],
-        isSuperAdmin: false,
-      }, 300000);
+      expect(mockRedisService.setJson).toHaveBeenCalledWith(
+        'user_auth:3',
+        {
+          roleCodes: ['admin'],
+          permissions: ['sys:user:create', 'sys:user:edit'],
+          isSuperAdmin: false,
+        },
+        300000,
+      );
     });
 
     it('如果在读取或写入缓存时抛出异常，应该优雅捕获不崩溃', async () => {
-      mockCacheManager.get.mockRejectedValue(new Error('Cache read error'));
-      mockCacheManager.set.mockRejectedValue(new Error('Cache write error'));
-      
+      mockRedisService.getJson.mockRejectedValue(new Error('Cache read error'));
+      mockRedisService.setJson.mockRejectedValue(new Error('Cache write error'));
+
       mockPrismaService.userRole.findMany.mockResolvedValue([]);
 
       const res = await service.getUserAuth(4);
@@ -127,49 +134,31 @@ describe('UserCacheService', () => {
 
   describe('invalidateUser', () => {
     it('应该从缓存中删除指定用户的数据', async () => {
-      mockCacheManager.del.mockResolvedValue(undefined);
+      mockRedisService.del.mockResolvedValue(1);
 
       await service.invalidateUser(5);
 
-      expect(mockCacheManager.del).toHaveBeenCalledWith('user_auth:5');
+      expect(mockRedisService.del).toHaveBeenCalledWith('user_auth:5');
     });
 
     it('如果删除发生异常，应该捕获并记录', async () => {
-      mockCacheManager.del.mockRejectedValue(new Error('Cache del error'));
+      mockRedisService.del.mockRejectedValue(new Error('Cache del error'));
       await expect(service.invalidateUser(5)).resolves.not.toThrow();
     });
   });
 
   describe('invalidateAll', () => {
-    it('如果支持 clear 方法，应该调用 clear', async () => {
-      mockCacheManager.clear.mockResolvedValue(undefined);
+    it('应该按模式删除所有 user_auth:* 缓存', async () => {
+      mockRedisService.delByPattern.mockResolvedValue(3);
 
       await service.invalidateAll();
 
-      expect(mockCacheManager.clear).toHaveBeenCalled();
-      expect(mockCacheManager.reset).not.toHaveBeenCalled();
+      expect(mockRedisService.delByPattern).toHaveBeenCalledWith('user_auth:*');
     });
 
-    it('如果不支持 clear 但支持 reset，应该调用 reset', async () => {
-      const cacheManagerWithoutClear = {
-        get: jest.fn(),
-        set: jest.fn(),
-        del: jest.fn(),
-        reset: jest.fn().mockResolvedValue(undefined),
-      };
-
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          UserCacheService,
-          { provide: PrismaService, useValue: mockPrismaService },
-          { provide: CACHE_MANAGER, useValue: cacheManagerWithoutClear },
-        ],
-      }).compile();
-
-      const newService = module.get<UserCacheService>(UserCacheService);
-      await newService.invalidateAll();
-
-      expect(cacheManagerWithoutClear.reset).toHaveBeenCalled();
+    it('如果清理发生异常，应该安全捕获', async () => {
+      mockRedisService.delByPattern.mockRejectedValue(new Error('Scan error'));
+      await expect(service.invalidateAll()).resolves.not.toThrow();
     });
   });
 });

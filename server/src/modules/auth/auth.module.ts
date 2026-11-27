@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { CaptchaService } from './captcha.service';
+import { SmsModule } from '../system/sms/sms.module';
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {
@@ -16,6 +17,7 @@ if (!jwtSecret) {
 @Module({
   imports: [
     PassportModule,
+    SmsModule,
     JwtModule.register({
       secret: jwtSecret,
       signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN || '1d') as any },

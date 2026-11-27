@@ -1,7 +1,6 @@
-import { Injectable, Inject, BadRequestException, Logger } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { RedisService } from '../../../shared/redis/redis.service';
 
 @Injectable()
 export class MpClientService {
@@ -9,15 +8,15 @@ export class MpClientService {
 
   constructor(
     private prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: any
+    private redisService: RedisService,
   ) {}
 
   /**
-   * 获取微信公众号的 AccessToken (带缓存机制)
+   * 获取微信公众号的 AccessToken (带 Redis 缓存机制)
    */
   async getAccessToken(appId: string): Promise<string> {
     const cacheKey = `mp:token:${appId}`;
-    const cachedToken = await this.cacheManager.get(cacheKey) as string;
+    const cachedToken = await this.redisService.get(cacheKey);
     if (cachedToken) {
       return cachedToken;
     }
@@ -39,8 +38,8 @@ export class MpClientService {
 
     const token = data.access_token;
     // 缓存过期时间略微扣除 200 秒以保安全
-    const ttl = (data.expires_in - 200) * 1000;
-    await this.cacheManager.set(cacheKey, token, ttl);
+    const ttl = Math.max(60, (data.expires_in || 7200) - 200) * 1000;
+    await this.redisService.set(cacheKey, token, ttl);
 
     return token;
   }
@@ -49,7 +48,7 @@ export class MpClientService {
    * 清除微信 AccessToken 缓存
    */
   async clearTokenCache(appId: string): Promise<void> {
-    await this.cacheManager.del(`mp:token:${appId}`);
+    await this.redisService.del(`mp:token:${appId}`);
   }
 
   /**

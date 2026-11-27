@@ -7,18 +7,21 @@ import {
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { RedisService } from '../../../shared/redis/redis.service';
 import { JobHandlers } from './job.handlers';
 import { CronJob } from 'cron';
+
+const JOB_LOCK_TTL_MS = 30 * 60 * 1000;
 
 @Injectable()
 export class JobService implements OnApplicationBootstrap {
   private readonly logger = new Logger(JobService.name);
-  private runningJobs = new Set<string>();
 
   constructor(
     private prisma: PrismaService,
     private schedulerRegistry: SchedulerRegistry,
     private jobHandlers: JobHandlers,
+    private redisService: RedisService,
   ) {}
 
   // 1. Lifecycle hook: Bootstrap all active jobs from DB
@@ -70,16 +73,19 @@ export class JobService implements OnApplicationBootstrap {
     }
   }
 
-  // 4. Job runner wrapper with locking, timing, error handling and DB logging
+  // 4. Job runner wrapper with distributed locking, timing, error handling and DB logging
   async runJobWrapper(jobId: number, handlerName: string) {
-    const lockKey = `${jobId}_${handlerName}`;
-    if (this.runningJobs.has(lockKey)) {
+    const lockKey = `job:lock:${jobId}_${handlerName}`;
+    const lockToken = await this.redisService.acquireLock(
+      lockKey,
+      JOB_LOCK_TTL_MS,
+    );
+    if (!lockToken) {
       this.logger.warn(
         `[Scheduler] Job ${handlerName} (ID: ${jobId}) is already running, skipping execution.`,
       );
       return;
     }
-    this.runningJobs.add(lockKey);
 
     const startTime = Date.now();
     let status = 200;
@@ -99,7 +105,7 @@ export class JobService implements OnApplicationBootstrap {
       this.logger.error(`[Scheduler] Error executing job "${handlerName}":`, err.stack || err);
     } finally {
       const duration = Date.now() - startTime;
-      this.runningJobs.delete(lockKey);
+      await this.redisService.releaseLock(lockKey, lockToken);
 
       // Save execution log
       try {

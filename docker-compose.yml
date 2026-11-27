@@ -26,6 +26,17 @@ services:
       - seaweeddata:/data
     restart: always
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis-server-compose
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    restart: always
+
 volumes:
   pgdata:
   seaweeddata:
+  redisdata:

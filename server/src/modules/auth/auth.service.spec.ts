@@ -4,6 +4,8 @@ import { PrismaService } from '../../shared/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserCacheService } from '../../shared/user-cache.service';
 import { IpService } from '../../shared/ip/ip.service';
+import { RedisService } from '../../shared/redis/redis.service';
+import { SmsCodeService } from '../system/sms/sms-code.service';
 import { UnauthorizedException, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
@@ -18,7 +20,9 @@ describe('AuthService', () => {
     },
     user: {
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
       create: jest.fn(),
+      update: jest.fn(),
     },
     userSession: {
       create: jest.fn(),
@@ -56,7 +60,25 @@ describe('AuthService', () => {
     search: jest.fn().mockResolvedValue('内网IP'),
   };
 
+  const mockRedisService = {
+    set: jest.fn().mockResolvedValue(undefined),
+    setJson: jest.fn().mockResolvedValue(undefined),
+    getAndDelete: jest.fn().mockResolvedValue(null),
+    del: jest.fn().mockResolvedValue(1),
+  };
+
+  const mockSmsCodeService = {
+    sendCode: jest.fn().mockResolvedValue({ success: true }),
+    verifyCode: jest.fn().mockResolvedValue({ success: true }),
+  };
+
+  const originalNodeEnv = process.env.NODE_ENV;
+  const originalSocialMock = process.env.SOCIAL_MOCK_ENABLED;
+
   beforeEach(async () => {
+    process.env.NODE_ENV = 'test';
+    process.env.SOCIAL_MOCK_ENABLED = 'true';
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -64,6 +86,8 @@ describe('AuthService', () => {
         { provide: JwtService, useValue: mockJwtService },
         { provide: UserCacheService, useValue: mockUserCacheService },
         { provide: IpService, useValue: mockIpService },
+        { provide: RedisService, useValue: mockRedisService },
+        { provide: SmsCodeService, useValue: mockSmsCodeService },
       ],
     }).compile();
 
@@ -72,6 +96,9 @@ describe('AuthService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
+    process.env.NODE_ENV = originalNodeEnv;
+    process.env.SOCIAL_MOCK_ENABLED = originalSocialMock;
   });
 
   describe('parseUserAgent', () => {
@@ -374,6 +401,43 @@ describe('AuthService', () => {
         service.socialLogin('GITHUB', 'mock_code', 'http://callback'),
       ).rejects.toThrow(BadRequestException);
     });
+
+    it('未开启 SOCIAL_MOCK_ENABLED 且 GitHub API 失败时禁止降级为 Mock 用户', async () => {
+      process.env.SOCIAL_MOCK_ENABLED = 'false';
+      mockPrismaService.socialClient.findUnique.mockResolvedValue({
+        type: 'GITHUB',
+        clientId: 'github_client_placeholder',
+        clientSecret: 'secret',
+        redirectUri: 'http://callback',
+        status: 'ENABLE',
+      });
+      jest.spyOn(global, 'fetch').mockRejectedValue(new Error('network down'));
+
+      await expect(
+        service.socialLogin('GITHUB', 'mock_code', 'http://callback'),
+      ).rejects.toThrow(BadRequestException);
+      expect(mockPrismaService.socialUser.findUnique).not.toHaveBeenCalled();
+    });
+
+    it('生产环境即使开启 SOCIAL_MOCK_ENABLED 也禁止 Mock 登录', async () => {
+      process.env.NODE_ENV = 'production';
+      process.env.SOCIAL_MOCK_ENABLED = 'true';
+      mockPrismaService.socialClient.findUnique.mockResolvedValue({
+        type: 'GITHUB',
+        clientId: 'github_client_placeholder',
+        clientSecret: 'secret',
+        redirectUri: 'http://callback',
+        status: 'ENABLE',
+      });
+      jest.spyOn(global, 'fetch').mockResolvedValue({
+        json: async () => ({ error: 'bad_verification_code' }),
+      } as any);
+
+      await expect(
+        service.socialLogin('GITHUB', 'mock_code', 'http://callback'),
+      ).rejects.toThrow(BadRequestException);
+      expect(mockPrismaService.socialUser.findUnique).not.toHaveBeenCalled();
+    });
   });
 
   describe('socialBind', () => {
@@ -470,6 +534,104 @@ describe('AuthService', () => {
       res = await service.getSocialBindStatus(1);
       expect(res[0].bound).toBe(true);
       expect(res[0].nickname).toBe('BoundUser');
+    });
+  });
+
+  describe('refreshToken / smsLogin / register / resetPassword', () => {
+    it('refreshToken 有效时应轮换令牌并清理旧会话', async () => {
+      mockRedisService.getAndDelete.mockResolvedValueOnce(
+        JSON.stringify({ userId: 1, username: 'admin', accessToken: 'old_token' }),
+      );
+      mockPrismaService.user.findUnique.mockResolvedValueOnce({
+        id: 1,
+        username: 'admin',
+        nickname: '管理员',
+        status: 'ENABLE',
+      });
+      mockJwtService.sign.mockReturnValue('new_access_token');
+      mockPrismaService.userSession.create.mockResolvedValue({});
+
+      const res = await service.refreshToken('valid_refresh');
+      expect(res.accessToken).toBe('new_access_token');
+      expect(res.refreshToken).toBeTruthy();
+      expect(mockPrismaService.userSession.deleteMany).toHaveBeenCalledWith({
+        where: { token: 'old_token' },
+      });
+    });
+
+    it('refreshToken 无效或过期应抛出 UnauthorizedException', async () => {
+      mockRedisService.getAndDelete.mockResolvedValueOnce(null);
+      await expect(service.refreshToken('bad_token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('smsLogin 验证通过且用户存在时应成功签发令牌', async () => {
+      mockSmsCodeService.verifyCode.mockResolvedValueOnce({ success: true });
+      mockPrismaService.user.findFirst.mockResolvedValueOnce({
+        id: 5,
+        username: 'mobile_user',
+        nickname: '手机用户',
+        status: 'ENABLE',
+      });
+      mockJwtService.sign.mockReturnValue('sms_jwt');
+      mockPrismaService.userSession.create.mockResolvedValue({});
+
+      const res = await service.smsLogin('13800138000', '123456');
+      expect(res.accessToken).toBe('sms_jwt');
+      expect(mockSmsCodeService.verifyCode).toHaveBeenCalledWith(
+        '13800138000',
+        '123456',
+        1,
+        '127.0.0.1',
+      );
+    });
+
+    it('register 用户名已存在应抛出 BadRequestException，不存在则创建并登录', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValueOnce({ id: 1 });
+      await expect(
+        service.register({ username: 'dup', password: 'password123' }),
+      ).rejects.toThrow(BadRequestException);
+
+      mockPrismaService.user.findUnique.mockResolvedValueOnce(null);
+      (bcrypt.hash as jest.Mock).mockResolvedValueOnce('hashed');
+      mockPrismaService.user.create.mockResolvedValueOnce({
+        id: 88,
+        username: 'newuser',
+        nickname: '新用户',
+        status: 'ENABLE',
+      });
+      mockJwtService.sign.mockReturnValue('reg_jwt');
+      mockPrismaService.userSession.create.mockResolvedValue({});
+
+      const res = await service.register({
+        username: 'newuser',
+        password: 'password123',
+        nickname: '新用户',
+      });
+      expect(res.accessToken).toBe('reg_jwt');
+      expect(res.userId).toBe(88);
+    });
+
+    it('resetPassword 应更新密码、清空会话并使权限缓存失效', async () => {
+      mockSmsCodeService.verifyCode.mockResolvedValueOnce({ success: true });
+      mockPrismaService.user.findFirst.mockResolvedValueOnce({
+        id: 9,
+        username: 'u9',
+      });
+      (bcrypt.hash as jest.Mock).mockResolvedValueOnce('new_hashed');
+      mockPrismaService.user.update.mockResolvedValueOnce({});
+
+      const res = await service.resetPassword(
+        '13800138000',
+        '654321',
+        'newpass123',
+      );
+      expect(res).toEqual({ success: true });
+      expect(mockPrismaService.userSession.deleteMany).toHaveBeenCalledWith({
+        where: { userId: 9 },
+      });
+      expect(mockUserCacheService.invalidateUser).toHaveBeenCalledWith(9);
     });
   });
 });

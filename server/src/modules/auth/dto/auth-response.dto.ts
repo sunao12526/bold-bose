@@ -9,6 +9,8 @@ export class CaptchaResponseDto extends createZodDto(CaptchaResponseSchema) {}
 
 export const LoginResponseSchema = z.object({
   accessToken: z.string().describe('JWT 访问令牌'),
+  refreshToken: z.string().optional().describe('刷新令牌'),
+  expiresTime: z.string().optional().describe('访问令牌过期时间'),
   userId: z.number().int().describe('用户 ID'),
 });
 export class LoginResponseDto extends createZodDto(LoginResponseSchema) {}

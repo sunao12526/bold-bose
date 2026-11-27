@@ -1,9 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { RedisService } from '../../../shared/redis/redis.service';
+
+const OAUTH2_CODE_TTL_MS = 10 * 60 * 1000;
 
 @Injectable()
 export class OAuth2Service {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redisService: RedisService,
+  ) {}
 
   async createClient(data: any) {
     return this.prisma.oAuth2Client.create({
@@ -79,21 +86,17 @@ export class OAuth2Service {
     return this.prisma.oAuth2Client.delete({ where: { id } });
   }
 
-  private codes = new Map<
-    string,
-    { userId: number; clientId: string; scopes: string[] }
-  >();
-
   async generateCode(
     userId: number,
     clientId: string,
     scopes: string[],
   ): Promise<string> {
-    const code =
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
-    this.codes.set(code, { userId, clientId, scopes });
-    setTimeout(() => this.codes.delete(code), 10 * 60 * 1000);
+    const code = crypto.randomBytes(24).toString('hex');
+    await this.redisService.setJson(
+      `oauth2:code:${code}`,
+      { userId, clientId, scopes },
+      OAUTH2_CODE_TTL_MS,
+    );
     return code;
   }
 
@@ -101,14 +104,18 @@ export class OAuth2Service {
     code: string,
     clientId: string,
   ): Promise<{ userId: number; scopes: string[] }> {
-    const payload = this.codes.get(code);
-    if (!payload) {
+    const raw = await this.redisService.getAndDelete(`oauth2:code:${code}`);
+    if (!raw) {
       throw new Error('授权码无效或已过期');
     }
+    const payload = JSON.parse(raw) as {
+      userId: number;
+      clientId: string;
+      scopes: string[];
+    };
     if (payload.clientId !== clientId) {
       throw new Error('授权码不匹配客户端');
     }
-    this.codes.delete(code);
     return { userId: payload.userId, scopes: payload.scopes };
   }
 }

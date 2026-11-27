@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JobService } from './job.service';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { RedisService } from '../../../shared/redis/redis.service';
 import { JobHandlers } from './job.handlers';
 import { CronJob } from 'cron';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
@@ -36,13 +37,22 @@ describe('JobService', () => {
     testErrorJob: jest.fn().mockRejectedValue(new Error('Test execution error')),
   };
 
+  const mockRedisService = {
+    acquireLock: jest.fn().mockResolvedValue('lock-token-1'),
+    releaseLock: jest.fn().mockResolvedValue(true),
+  };
+
   beforeEach(async () => {
+    mockRedisService.acquireLock.mockResolvedValue('lock-token-1');
+    mockRedisService.releaseLock.mockResolvedValue(true);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         JobService,
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: SchedulerRegistry, useValue: mockSchedulerRegistry },
         { provide: JobHandlers, useValue: mockJobHandlers },
+        { provide: RedisService, useValue: mockRedisService },
       ],
     }).compile();
 
@@ -51,7 +61,6 @@ describe('JobService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    (service as any).runningJobs.clear();
   });
 
   describe('onApplicationBootstrap', () => {
@@ -151,24 +160,32 @@ describe('JobService', () => {
   });
 
   describe('runJobWrapper', () => {
-    it('防重复并发锁：如果同一个任务已经在运行中，应该直接跳过', async () => {
-      const lockKey = '55_demoTaskJob';
-      (service as any).runningJobs.add(lockKey);
+    it('防重复并发锁：如果分布式锁已被占用，应该直接跳过', async () => {
+      mockRedisService.acquireLock.mockResolvedValueOnce(null);
 
       await service.runJobWrapper(55, 'demoTaskJob');
 
       // The handler should not be called
+      expect(mockRedisService.acquireLock).toHaveBeenCalledWith(
+        'job:lock:55_demoTaskJob',
+        30 * 60 * 1000,
+      );
       expect(mockJobHandlers.demoTaskJob).not.toHaveBeenCalled();
       expect(mockPrismaService.sysJobLog.create).not.toHaveBeenCalled();
+      expect(mockRedisService.releaseLock).not.toHaveBeenCalled();
     });
 
-    it('应该成功运行 Handler 并写入 SUCCESS 状态 200 日志', async () => {
+    it('应该成功运行 Handler、释放分布式锁并写入 SUCCESS 状态 200 日志', async () => {
       mockJobHandlers.demoTaskJob.mockResolvedValue(undefined);
       mockPrismaService.sysJobLog.create.mockResolvedValue({});
 
       await service.runJobWrapper(88, 'demoTaskJob');
 
       expect(mockJobHandlers.demoTaskJob).toHaveBeenCalled();
+      expect(mockRedisService.releaseLock).toHaveBeenCalledWith(
+        'job:lock:88_demoTaskJob',
+        'lock-token-1',
+      );
       expect(mockPrismaService.sysJobLog.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({

@@ -14,7 +14,7 @@ export class RoleService {
     return this.prisma.role.create({ data });
   }
 
-  async findAll(query?: any) {
+  private buildWhere(query?: any) {
     const where: any = {};
     if (query?.name) {
       where.name = { contains: query.name };
@@ -25,9 +25,19 @@ export class RoleService {
     if (query?.status) {
       where.status = query.status;
     }
+    return where;
+  }
 
+  async findAll(query?: any) {
     return paginateQuery(this.prisma, 'role', query || {}, {
-      where,
+      where: this.buildWhere(query),
+      orderBy: { sort: 'asc' },
+    });
+  }
+
+  async findAllForExport(query?: any) {
+    return this.prisma.role.findMany({
+      where: this.buildWhere(query),
       orderBy: { sort: 'asc' },
     });
   }

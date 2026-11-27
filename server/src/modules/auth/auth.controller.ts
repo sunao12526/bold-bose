@@ -16,7 +16,14 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import {
+  LoginDto,
+  RefreshTokenDto,
+  RegisterDto,
+  ResetPasswordDto,
+  SendSmsCodeDto,
+  SmsLoginDto,
+} from './dto/login.dto';
 import { Public } from '../../shared/decorators/public.decorator';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { CaptchaService } from './captcha.service';
@@ -50,7 +57,7 @@ export class AuthController {
   @Get('captcha')
   @ApiOperation({ summary: '获取验证码图片' })
   @ApiOkResponse({ type: CaptchaResponseDto })
-  getCaptcha() {
+  async getCaptcha() {
     return this.captchaService.generate();
   }
 
@@ -66,7 +73,7 @@ export class AuthController {
     if (!loginDto.captchaKey || !loginDto.captchaCode) {
       throw new UnauthorizedException('请输入验证码');
     }
-    const valid = this.captchaService.verify(
+    const valid = await this.captchaService.verify(
       loginDto.captchaKey,
       loginDto.captchaCode,
     );
@@ -77,6 +84,70 @@ export class AuthController {
     const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
     const userAgent = req.headers['user-agent'] || '';
     return this.authService.login(loginDto, ip, userAgent);
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('send-sms-code')
+  @ApiOperation({ summary: '发送登录/注册/重置密码短信验证码' })
+  @ApiOkResponse({ type: SuccessResponseDto })
+  async sendSmsCode(@Body() body: SendSmsCodeDto, @Req() req: any) {
+    const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+    return this.authService.sendSmsCode(body.mobile, body.scene ?? 1, ip);
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('sms-login')
+  @ApiOperation({ summary: '手机短信验证码登录' })
+  @ApiOkResponse({ type: LoginResponseDto })
+  async smsLogin(@Body() body: SmsLoginDto, @Req() req: any) {
+    const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+    const userAgent = req.headers['user-agent'] || '';
+    return this.authService.smsLogin(body.mobile, body.code, ip, userAgent);
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('register')
+  @ApiOperation({ summary: '注册新用户并自动登录' })
+  @ApiOkResponse({ type: LoginResponseDto })
+  async register(@Body() body: RegisterDto, @Req() req: any) {
+    const valid = await this.captchaService.verify(
+      body.captchaKey,
+      body.captchaCode,
+    );
+    if (!valid) {
+      throw new UnauthorizedException('验证码错误');
+    }
+    const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+    const userAgent = req.headers['user-agent'] || '';
+    return this.authService.register(body, ip, userAgent);
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('reset-password')
+  @ApiOperation({ summary: '通过短信验证码重置密码' })
+  @ApiOkResponse({ type: SuccessResponseDto })
+  async resetPassword(@Body() body: ResetPasswordDto, @Req() req: any) {
+    const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+    return this.authService.resetPassword(
+      body.mobile,
+      body.code,
+      body.password,
+      ip,
+    );
+  }
+
+  @Public()
+  @Post('refresh-token')
+  @ApiOperation({ summary: '使用 Refresh Token 刷新登录令牌' })
+  @ApiOkResponse({ type: LoginResponseDto })
+  async refreshToken(@Body() body: RefreshTokenDto, @Req() req: any) {
+    const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+    const userAgent = req.headers['user-agent'] || '';
+    return this.authService.refreshToken(body.refreshToken, ip, userAgent);
   }
 
   @Post('logout')

@@ -40,7 +40,7 @@ export class UserService {
     return user;
   }
 
-  async findAll(query?: any) {
+  private buildWhere(query?: any) {
     const where: any = {};
     if (query?.username) {
       where.username = { contains: query.username };
@@ -57,6 +57,11 @@ export class UserService {
     if (query?.deptId) {
       where.deptId = Number(query.deptId);
     }
+    return where;
+  }
+
+  async findAll(query?: any) {
+    const where = this.buildWhere(query);
 
     return paginateQuery(this.prisma, 'user', query || {}, {
       where,
@@ -81,6 +86,100 @@ export class UserService {
         },
       },
     });
+  }
+
+  async findAllForExport(query?: any) {
+    return this.prisma.user.findMany({
+      where: this.buildWhere(query),
+      orderBy: { id: 'desc' },
+      select: {
+        id: true,
+        username: true,
+        nickname: true,
+        email: true,
+        mobile: true,
+        status: true,
+        remark: true,
+        createdAt: true,
+        dept: { select: { name: true } },
+      },
+    });
+  }
+
+  async importUsers(
+    rows: Record<string, any>[],
+    updateSupport = false,
+  ): Promise<{
+    createUsernames: string[];
+    updateUsernames: string[];
+    failureUsernames: Record<string, string>;
+  }> {
+    const createUsernames: string[] = [];
+    const updateUsernames: string[] = [];
+    const failureUsernames: Record<string, string> = {};
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const username = String(row['用户名'] ?? row['username'] ?? '').trim();
+      const nickname = String(row['用户昵称'] ?? row['昵称'] ?? row['nickname'] ?? '').trim();
+      const email = String(row['邮箱'] ?? row['email'] ?? '').trim() || null;
+      const mobile = String(row['手机号'] ?? row['mobile'] ?? '').trim() || null;
+      const rawPassword = String(row['密码'] ?? row['password'] ?? '').trim();
+      const rawStatus = String(row['状态'] ?? row['status'] ?? 'ENABLE').trim();
+      const remark = String(row['备注'] ?? row['remark'] ?? '').trim() || null;
+      const status =
+        rawStatus === '禁用' || rawStatus.toUpperCase() === 'DISABLE'
+          ? 'DISABLE'
+          : 'ENABLE';
+
+      if (!username) {
+        failureUsernames[`第${i + 2}行`] = '用户名不能为空';
+        continue;
+      }
+
+      try {
+        const existing = await this.prisma.user.findUnique({
+          where: { username },
+        });
+        if (!existing) {
+          const password = await bcrypt.hash(rawPassword || '123456', 10);
+          await this.prisma.user.create({
+            data: {
+              username,
+              nickname: nickname || username,
+              email,
+              mobile,
+              password,
+              status,
+              remark,
+            },
+          });
+          createUsernames.push(username);
+        } else if (updateSupport) {
+          const updateData: any = {
+            nickname: nickname || existing.nickname,
+            email: email ?? existing.email,
+            mobile: mobile ?? existing.mobile,
+            status,
+            remark: remark ?? existing.remark,
+          };
+          if (rawPassword) {
+            updateData.password = await bcrypt.hash(rawPassword, 10);
+          }
+          await this.prisma.user.update({
+            where: { id: existing.id },
+            data: updateData,
+          });
+          updateUsernames.push(username);
+        } else {
+          failureUsernames[username] = '用户名已存在';
+        }
+      } catch (err: any) {
+        failureUsernames[username] = err?.message || '导入失败';
+      }
+    }
+
+    return { createUsernames, updateUsernames, failureUsernames };
   }
 
   async findOne(id: number) {

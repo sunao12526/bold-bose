@@ -15,8 +15,14 @@ import { CmsModule } from './modules/cms/cms.module';
 import { MpModule } from './modules/mp/mp.module';
 import { HealthRdModule } from './modules/health-rd/health-rd.module';
 import { JwtAuthGuard } from './shared/guards/jwt-auth.guard';
+import { ApiAccessLogInterceptor } from './shared/interceptors/api-access-log.interceptor';
+import { IdempotentInterceptor } from './shared/interceptors/idempotent.interceptor';
 import { LogInterceptor } from './shared/interceptors/log.interceptor';
 import { TransformInterceptor } from './shared/interceptors/transform.interceptor';
+import { ExcelModule } from './shared/excel/excel.module';
+import { RedisModule } from './shared/redis/redis.module';
+import { RedisService } from './shared/redis/redis.service';
+import { RedisThrottlerStorage } from './shared/redis/redis-throttler.storage';
 import { UserCacheModule } from './shared/user-cache.module';
 import { IpModule } from './shared/ip/ip.module';
 import { AppController } from './app.controller';
@@ -35,12 +41,22 @@ import { AppService } from './app.service';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 60,
-    }]),
+    RedisModule,
+    ThrottlerModule.forRootAsync({
+      inject: [RedisService],
+      useFactory: (redisService: RedisService) => ({
+        throttlers: [
+          {
+            ttl: 60000,
+            limit: 60,
+          },
+        ],
+        storage: new RedisThrottlerStorage(redisService),
+      }),
+    }),
     ScheduleModule.forRoot(), 
-    PrismaModule, 
+    PrismaModule,
+    ExcelModule,
     UserCacheModule,
     IpModule,
     AuthModule, 
@@ -66,6 +82,14 @@ import { AppService } from './app.service';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ApiAccessLogInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: IdempotentInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,

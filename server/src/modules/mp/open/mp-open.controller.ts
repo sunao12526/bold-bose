@@ -2,6 +2,8 @@ import { Controller, Get, Post, Query, Param, Body, Header, HttpCode, HttpStatus
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import * as xml2js from 'xml2js';
 import { PrismaService } from '../../../shared/prisma/prisma.service';
+import { Public } from '../../../shared/decorators/public.decorator';
+import { Keep } from '../../../shared/decorators/keep.decorator';
 import { MpClientService } from '../shared/mp-client.service';
 import { WechatCrypto } from '../shared/wechat-crypto';
 
@@ -19,6 +21,8 @@ function buildXml(obj: any): string {
 }
 
 @ApiTags('微信公众号 - 服务器回调')
+@Public()
+@Keep()
 @Controller('mp/open')
 export class MpOpenController {
   private readonly logger = new Logger(MpOpenController.name);
@@ -215,8 +219,8 @@ export class MpOpenController {
       if (reply) return reply;
     }
 
-    // 默认兜底：如果没有触发任何关键字回复，可以尝试匹配消息回复 (未匹配到规则的统配回复)
-    return null;
+    // 默认兜底：如果没有触发任何关键字回复，尝试匹配默认消息回复 (type = 3)
+    return this.triggerReply(accountId, openid, 3);
   }
 
   /**

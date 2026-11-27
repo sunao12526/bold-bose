@@ -1,7 +1,6 @@
-import { Injectable, Global, Logger, Inject } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import type { Cache } from 'cache-manager';
+import { Injectable, Global, Logger } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
+import { RedisService } from './redis/redis.service';
 
 interface CachedUserAuth {
   roleCodes: string[];
@@ -16,14 +15,14 @@ export class UserCacheService {
 
   constructor(
     private prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private redisService: RedisService,
   ) {}
 
   async getUserAuth(userId: number): Promise<CachedUserAuth> {
     const cacheKey = `user_auth:${userId}`;
 
     try {
-      const cached = await this.cacheManager.get<CachedUserAuth>(cacheKey);
+      const cached = await this.redisService.getJson<CachedUserAuth>(cacheKey);
       if (cached) {
         return cached;
       }
@@ -61,7 +60,7 @@ export class UserCacheService {
 
     try {
       // TTL set to 5 minutes (300,000 milliseconds)
-      await this.cacheManager.set(cacheKey, auth, 300000);
+      await this.redisService.setJson(cacheKey, auth, 300000);
     } catch (err) {
       this.logger.error(`Failed to set cache for user ${userId}:`, err);
     }
@@ -72,7 +71,7 @@ export class UserCacheService {
   async invalidateUser(userId: number): Promise<void> {
     const cacheKey = `user_auth:${userId}`;
     try {
-      await this.cacheManager.del(cacheKey);
+      await this.redisService.del(cacheKey);
     } catch (err) {
       this.logger.error(`Failed to invalidate cache for user ${userId}:`, err);
     }
@@ -80,11 +79,7 @@ export class UserCacheService {
 
   async invalidateAll(): Promise<void> {
     try {
-      if (typeof this.cacheManager.clear === 'function') {
-        await this.cacheManager.clear();
-      } else if (typeof (this.cacheManager as any).reset === 'function') {
-        await (this.cacheManager as any).reset();
-      }
+      await this.redisService.delByPattern('user_auth:*');
     } catch (err) {
       this.logger.error('Failed to clear cache:', err);
     }

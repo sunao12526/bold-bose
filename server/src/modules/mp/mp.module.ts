@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { CacheModule } from '@nestjs/cache-manager';
 import { MpAccountService } from './account/mp-account.service';
 import { MpAccountController } from './account/mp-account.controller';
 import { MpMaterialService } from './material/mp-material.service';
@@ -23,9 +22,7 @@ import { MpFreePublishController } from './news/mp-free-publish.controller';
 import { MpStatisticsController } from './statistics/mp-statistics.controller';
 
 @Module({
-  imports: [
-    CacheModule.register(),
-  ],
+  imports: [],
   controllers: [
     MpOpenController,
     MpAccountController,

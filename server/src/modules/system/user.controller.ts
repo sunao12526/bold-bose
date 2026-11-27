@@ -7,9 +7,15 @@ import {
   Body,
   Param,
   Query,
+  Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   ParseIntPipe,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import type { Response } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -20,7 +26,9 @@ import { UserService } from './user.service';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../shared/guards/permissions.guard';
 import { RequirePermissions } from '../../shared/decorators/require-permissions.decorator';
+import { Keep } from '../../shared/decorators/keep.decorator';
 import { Log } from '../../shared/decorators/log.decorator';
+import { ExcelService } from '../../shared/excel/excel.service';
 import { UserQueryDto } from './dto/user-query.dto';
 import { CreateUserDto, UpdateUserDto, AssignUserRolesDto } from './dto/user-input.dto';
 import { UserResponseDto, UserListResponseDto } from './dto/user-response.dto';
@@ -31,7 +39,10 @@ import { SuccessResponseDto } from '../../shared/dto/success-response.dto';
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('system/user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private excelService: ExcelService,
+  ) {}
 
   @Post()
   @RequirePermissions('system:user:create')
@@ -48,6 +59,87 @@ export class UserController {
   @ApiOkResponse({ type: UserListResponseDto })
   async findAll(@Query() query: UserQueryDto) {
     return this.userService.findAll(query);
+  }
+
+  @Get('export-excel')
+  @Keep()
+  @RequirePermissions('system:user:export')
+  @ApiOperation({ summary: '导出系统用户 Excel' })
+  async exportExcel(@Query() query: UserQueryDto, @Res() res: Response) {
+    const rows = await this.userService.findAllForExport(query);
+    this.excelService.sendExcelResponse(
+      res,
+      '系统用户.xlsx',
+      rows,
+      [
+        { header: '用户编号', key: 'id', width: 10 },
+        { header: '用户名', key: 'username', width: 18 },
+        { header: '用户昵称', key: 'nickname', width: 18 },
+        {
+          header: '部门',
+          key: 'dept',
+          width: 18,
+          formatter: (r) => r.dept?.name || '',
+        },
+        { header: '邮箱', key: 'email', width: 24 },
+        { header: '手机号', key: 'mobile', width: 16 },
+        {
+          header: '状态',
+          key: 'status',
+          width: 10,
+          formatter: (r) => (r.status === 'ENABLE' ? '启用' : '禁用'),
+        },
+        { header: '创建时间', key: 'createdAt', width: 22 },
+      ],
+      '用户列表',
+    );
+  }
+
+  @Get('get-import-template')
+  @Keep()
+  @RequirePermissions('system:user:import')
+  @ApiOperation({ summary: '下载系统用户导入模板' })
+  async getImportTemplate(@Res() res: Response) {
+    const sampleRows = [
+      {
+        username: 'demo_user',
+        nickname: '示例用户',
+        email: 'demo@example.com',
+        mobile: '13800138000',
+        status: '启用',
+        remark: '导入示例（默认密码 123456）',
+      },
+    ];
+    this.excelService.sendExcelResponse(
+      res,
+      '用户导入模板.xlsx',
+      sampleRows,
+      [
+        { header: '用户名', key: 'username', width: 18 },
+        { header: '用户昵称', key: 'nickname', width: 18 },
+        { header: '邮箱', key: 'email', width: 24 },
+        { header: '手机号', key: 'mobile', width: 16 },
+        { header: '状态', key: 'status', width: 10 },
+        { header: '备注', key: 'remark', width: 28 },
+      ],
+      '导入模板',
+    );
+  }
+
+  @Post('import-excel')
+  @RequirePermissions('system:user:import')
+  @UseInterceptors(FileInterceptor('file'))
+  @Log({ module: '用户管理', type: 'IMPORT', description: '导入系统用户' })
+  @ApiOperation({ summary: '导入系统用户 Excel' })
+  async importExcel(
+    @UploadedFile() file: Express.Multer.File,
+    @Query('updateSupport') updateSupport?: string,
+  ) {
+    if (!file || !file.buffer) {
+      throw new BadRequestException('请上传有效的 Excel 文件');
+    }
+    const rows = this.excelService.parseExcelBuffer(file.buffer);
+    return this.userService.importUsers(rows, updateSupport === 'true');
   }
 
   @Get(':id')

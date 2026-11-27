@@ -1,52 +1,44 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
+import { RedisService } from '../../shared/redis/redis.service';
 
 export interface CaptchaResult {
   key: string;
   image: string;
 }
 
-interface CaptchaRecord {
-  code: string;
-  expiresAt: number;
-}
+const CAPTCHA_TTL_MS = 5 * 60 * 1000;
 
 @Injectable()
 export class CaptchaService {
   private readonly logger = new Logger(CaptchaService.name);
-  private store = new Map<string, CaptchaRecord>();
 
-  constructor() {
-    setInterval(() => this.cleanup(), 60_000);
-  }
+  constructor(private readonly redisService: RedisService) {}
 
-  generate(): CaptchaResult {
+  async generate(): Promise<CaptchaResult> {
     const code = this.randomCode(4);
     const key = crypto.randomUUID();
-    this.store.set(key, {
-      code: code.toLowerCase(),
-      expiresAt: Date.now() + 5 * 60 * 1000,
-    });
-    this.logger.log(`Generated: key=${key}, code=${code.toLowerCase()}`);
+    await this.redisService.set(
+      `captcha:${key}`,
+      code.toLowerCase(),
+      CAPTCHA_TTL_MS,
+    );
+    this.logger.log(`Generated: key=${key}`);
     return { key, image: this.renderSvg(code) };
   }
 
-  verify(key: string, input: string): boolean {
-    this.logger.log(`Verifying: key=${key}, input=${input}`);
-    const record = this.store.get(key);
-    if (!record) {
-      this.logger.log(`Verify failed: no record for key=${key}`);
+  async verify(key: string, input: string): Promise<boolean> {
+    if (!key || !input) {
       return false;
     }
-    this.store.delete(key);
-    if (Date.now() > record.expiresAt) {
-      this.logger.log(`Verify failed: expired`);
+    this.logger.log(`Verifying: key=${key}`);
+    const storedCode = await this.redisService.getAndDelete(`captcha:${key}`);
+    if (!storedCode) {
+      this.logger.log(`Verify failed: no record or expired for key=${key}`);
       return false;
     }
-    const result = record.code === input.toLowerCase();
-    this.logger.log(
-      `Verify: stored=${record.code}, input_lower=${input.toLowerCase()}, match=${result}`,
-    );
+    const result = storedCode === input.toLowerCase();
+    this.logger.log(`Verify: key=${key}, match=${result}`);
     return result;
   }
 
@@ -100,12 +92,5 @@ export class CaptchaService {
 
     svg += '</svg>';
     return svg;
-  }
-
-  private cleanup() {
-    const now = Date.now();
-    for (const [key, record] of this.store) {
-      if (now > record.expiresAt) this.store.delete(key);
-    }
   }
 }
